@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
-import 'package:ride_seattle/classes/agency.dart';
 import 'keys.dart' as OBAKey;
 import 'package:xml/xml.dart' as xml;
 
