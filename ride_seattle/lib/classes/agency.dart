@@ -34,6 +34,10 @@ class Agency {
     }
   }
 
+  void getRoutes() async {
+    Response res = await get(Uri.parse(Routes.getRoutes(id)));
+  }
+
   @override
   String toString() {
     return "Id: $id\nName: $name\nUrl: $url\nFareUrl: $fareUrl\nTimezone: $timezone\nPhone: $phone\nPrivate: ${privateService.toString()}";
