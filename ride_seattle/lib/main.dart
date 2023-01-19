@@ -10,6 +10,6 @@ void main() => runApp(
             create: (_) => StateInfo(),
           ),
         ],
-        child: Home(),
+        child: const Home(),
       ),
     );
