@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:ride_seattle/classes/agency.dart';
+import 'keys.dart' as OBAKey;
 import 'package:xml/xml.dart' as xml;
 
 class Test extends StatefulWidget {
@@ -13,7 +14,7 @@ class Test extends StatefulWidget {
 class _TestState extends State<Test> {
   void getData() async {
     String uri =
-        'http://api.pugetsound.onebusaway.org/api/where/agencies-with-coverage.xml?key=0ac2c688-a91f-4ea4-a7f7-f1d99b145174';
+        'http://api.pugetsound.onebusaway.org/api/where/agencies-with-coverage.xml?key=${OBAKey.Key.oneBusAway}';
     Response res = await get(Uri.parse(uri));
     final document = xml.XmlDocument.parse(res.body);
     for (var agency in document.findAllElements('agency')) {
