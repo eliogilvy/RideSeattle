@@ -4,6 +4,8 @@ import 'package:ride_seattle/OneBusAway/test_data.dart';
 import 'package:ride_seattle/Pages/maps.dart';
 import 'package:ride_seattle/Pages/sign_in.dart';
 
+import 'homescreen.dart';
+
 class Home extends StatelessWidget {
   const Home({super.key});
 
@@ -13,7 +15,7 @@ class Home extends StatelessWidget {
     final routerDelegate = BeamerDelegate(
       locationBuilder: RoutesLocationBuilder(
         routes: {
-          "/": (context, state, data) => const MapsPage(),
+          "/": (context, state, data) => const HomeScreen(),
         },
       ),
     );
