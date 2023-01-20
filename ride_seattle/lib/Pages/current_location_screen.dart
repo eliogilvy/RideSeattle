@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+
+
 class CurrentLocationScreen extends StatefulWidget {
   const CurrentLocationScreen({Key? key}) : super(key: key);
 
@@ -12,10 +14,11 @@ class CurrentLocationScreen extends StatefulWidget {
 class _CurrentLocationScreenState extends State<CurrentLocationScreen> {
 
   late GoogleMapController googleMapController;
-
   static const CameraPosition initialCameraPosition = CameraPosition(target: LatLng(37, -122), zoom: 14);
 
-  Set<Marker> markers = {};
+  Map<String, Marker> markers = {};
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -26,11 +29,14 @@ class _CurrentLocationScreenState extends State<CurrentLocationScreen> {
       ),
       body: GoogleMap(
         initialCameraPosition: initialCameraPosition,
-        markers: markers,
+        markers: markers.values.toSet(),
         zoomControlsEnabled: false,
         mapType: MapType.normal,
+
+
         onMapCreated: (GoogleMapController controller){
           googleMapController = controller;
+
         },),
 
       floatingActionButton: FloatingActionButton.extended(onPressed: () async {
@@ -41,7 +47,7 @@ class _CurrentLocationScreenState extends State<CurrentLocationScreen> {
 
         markers.clear();
 
-        markers.add(Marker(markerId: const MarkerId('currentLocation'), position: LatLng(position.latitude,position.longitude)));
+        addMarker('currentLocation', LatLng(position.latitude,position.longitude));
 
         setState(() {
 
@@ -53,6 +59,21 @@ class _CurrentLocationScreenState extends State<CurrentLocationScreen> {
       ),
     );
   }
+
+  addMarker(String id, LatLng location)
+  {
+    var marker = Marker(
+        markerId: MarkerId(id),
+        position: location,
+        infoWindow: const InfoWindow(title: 'Location of thing', snippet: 'Some Description'),
+    );
+
+    markers[id] = marker;
+    setState(() {
+
+    });
+  }
+
 
   Future<Position> _determinePosition() async {
     bool serviceEnabled;
