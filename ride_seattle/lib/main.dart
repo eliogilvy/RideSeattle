@@ -3,13 +3,16 @@ import 'package:provider/provider.dart';
 import 'Pages/home.dart';
 import 'classes/state_info.dart';
 
-void main() => runApp(
-      MultiProvider(
-        providers: [
-          ChangeNotifierProvider(
-            create: (_) => StateInfo(),
-          ),
-        ],
-        child: const Home(),
-      ),
-    );
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  var stateInfo = StateInfo();
+  await stateInfo.getAgencies();
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: stateInfo),
+      ],
+      child: const Home(),
+    ),
+  );
+}
