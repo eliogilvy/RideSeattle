@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
-import 'keys.dart' as OBAKey;
-import 'package:xml/xml.dart' as xml;
+import 'package:provider/provider.dart';
+import '../classes/state_info.dart';
 
 class Test extends StatefulWidget {
   const Test({super.key});
@@ -11,45 +10,17 @@ class Test extends StatefulWidget {
 }
 
 class _TestState extends State<Test> {
-  void getData() async {
-    String uri =
-        'http://api.pugetsound.onebusaway.org/api/where/agencies-with-coverage.xml?key=${OBAKey.Key.oneBusAway}';
-    Response res = await get(Uri.parse(uri));
-    final document = xml.XmlDocument.parse(res.body);
-    for (var agency in document.findAllElements('agency')) {
-      final id = agency.findElements('id');
-      final name = agency.findElements('name');
-      final url = agency.findElements('url');
-      final timezone = agency.findElements('timezone');
-      final lang = agency.findElements('lang');
-      var phone;
-      var fareUrl;
-      try {
-        phone = agency.findElements('phone').first.text;
-      } catch (e) {
-        if (e is StateError) phone = null;
-      }
-      try {
-        fareUrl = agency.findElements('fareUrl').first.text;
-      } catch (e) {
-        if (e is StateError) fareUrl = null;
-      }
-      final privateService = agency.findElements('privateService');
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    getData();
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Test"),
-      ),
+    return Consumer<StateInfo>(
+      builder: (context, stateInfo, child) {
+        return Scaffold(
+          appBar: AppBar(
+            title: Text("Hello"),
+          ),
+          body: Text(stateInfo.agencies['1']?.name ?? "Hello"),
+        );
+      },
     );
   }
 }
