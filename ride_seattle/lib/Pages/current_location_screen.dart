@@ -60,12 +60,24 @@ class _CurrentLocationScreenState extends State<CurrentLocationScreen> {
     );
   }
 
-  addMarker(String id, LatLng location)
+  addMarker(String id, LatLng location, {String? icon_filepath}) async
   {
+
+    BitmapDescriptor markerIcon;
+
+    if(icon_filepath != null) {
+      markerIcon = await BitmapDescriptor.fromAssetImage(const ImageConfiguration(), icon_filepath);
+    } else{
+      markerIcon = await BitmapDescriptor.fromAssetImage(const ImageConfiguration(), 'assets/images/icons8-location-pin-66.png');
+    }
     var marker = Marker(
         markerId: MarkerId(id),
         position: location,
-        infoWindow: const InfoWindow(title: 'Location of thing', snippet: 'Some Description'),
+        infoWindow: const InfoWindow(
+            title: 'Location of thing',
+            snippet: 'Some Description'
+        ),
+        icon: markerIcon
     );
 
     markers[id] = marker;
