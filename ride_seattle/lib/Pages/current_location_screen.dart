@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:provider/provider.dart';
 
-
+import '../classes/stop.dart';
+import '../provider/state_info.dart';
 
 class CurrentLocationScreen extends StatefulWidget {
   const CurrentLocationScreen({Key? key}) : super(key: key);
@@ -12,108 +14,61 @@ class CurrentLocationScreen extends StatefulWidget {
 }
 
 class _CurrentLocationScreenState extends State<CurrentLocationScreen> {
-
-  late GoogleMapController googleMapController;
-  static const CameraPosition initialCameraPosition = CameraPosition(target: LatLng(37, -122), zoom: 14);
-
+  GoogleMapController? googleMapController;
+  static const CameraPosition initialCameraPosition =
+      CameraPosition(target: LatLng(47.6219, -122.3517), zoom: 10);
   Map<String, Marker> markers = {};
-
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("User current location") ,
+        title: const Text("User current location"),
         centerTitle: true,
       ),
-      body: GoogleMap(
-        initialCameraPosition: initialCameraPosition,
-        markers: markers.values.toSet(),
-        zoomControlsEnabled: false,
-        mapType: MapType.normal,
-
-
-        onMapCreated: (GoogleMapController controller){
-          googleMapController = controller;
-
-        },),
-
-      floatingActionButton: FloatingActionButton.extended(onPressed: () async {
-
-        Position position = await _determinePosition();
-
-        googleMapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(target: LatLng(position.latitude, position.longitude), zoom: 14)));
-
-        markers.clear();
-
-        addMarker('currentLocation', LatLng(position.latitude,position.longitude));
-
-        setState(() {
-
-        });
-
-      },
-          label: const Text("Current Location"),
-          icon: const Icon(Icons.location_history)
-      ),
-    );
-  }
-
-  addMarker(String id, LatLng location, {String? icon_filepath}) async
-  {
-
-    BitmapDescriptor markerIcon;
-
-    if(icon_filepath != null) {
-      markerIcon = await BitmapDescriptor.fromAssetImage(const ImageConfiguration(), icon_filepath);
-    } else{
-      markerIcon = await BitmapDescriptor.fromAssetImage(const ImageConfiguration(), 'assets/images/icons8-location-pin-66.png');
-    }
-    var marker = Marker(
-        markerId: MarkerId(id),
-        position: location,
-        infoWindow: const InfoWindow(
-            title: 'Location of thing',
-            snippet: 'Some Description'
+      body: Consumer<StateInfo>(
+        builder: (context, stateInfo, child) => GoogleMap(
+          initialCameraPosition: initialCameraPosition,
+          markers: stateInfo.markers,
+          zoomControlsEnabled: false,
+          mapType: MapType.normal,
+          onMapCreated: (GoogleMapController controller) {
+            googleMapController = controller;
+          },
+          onCameraMove: (position) async {
+            await stateInfo.setRadius(
+                position.target,
+                await getTopOfScreen(googleMapController!),
+                await getTopOfScreen(googleMapController!));
+            stateInfo.getStopsForLocation(position.target.latitude.toString(),
+                position.target.longitude.toString());
+          },
         ),
-        icon: markerIcon
+      ),
+      floatingActionButton:
+          Consumer<StateInfo>(builder: (context, stateInfo, child) {
+        return FloatingActionButton(
+            onPressed: () async {
+              Position position = stateInfo.position;
+              googleMapController!.animateCamera(
+                CameraUpdate.newCameraPosition(
+                  CameraPosition(
+                    target: LatLng(position.latitude, position.longitude),
+                    zoom: 16,
+                  ),
+                ),
+              );
+              stateInfo.addMarker('currentLocation',
+                  LatLng(position.latitude, position.longitude));
+            },
+            child: const Icon(Icons.location_history));
+      }),
     );
-
-    markers[id] = marker;
-    setState(() {
-
-    });
   }
 
-
-  Future<Position> _determinePosition() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-
-    if(!serviceEnabled){
-      return Future.error('Location services are disabled');
-    }
-
-    permission = await Geolocator.checkPermission();
-
-    if(permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-
-      if (permission == LocationPermission.denied) {
-        return Future.error("Location Permission denied");
-      }
-    }
-
-    if(permission == LocationPermission.deniedForever){
-      return Future.error("Location permission denied permanently");
-    }
-
-    Position position = await Geolocator.getCurrentPosition();
-
-    return position;
-
+  Future<LatLng> getTopOfScreen(GoogleMapController controller) {
+    return controller.getVisibleRegion().then(((value) {
+      return value.northeast;
+    }));
   }
 }

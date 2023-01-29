@@ -9,7 +9,7 @@ void main() {
   group('Agency', () {
     test('Constructor sets properties correctly', () {
       var agency = Agency(
-        id: '1',
+        agencyId: '1',
         name: 'Test Agency',
         url: 'http://example.com',
         timezone: 'UTC',
@@ -19,7 +19,7 @@ void main() {
         privateService: false,
       );
 
-      expect(agency.id, '1');
+      expect(agency.agencyId, '1');
       expect(agency.name, 'Test Agency');
       expect(agency.url, 'http://example.com');
       expect(agency.timezone, 'UTC');

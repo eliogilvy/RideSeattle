@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../classes/state_info.dart';
+import '../provider/state_info.dart';
 
 class Test extends StatefulWidget {
   const Test({super.key});
@@ -18,7 +18,6 @@ class _TestState extends State<Test> {
           appBar: AppBar(
             title: Text("Hello"),
           ),
-          body: Text(stateInfo.agencies['1']?.name ?? "Hello"),
         );
       },
     );

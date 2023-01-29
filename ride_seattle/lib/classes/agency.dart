@@ -5,7 +5,7 @@ import 'package:ride_seattle/classes/stop.dart';
 import 'package:xml/xml.dart';
 
 class Agency {
-  String id;
+  String agencyId;
   String name;
   String url;
   String timezone;
@@ -14,12 +14,12 @@ class Agency {
   String? fareUrl;
   bool privateService;
 
-  final List<String> _stopList = [];
+  final List<String> _stopIds = [];
   final Map<String, Route> _routes = {};
   final Map<String, Stop> _stops = {};
 
   Agency({
-    required this.id,
+    required this.agencyId,
     required this.name,
     required this.url,
     required this.timezone,
@@ -27,11 +27,7 @@ class Agency {
     required this.phone,
     required this.fareUrl,
     required this.privateService,
-  }) {
-    getRoutes();
-    getStopIdsForAgency();
-    populateStopMap();
-  }
+  });
 
   Stop getStop(String stopId) {
     return _stops[stopId]!;
@@ -42,7 +38,7 @@ class Agency {
   }
 
   void getRoutes() async {
-    Response res = await get(Uri.parse(Routes.getRoutes(id)));
+    Response res = await get(Uri.parse(Routes.getRoutes(agencyId)));
     final document = XmlDocument.parse(res.body);
     final routes = document.findAllElements('route');
     for (var route in routes) {
@@ -52,13 +48,13 @@ class Agency {
 
   void _createRoute(XmlElement route) {
     final id = route.findElements('id').first.text;
-    var shortName;
+    String? shortName;
     try {
       shortName = route.findElements('shortName').first.text;
     } catch (e) {
       if (e is StateError) shortName = null;
     }
-    var description;
+    String? description;
     try {
       description = route.findElements('description').first.text;
     } catch (e) {
@@ -74,7 +70,7 @@ class Agency {
     }
     final agencyId = route.findElements('agencyId').first.text;
     _routes[id] = Route(
-        id: id,
+        routeId: id,
         shortName: shortName,
         description: description,
         type: type,
@@ -83,16 +79,16 @@ class Agency {
   }
 
   void getStopIdsForAgency() async {
-    Response res = await get(Uri.parse(Routes.getStopIdsForAgency(id)));
+    Response res = await get(Uri.parse(Routes.getStopIdsForAgency(agencyId)));
     final document = XmlDocument.parse(res.body);
     final stopIds = document.findAllElements('string');
     for (var stopId in stopIds) {
-      _stopList.add(stopId.text);
+      _stopIds.add(stopId.text);
     }
   }
 
   void populateStopMap() {
-    for (var stop in _stopList) {
+    for (var stop in _stopIds) {
       _addStopFromId(stop);
     }
   }
@@ -118,7 +114,7 @@ class Agency {
       routeList.add(route.text);
     }
     _stops[id] = Stop(
-      id: id,
+      stopId: id,
       lat: lat,
       lon: lon,
       direction: direction,
@@ -131,6 +127,6 @@ class Agency {
 
   @override
   String toString() {
-    return "Id: $id\nName: $name\nUrl: $url\nFareUrl: $fareUrl\nTimezone: $timezone\nPhone: $phone\nPrivate: ${privateService.toString()}";
+    return "Id: $agencyId\nName: $name\nUrl: $url\nFareUrl: $fareUrl\nTimezone: $timezone\nPhone: $phone\nPrivate: ${privateService.toString()}";
   }
 }

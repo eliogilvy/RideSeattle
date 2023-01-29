@@ -1,3 +1,4 @@
+import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:ride_seattle/Pages/current_location_screen.dart';
 
@@ -20,14 +21,13 @@ class _HomeScreenState extends State<HomeScreen> {
           width: MediaQuery.of(context).size.width,
           child: Column(
             children: [
-              ElevatedButton(onPressed: (){
-                Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context ){
-                  return const CurrentLocationScreen();
-                }));
-              }, child: const Text("User current location"))
+              ElevatedButton(
+                  onPressed: () {
+                    Beamer.of(context).beamToNamed('/map');
+                  },
+                  child: const Text("User current location"))
             ],
-          )
-      ),
+          )),
     );
   }
 }

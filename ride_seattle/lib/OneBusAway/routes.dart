@@ -20,4 +20,20 @@ class Routes {
   static String getStopIdsForAgency(String id) {
     return 'http://api.pugetsound.onebusaway.org/api/where/stop-ids-for-agency/$id.xml?key=${Key.oneBusAway}';
   }
+
+  static String getVehiclesforAgency(String id) {
+    return 'http://api.onebusaway.org/api/where/vehicles-for-agency/$id.xml?key=${Key.oneBusAway}';
+  }
+
+  static String getArrivalAndDeparture(String id) {
+    return 'http://api.pugetsound.onebusaway.org/api/where/arrival-and-departure-for-stop/1_75403.xml?key=${Key.oneBusAway}';
+  }
+
+  static String getStopsForLocation(String lat, String lon, String radius) {
+    return 'http://api.pugetsound.onebusaway.org/api/where/stops-for-location.xml?key=${Key.oneBusAway}&lat=$lat&lon=$lon';
+  }
+
+  static String getRoutesForLocation(String lat, String lon, String radius) {
+    return 'http://api.pugetsound.onebusaway.org/api/where/routes-for-location.xml?key=${Key.oneBusAway}&lat=$lat&lon=$lon';
+  }
 }

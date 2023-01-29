@@ -4,7 +4,7 @@ import 'package:xml/xml.dart';
 import '../OneBusAway/routes.dart';
 
 class Route {
-  final String id;
+  final String routeId;
   String? shortName;
   String? description;
   final String type;
@@ -12,7 +12,7 @@ class Route {
   final String agencyId;
 
   Route({
-    required this.id,
+    required this.routeId,
     required this.shortName,
     required this.type,
     required this.description,
@@ -25,7 +25,7 @@ class Route {
   final List<String> _stopIds = [];
 
   void getStopList() async {
-    Response res = await get(Uri.parse(Routes.getStopsForRoute(id)));
+    Response res = await get(Uri.parse(Routes.getStopsForRoute(routeId)));
     final document = XmlDocument.parse(res.body);
     final stops = document.findAllElements('string');
     for (var stop in stops) {
