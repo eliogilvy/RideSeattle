@@ -19,6 +19,7 @@ class _CurrentLocationScreenState extends State<CurrentLocationScreen> {
       CameraPosition(target: LatLng(47.6219, -122.3517), zoom: 10);
   Map<String, Marker> markers = {};
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,28 +44,39 @@ class _CurrentLocationScreenState extends State<CurrentLocationScreen> {
             stateInfo.getStopsForLocation(position.target.latitude.toString(),
                 position.target.longitude.toString());
           },
+
+          //TODO position hasn't been intialized?
+          /* circles: {Circle(
+              circleId: const CircleId("userRadius"),
+              center: LatLng(stateInfo.position.latitude,
+                  stateInfo.position.longitude),
+              radius: 4000,
+          )},*/
+
         ),
       ),
       floatingActionButton:
           Consumer<StateInfo>(builder: (context, stateInfo, child) {
-        return FloatingActionButton(
-            onPressed: () async {
-              Position position = stateInfo.position;
-              googleMapController!.animateCamera(
-                CameraUpdate.newCameraPosition(
-                  CameraPosition(
-                    target: LatLng(position.latitude, position.longitude),
-                    zoom: 16,
-                  ),
-                ),
-              );
-              stateInfo.addMarker('currentLocation',
-                  LatLng(position.latitude, position.longitude));
-            },
-            child: const Icon(Icons.location_history));
+            return FloatingActionButton(
+                onPressed: () async {
+                  Position position = stateInfo.position;
+                  googleMapController!.animateCamera(
+                    CameraUpdate.newCameraPosition(
+                      CameraPosition(
+                        target: LatLng(position.latitude, position.longitude),
+                        zoom: 16,
+                      ),
+                    ),
+                  );
+                  stateInfo.addMarker('currentLocation',
+                      LatLng(position.latitude, position.longitude));
+                },
+                child: const Icon(Icons.location_history));
       }),
     );
   }
+
+
 
   Future<LatLng> getTopOfScreen(GoogleMapController controller) {
     return controller.getVisibleRegion().then(((value) {
