@@ -7,26 +7,41 @@ import 'package:xml/xml.dart';
 import '../OneBusAway/routes.dart';
 import '../classes/stop.dart';
 import 'dart:math';
+import 'package:ride_seattle/classes/route.dart' as r;
 
 class StateInfo with ChangeNotifier {
   StateInfo() {
     getPosition();
   }
 
-  final String _radius = "5000";
+  String _radius = "0";
   late Position _position;
   final Map<String, Agency> _agencies = {};
   final Map<String, Stop> _stops = {};
-  final Map<String, Route> _routes = {};
+  final Map<String, r.Route> _routes = {};
   final Map<String, Marker> _markers = {};
+  final Map<String, Circle> _circles = {};
 
+  Set<Circle> get circles => _circles.values.toSet();
   Set<Marker> get markers => _markers.values.toSet();
   List<Stop> get stops => _stops.values.toList();
-  List<Route> get routes => _routes.values.toList();
+  List<r.Route> get routes => _routes.values.toList();
   Position get position => _position;
+  String get radius => _radius;
 
-  Future<double> setRadius(LatLng center, LatLng top, LatLng bottom) async {
-    final earthRadius = 6371000; // Earth's mean radius in kilometers
+  void addCircle(LatLng position, String id) {
+    _circles[id] = Circle(
+        circleId: const CircleId("id"),
+        center: position,
+        radius: double.parse(_radius!), // convert to meters
+        fillColor: Colors.blue.withOpacity(0.1),
+        strokeWidth: 1,
+        strokeColor: Colors.blue);
+    notifyListeners();
+  }
+
+  Future<void> setRadius(LatLng center, LatLng top, LatLng bottom) async {
+    const earthRadius = 6371000; // Earth's mean radius in kilometers
     final lat1 = center.latitude * pi / 180;
     final lat2 = top.latitude * pi / 180;
     final lng1 = center.longitude * pi / 180;
@@ -40,12 +55,11 @@ class StateInfo with ChangeNotifier {
     final c = 2 * atan2(sqrt(a), sqrt(1 - a));
     final distance = earthRadius * c;
 
-    print("distance is: $distance");
-
-    return distance;
+    _radius = distance.toString();
   }
 
   Future<void> getStopsForLocation(String lat, String lon) async {
+    print("Searching for $_radius");
     Response res =
         await get(Uri.parse(Routes.getStopsForLocation(lat, lon, _radius)));
     final document = XmlDocument.parse(res.body);
@@ -87,6 +101,48 @@ class StateInfo with ChangeNotifier {
     }
   }
 
+  Future<void> getRoutesForLocation(String lat, String lon) async {
+    Response res =
+        await get(Uri.parse(Routes.getRoutesForLocation(lat, lon, _radius)));
+    final document = XmlDocument.parse(res.body);
+    final routes = document.findAllElements('route');
+    for (var route in routes) {
+      _createRoute(route);
+    }
+  }
+
+  void _createRoute(XmlElement route) {
+    final id = route.findElements('id').first.text;
+    String? shortName;
+    try {
+      shortName = route.findElements('shortName').first.text;
+    } catch (e) {
+      if (e is StateError) shortName = null;
+    }
+    String? description;
+    try {
+      description = route.findElements('description').first.text;
+    } catch (e) {
+      if (e is StateError) description = null;
+    }
+
+    final type = route.findElements('type').first.text;
+    var url;
+    try {
+      url = route.findElements('url').first.text;
+    } catch (e) {
+      if (e is StateError) url = null;
+    }
+    final agencyId = route.findElements('agencyId').first.text;
+    _routes[id] = r.Route(
+        routeId: id,
+        shortName: shortName,
+        description: description,
+        type: type,
+        url: url,
+        agencyId: agencyId);
+  }
+
   Future<void> getPosition() async {
     bool serviceEnabled;
     LocationPermission permission;
@@ -113,6 +169,7 @@ class StateInfo with ChangeNotifier {
     }
 
     _position = await Geolocator.getCurrentPosition();
+    notifyListeners();
   }
 
   Future<void> addMarker(String id, LatLng location,

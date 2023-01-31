@@ -19,7 +19,7 @@ class Route {
     required this.url,
     required this.agencyId,
   }) {
-    getStopList();
+    //getStopList();
   }
 
   final List<String> _stopIds = [];

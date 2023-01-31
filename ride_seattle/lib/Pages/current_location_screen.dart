@@ -16,9 +16,10 @@ class CurrentLocationScreen extends StatefulWidget {
 class _CurrentLocationScreenState extends State<CurrentLocationScreen> {
   GoogleMapController? googleMapController;
   static const CameraPosition initialCameraPosition =
-      CameraPosition(target: LatLng(47.6219, -122.3517), zoom: 10);
+      CameraPosition(target: LatLng(47.6219, -122.3517), zoom: 12);
   Map<String, Marker> markers = {};
 
+  set currentCenter(position) => currentCenter = position;
 
   @override
   Widget build(BuildContext context) {
@@ -31,56 +32,59 @@ class _CurrentLocationScreenState extends State<CurrentLocationScreen> {
         builder: (context, stateInfo, child) => GoogleMap(
           initialCameraPosition: initialCameraPosition,
           markers: stateInfo.markers,
+          circles: stateInfo.circles,
           zoomControlsEnabled: false,
           mapType: MapType.normal,
           onMapCreated: (GoogleMapController controller) {
             googleMapController = controller;
           },
-          onCameraMove: (position) async {
+          onCameraIdle: () async {
+            print("idle");
+            final LatLng center = await getCurrentCenter(googleMapController!);
+            final LatLng currentCenter =
+                LatLng(center.latitude, center.longitude);
+            await stateInfo.getPosition();
             await stateInfo.setRadius(
-                position.target,
+                currentCenter,
                 await getTopOfScreen(googleMapController!),
                 await getTopOfScreen(googleMapController!));
-            stateInfo.getStopsForLocation(position.target.latitude.toString(),
-                position.target.longitude.toString());
+            stateInfo.getStopsForLocation(currentCenter.latitude.toString(),
+                currentCenter.longitude.toString());
+            stateInfo.addCircle(currentCenter, 'searchRadius');
           },
-
-          //TODO position hasn't been intialized?
-          /* circles: {Circle(
-              circleId: const CircleId("userRadius"),
-              center: LatLng(stateInfo.position.latitude,
-                  stateInfo.position.longitude),
-              radius: 4000,
-          )},*/
-
         ),
       ),
       floatingActionButton:
           Consumer<StateInfo>(builder: (context, stateInfo, child) {
-            return FloatingActionButton(
-                onPressed: () async {
-                  Position position = stateInfo.position;
-                  googleMapController!.animateCamera(
-                    CameraUpdate.newCameraPosition(
-                      CameraPosition(
-                        target: LatLng(position.latitude, position.longitude),
-                        zoom: 16,
-                      ),
-                    ),
-                  );
-                  stateInfo.addMarker('currentLocation',
-                      LatLng(position.latitude, position.longitude));
-                },
-                child: const Icon(Icons.location_history));
+        return FloatingActionButton(
+            onPressed: () async {
+              Position position = stateInfo.position;
+              googleMapController!.animateCamera(
+                CameraUpdate.newCameraPosition(
+                  CameraPosition(
+                    target: LatLng(position.latitude, position.longitude),
+                    zoom: 16,
+                  ),
+                ),
+              );
+              stateInfo.addMarker('currentLocation',
+                  LatLng(position.latitude, position.longitude));
+            },
+            child: const Icon(Icons.location_history));
       }),
     );
   }
-
-
 
   Future<LatLng> getTopOfScreen(GoogleMapController controller) {
     return controller.getVisibleRegion().then(((value) {
       return value.northeast;
     }));
+  }
+
+  Future<LatLng> getCurrentCenter(GoogleMapController controller) {
+    return controller.getVisibleRegion().then((value) {
+      return LatLng((value.southwest.latitude + value.northeast.latitude) / 2,
+          (value.southwest.longitude + value.northeast.longitude) / 2);
+    });
   }
 }
