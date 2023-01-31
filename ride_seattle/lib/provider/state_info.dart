@@ -33,7 +33,7 @@ class StateInfo with ChangeNotifier {
     _circles[id] = Circle(
         circleId: const CircleId("id"),
         center: position,
-        radius: double.parse(_radius!), // convert to meters
+        radius: double.parse(_radius), // convert to meters
         fillColor: Colors.blue.withOpacity(0.1),
         strokeWidth: 1,
         strokeColor: Colors.blue);
