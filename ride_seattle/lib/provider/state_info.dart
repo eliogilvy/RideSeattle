@@ -21,6 +21,8 @@ class StateInfo with ChangeNotifier {
   final Map<String, r.Route> _routes = {};
   final Map<String, Marker> _markers = {};
   final Map<String, Circle> _circles = {};
+  bool showMarkerInfo = false;
+  late Stop _currentStopInfo;
 
   Set<Circle> get circles => _circles.values.toSet();
   Set<Marker> get markers => _markers.values.toSet();
@@ -28,6 +30,7 @@ class StateInfo with ChangeNotifier {
   List<r.Route> get routes => _routes.values.toList();
   Position get position => _position;
   String get radius => _radius;
+  Stop get currentStopInfo => _currentStopInfo;
 
   void addCircle(LatLng position, String id) {
     _circles[id] = Circle(
@@ -56,6 +59,7 @@ class StateInfo with ChangeNotifier {
     final distance = earthRadius * c;
 
     _radius = distance.toString();
+    notifyListeners();
   }
 
   Future<void> getStopsForLocation(String lat, String lon) async {
@@ -97,7 +101,7 @@ class StateInfo with ChangeNotifier {
         routeIds: routeIds,
       );
       addMarker(id, LatLng(lat, lon),
-          icon_filepath: 'assets/images/icons8-bus-stop-64.png');
+          iconFilepath: 'assets/images/icons8-bus-stop-64.png');
     }
   }
 
@@ -173,26 +177,34 @@ class StateInfo with ChangeNotifier {
   }
 
   Future<void> addMarker(String id, LatLng location,
-      {String? icon_filepath}) async {
+      {String? iconFilepath}) async {
     BitmapDescriptor markerIcon;
 
-    if (icon_filepath != null) {
+    if (iconFilepath != null) {
       markerIcon = await BitmapDescriptor.fromAssetImage(
-          const ImageConfiguration(), icon_filepath);
+          const ImageConfiguration(), iconFilepath);
     } else {
       markerIcon = await BitmapDescriptor.fromAssetImage(
           const ImageConfiguration(),
           'assets/images/icons8-location-pin-66.png');
     }
     var marker = Marker(
-        markerId: MarkerId(id),
-        position: location,
-        infoWindow: const InfoWindow(
-            title: 'Location of thing', snippet: 'Some Description'),
-        icon: markerIcon);
-
+      markerId: MarkerId(id),
+      position: location,
+      icon: markerIcon,
+      onTap: () async {
+        showMarkerInfo = true;
+        await getMarkerInfo(id);
+        notifyListeners();
+      },
+    );
     _markers[id] = marker;
     notifyListeners();
+  }
+
+  Future<void> getMarkerInfo(String id) async {
+    _currentStopInfo = _stops[id]!;
+    await _currentStopInfo.getArrivalAndDeparture();
   }
 
   // Future<void> getAgencies() async {
