@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:ride_seattle/widgets/marker_sheet.dart';
 
 import '../classes/stop.dart';
 import '../provider/state_info.dart';
@@ -16,20 +17,17 @@ class CurrentLocationScreen extends StatefulWidget {
 class _CurrentLocationScreenState extends State<CurrentLocationScreen> {
   GoogleMapController? googleMapController;
   static const CameraPosition initialCameraPosition =
-      CameraPosition(target: LatLng(47.6219, -122.3517), zoom: 12);
+      CameraPosition(target: LatLng(47.6219, -122.3517), zoom: 16);
   Map<String, Marker> markers = {};
 
   set currentCenter(position) => currentCenter = position;
 
   @override
   Widget build(BuildContext context) {
+    final stateInfo = Provider.of<StateInfo>(context, listen: true);
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("User current location"),
-        centerTitle: true,
-      ),
-      body: Consumer<StateInfo>(
-        builder: (context, stateInfo, child) => GoogleMap(
+      body: Builder(
+        builder: (context) => GoogleMap(
           initialCameraPosition: initialCameraPosition,
           markers: stateInfo.markers,
           circles: stateInfo.circles,
@@ -38,40 +36,38 @@ class _CurrentLocationScreenState extends State<CurrentLocationScreen> {
           onMapCreated: (GoogleMapController controller) {
             googleMapController = controller;
           },
-          onCameraIdle: () async {
-            print("idle");
-            final LatLng center = await getCurrentCenter(googleMapController!);
-            final LatLng currentCenter =
-                LatLng(center.latitude, center.longitude);
-            await stateInfo.getPosition();
-            await stateInfo.setRadius(
-                currentCenter,
-                await getTopOfScreen(googleMapController!),
-                await getTopOfScreen(googleMapController!));
-            stateInfo.getStopsForLocation(currentCenter.latitude.toString(),
-                currentCenter.longitude.toString());
-            stateInfo.addCircle(currentCenter, 'searchRadius');
+          onTap: (argument) {
+            stateInfo.showMarkerInfo = false;
+            Navigator.of(context).maybePop();
+          },
+          onCameraIdle: () {
+            updateView(stateInfo);
+            if (stateInfo.showMarkerInfo) {
+              Scaffold.of(context).showBottomSheet(
+                (BuildContext context) {
+                  return const MarkerSheet();
+                },
+              );
+            }
           },
         ),
       ),
-      floatingActionButton:
-          Consumer<StateInfo>(builder: (context, stateInfo, child) {
-        return FloatingActionButton(
-            onPressed: () async {
-              Position position = stateInfo.position;
-              googleMapController!.animateCamera(
-                CameraUpdate.newCameraPosition(
-                  CameraPosition(
-                    target: LatLng(position.latitude, position.longitude),
-                    zoom: 16,
-                  ),
-                ),
-              );
-              stateInfo.addMarker('currentLocation',
-                  LatLng(position.latitude, position.longitude));
-            },
-            child: const Icon(Icons.location_history));
-      }),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          Position position = stateInfo.position;
+          googleMapController!.animateCamera(
+            CameraUpdate.newCameraPosition(
+              CameraPosition(
+                target: LatLng(position.latitude, position.longitude),
+                zoom: 16,
+              ),
+            ),
+          );
+          stateInfo.addMarker(
+              'currentLocation', LatLng(position.latitude, position.longitude));
+        },
+        child: const Icon(Icons.location_history),
+      ),
     );
   }
 
@@ -81,10 +77,29 @@ class _CurrentLocationScreenState extends State<CurrentLocationScreen> {
     }));
   }
 
+  Future<LatLng> getBottomOfScreen(GoogleMapController controller) {
+    return controller.getVisibleRegion().then(((value) {
+      return value.southwest;
+    }));
+  }
+
   Future<LatLng> getCurrentCenter(GoogleMapController controller) {
     return controller.getVisibleRegion().then((value) {
       return LatLng((value.southwest.latitude + value.northeast.latitude) / 2,
           (value.southwest.longitude + value.northeast.longitude) / 2);
     });
+  }
+
+  Future<void> updateView(StateInfo stateInfo) async {
+    final LatLng center = await getCurrentCenter(googleMapController!);
+    final LatLng currentCenter = LatLng(center.latitude, center.longitude);
+    await stateInfo.getPosition();
+    await stateInfo.setRadius(
+        currentCenter,
+        await getTopOfScreen(googleMapController!),
+        await getBottomOfScreen(googleMapController!));
+    stateInfo.getStopsForLocation(
+        currentCenter.latitude.toString(), currentCenter.longitude.toString());
+    stateInfo.addCircle(currentCenter, 'searchRadius');
   }
 }
