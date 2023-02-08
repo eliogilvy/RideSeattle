@@ -25,8 +25,8 @@ class Routes {
     return 'http://api.onebusaway.org/api/where/vehicles-for-agency/$id.xml?key=${Key.oneBusAway}';
   }
 
-  static String getArrivalAndDeparture(String id) {
-    return 'http://api.pugetsound.onebusaway.org/api/where/arrival-and-departure-for-stop/1_75403.xml?key=${Key.oneBusAway}';
+  static String getArrivalsAndDepartures(String id) {
+    return 'http://api.pugetsound.onebusaway.org/api/where/arrivals-and-departures-for-stop/$id.xml?key=${Key.oneBusAway}';
   }
 
   static String getStopsForLocation(String lat, String lon, String radius) {
