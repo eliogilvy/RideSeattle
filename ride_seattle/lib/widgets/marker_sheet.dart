@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ride_seattle/widgets/arrival_and_departure_list.dart';
 
 class MarkerSheet extends StatelessWidget {
-  const MarkerSheet({super.key});
+  final GoogleMapController controller;
+  const MarkerSheet({super.key, required this.controller});
 
   @override
   Widget build(BuildContext context) {
@@ -14,6 +16,7 @@ class MarkerSheet extends StatelessWidget {
           child: Center(
             child: ArrivalAndDepartureList(
               scrollController: scrollController,
+              controller: controller,
             ),
           ),
         );
