@@ -6,53 +6,76 @@ import 'package:ride_seattle/widgets/marker_sheet.dart';
 import '../provider/state_info.dart';
 import '../widgets/navDrawer.dart';
 
-class CurrentLocationScreen extends StatefulWidget {
-  const CurrentLocationScreen({Key? key}) : super(key: key);
+class ride_homeScreen extends StatefulWidget {
+  const ride_homeScreen({Key? key}) : super(key: key);
 
   @override
-  State<CurrentLocationScreen> createState() => _CurrentLocationScreenState();
+  State<ride_homeScreen> createState() => _ride_homeScreenState();
 }
 
-class _CurrentLocationScreenState extends State<CurrentLocationScreen> {
+class _ride_homeScreenState extends State<ride_homeScreen> {
   GoogleMapController? googleMapController;
   static const CameraPosition initialCameraPosition =
       CameraPosition(target: LatLng(47.6219, -122.3517), zoom: 16);
-  Map<String, Marker> markers = {};
 
-  set currentCenter(position) => currentCenter = position;
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     final stateInfo = Provider.of<StateInfo>(context, listen: true);
     return Scaffold(
-      drawer: navDrawer(),
-      body: Builder(
-        builder: (context) => GoogleMap(
-          myLocationButtonEnabled: false,
-          myLocationEnabled: true,
-          initialCameraPosition: initialCameraPosition,
-          markers: stateInfo.markers,
-          circles: stateInfo.circles,
-          zoomControlsEnabled: false,
-          mapType: MapType.normal,
-          onMapCreated: (GoogleMapController controller) {
-            googleMapController = controller;
-          },
-          onTap: (argument) {
-            stateInfo.showMarkerInfo = false;
-            Navigator.of(context).maybePop();
-          },
-          onCameraIdle: () {
-            updateView(stateInfo);
-            if (stateInfo.showMarkerInfo) {
-              Scaffold.of(context).showBottomSheet(
-                (BuildContext context) {
-                  return MarkerSheet(controller: googleMapController!);
+      appBar: AppBar(title: const Text('Ride Seattle'),),
+      drawer: const navDrawer(),
+      body: 
+      Column(
+        children: [
+          Row(children: [
+            Expanded(child: TextFormField(
+              controller: _searchController,
+              decoration: const InputDecoration(hintText: 'Search for stops'),
+              onChanged: (value) {
+                print(value);
+              },
+            )),
+            IconButton(onPressed: (){}, icon: Icon(Icons.search),),
+            
+          ],),
+          
+          Expanded(
+            child: Builder(
+              builder: (context) => GoogleMap(
+                myLocationButtonEnabled: false,
+                myLocationEnabled: true,
+                initialCameraPosition: initialCameraPosition,
+
+                markers: stateInfo.markers,
+
+
+                circles: stateInfo.circles,
+                zoomControlsEnabled: false,
+                mapType: MapType.normal,
+
+                onMapCreated: (GoogleMapController controller) {
+                  googleMapController = controller;
                 },
-              );
-            }
-          },
-        ),
+                onTap: (argument) {
+                  stateInfo.showMarkerInfo = false;
+                  Navigator.of(context).maybePop();
+                },
+                onCameraIdle: () {
+                  updateView(stateInfo);
+                  if (stateInfo.showMarkerInfo) {
+                    Scaffold.of(context).showBottomSheet(
+                      (BuildContext context) {
+                        return MarkerSheet(controller: googleMapController!);
+                      },
+                    );
+                  }
+                },
+              ),
+            ),
+          ),
+        ]
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
@@ -107,3 +130,5 @@ class _CurrentLocationScreenState extends State<CurrentLocationScreen> {
     stateInfo.addCircle(currentCenter, 'searchRadius');
   }
 }
+
+//

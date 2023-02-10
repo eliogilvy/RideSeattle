@@ -99,7 +99,7 @@ class StateInfo with ChangeNotifier {
         locationType: locationType,
         routeIds: routeIds,
       );
-      addMarker(id, LatLng(lat, lon), getMarkerInfo,
+      addMarker(id, name, LatLng(lat, lon), getMarkerInfo,
           iconFilepath: 'assets/images/icons8-bus-stop-64.png');
     }
   }
@@ -117,11 +117,13 @@ class StateInfo with ChangeNotifier {
   void _createRoute(XmlElement route) {
     final id = route.findElements('id').first.text;
     String? shortName;
+
     try {
       shortName = route.findElements('shortName').first.text;
     } catch (e) {
       if (e is StateError) shortName = null;
     }
+
     String? description;
     try {
       description = route.findElements('description').first.text;
@@ -136,6 +138,7 @@ class StateInfo with ChangeNotifier {
     } catch (e) {
       if (e is StateError) url = null;
     }
+
     final agencyId = route.findElements('agencyId').first.text;
     _routes[id] = r.Route(
         routeId: id,
@@ -175,7 +178,7 @@ class StateInfo with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> addMarker(String id, LatLng location, Function(String) function,
+  Future<void> addMarker(String id, String name, LatLng location, Function(String) function,
       {String? iconFilepath}) async {
     BitmapDescriptor markerIcon;
 
@@ -187,9 +190,13 @@ class StateInfo with ChangeNotifier {
           const ImageConfiguration(),
           'assets/images/icons8-location-pin-66.png');
     }
+
     var marker = Marker(
       markerId: MarkerId(id),
       position: location,
+      infoWindow: InfoWindow(
+        title: name,
+      ),
       icon: markerIcon,
       onTap: () async {
         function(id);

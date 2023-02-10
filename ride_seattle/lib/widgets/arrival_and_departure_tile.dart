@@ -22,7 +22,7 @@ class ArrivalAndDepartureTile extends StatelessWidget {
         ),
         onPressed: () async {
           await stateInfo.addMarker(
-              'vehicle', adInfo.tripStatus.position, stateInfo.getVehicleInfo,
+              'vehicle', adInfo.routeShortName, adInfo.tripStatus.position, stateInfo.getVehicleInfo,
               iconFilepath: 'assets/images/icons8-trolleybus-30.png');
           controller.animateCamera(
             CameraUpdate.newCameraPosition(

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'Pages/current_location_screen.dart';
+import 'Pages/ride_homeScreen.dart';
 import 'provider/state_info.dart';
 
 void main() async {
@@ -24,7 +24,7 @@ final _router = GoRouter(
   routes: [
     GoRoute(
       path: '/',
-      builder: (context, state) => const CurrentLocationScreen(),
+      builder: (context, state) => const ride_homeScreen(),
       routes: [],
     ),
   ],
