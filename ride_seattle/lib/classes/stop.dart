@@ -1,5 +1,8 @@
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart';
 import 'package:ride_seattle/classes/arrival_and_departure.dart';
+import 'package:ride_seattle/classes/trip_status.dart';
 import 'package:xml/xml.dart';
 
 import '../OneBusAway/routes.dart';
@@ -32,8 +35,84 @@ class Stop {
   List<ArrivalAndDeparture> get arrivalAndDepartureList =>
       _arrivalAndDeparture.values.toList();
 
+  LatLng getPostion(XmlElement position) {
+    double lat = double.parse(position.findElements('lat').first.text);
+    double lon = double.parse(position.findElements('lon').first.text);
+    return LatLng(lat, lon);
+  }
+
+  TripStatus getTripStatus(XmlElement trip) {
+    final activeTripId = trip.findElements('activeTripId').first.text;
+    final blockTripSequence =
+        int.parse(trip.findElements('blockTripSequence').first.text);
+    final serviceDate = int.parse(trip.findElements('serviceDate').first.text);
+    final scheduledDistanceAlongTrip = double.parse(
+        trip.findElements('scheduledDistanceAlongTrip').first.text);
+    final totalDistanceAlongTrip =
+        double.parse(trip.findElements('totalDistanceAlongTrip').first.text);
+    final LatLng position = getPostion(trip.findElements('position').first);
+    final orientation =
+        double.parse(trip.findElements('orientation').first.text);
+    final closestStop = trip.findElements('closestStop').first.text;
+    final closestStopTimeOffset =
+        int.parse(trip.findElements('closestStopTimeOffset').first.text);
+    final nextStop = trip.findElements('nextStop').first.text;
+    final nextStopTimeOffset =
+        int.parse(trip.findAllElements('nextStopTimeOffset').first.text);
+
+    var phase;
+    try {
+      phase = trip.findAllElements('phase').first.text;
+    } catch (e) {
+      phase = "Unknown";
+    }
+    final status = trip.findAllElements('status').first.text;
+    final predicted =
+        bool.fromEnvironment(trip.findAllElements('predicted').first.text);
+    var lastUpdateTime;
+    try {
+      lastUpdateTime =
+          int.parse(trip.findAllElements('lastUpdateTime').first.text);
+    } catch (e) {
+      lastUpdateTime = 0;
+    }
+    var lastLocationUpdateTime;
+    try {
+      lastLocationUpdateTime =
+          int.parse(trip.findAllElements('lastLocationUpdateTime').first.text);
+    } catch (e) {
+      lastLocationUpdateTime = 0;
+    }
+    var lastKnownLocation;
+    try {
+      lastKnownLocation =
+          getPostion(trip.findAllElements('lastKnownLocation').first);
+    } catch (e) {
+      lastKnownLocation = null;
+    }
+
+    return TripStatus(
+      activeTripId: activeTripId,
+      blockTripSequence: blockTripSequence,
+      serviceDate: serviceDate,
+      scheduledDistanceAlongTrip: scheduledDistanceAlongTrip,
+      totalDistanceAlongTrip: totalDistanceAlongTrip,
+      position: position,
+      orientation: orientation,
+      closestStop: closestStop,
+      closestStopTimeOffset: closestStopTimeOffset,
+      nextStop: nextStop,
+      nextStopTimeOffset: nextStopTimeOffset,
+      phase: phase,
+      status: status,
+      predicted: predicted,
+      lastUpdateTime: lastUpdateTime,
+      lastLocationUpdateTime: lastLocationUpdateTime,
+      lastKnownLocation: lastKnownLocation,
+    );
+  }
+
   Future<void> getArrivalAndDeparture() async {
-    print("stop $stopId");
     Response res =
         await get(Uri.parse(Routes.getArrivalsAndDepartures(stopId)));
     final document = XmlDocument.parse(res.body);
@@ -68,9 +147,9 @@ class Stop {
           double.parse(ad.findElements("distanceFromStop").first.text);
       final numberOfStopsAway =
           int.parse(ad.findElements("numberOfStopsAway").first.text);
-      final tripStatus = ad.findElements("tripStatus").first.text;
+      final tripStatus = ad.findElements("tripStatus").first;
+      TripStatus trip = getTripStatus(tripStatus);
 
-      print("adding $routeId");
       _arrivalAndDeparture[tripId] = ArrivalAndDeparture(
         routeId: routeId,
         tripId: tripId,
@@ -89,7 +168,7 @@ class Stop {
         predictedDepartureTime: predictedDepartureTime,
         distanceFromStop: distanceFromStop,
         numberOfStopsAway: numberOfStopsAway,
-        tripStatus: tripStatus,
+        tripStatus: trip,
       );
     }
   }
