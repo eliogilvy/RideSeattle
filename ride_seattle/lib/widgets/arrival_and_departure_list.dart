@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:ride_seattle/widgets/arrival_and_departure_tile.dart';
 
@@ -6,7 +7,9 @@ import '../provider/state_info.dart';
 
 class ArrivalAndDepartureList extends StatefulWidget {
   final ScrollController scrollController;
-  const ArrivalAndDepartureList({super.key, required this.scrollController});
+  final GoogleMapController controller;
+  const ArrivalAndDepartureList(
+      {super.key, required this.scrollController, required this.controller});
 
   @override
   State<ArrivalAndDepartureList> createState() =>
@@ -22,7 +25,9 @@ class _ArrivalAndDepartureListState extends State<ArrivalAndDepartureList> {
         itemCount: stateInfo.currentStopInfo.arrivalAndDeparture.values.length,
         itemBuilder: (BuildContext context, int index) {
           return ArrivalAndDepartureTile(
-              adInfo: stateInfo.currentStopInfo.arrivalAndDepartureList[index]);
+            adInfo: stateInfo.currentStopInfo.arrivalAndDepartureList[index],
+            controller: widget.controller,
+          );
         });
   }
 }
