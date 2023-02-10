@@ -5,6 +5,8 @@ import 'package:provider/provider.dart';
 import 'package:ride_seattle/widgets/marker_sheet.dart';
 import '../provider/state_info.dart';
 import '../widgets/navDrawer.dart';
+import '../classes/auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class CurrentLocationScreen extends StatefulWidget {
   const CurrentLocationScreen({Key? key}) : super(key: key);
@@ -18,6 +20,7 @@ class _CurrentLocationScreenState extends State<CurrentLocationScreen> {
   static const CameraPosition initialCameraPosition =
       CameraPosition(target: LatLng(47.6219, -122.3517), zoom: 16);
   Map<String, Marker> markers = {};
+  final User? user = Auth().currentUser;
 
   set currentCenter(position) => currentCenter = position;
 
@@ -54,23 +57,31 @@ class _CurrentLocationScreenState extends State<CurrentLocationScreen> {
           },
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          Position position = stateInfo.position;
-          googleMapController!.animateCamera(
-            CameraUpdate.newCameraPosition(
-              CameraPosition(
-                target: LatLng(position.latitude, position.longitude),
-                zoom: 16,
-              ),
-            ),
-          );
-          // await stateInfo.addMarker(
-          //     'currentLocation',
-          //     LatLng(position.latitude, position.longitude),
-          //     stateInfo.getMarkerInfo);
-        },
-        child: const Icon(Icons.location_history),
+      floatingActionButton: Row(
+        children: [
+          FloatingActionButton(
+            onPressed: () async {
+              Position position = stateInfo.position;
+              googleMapController!.animateCamera(
+                CameraUpdate.newCameraPosition(
+                  CameraPosition(
+                    target: LatLng(position.latitude, position.longitude),
+                    zoom: 16,
+                  ),
+                ),
+              );
+              // await stateInfo.addMarker(
+              //     'currentLocation',
+              //     LatLng(position.latitude, position.longitude),
+              //     stateInfo.getMarkerInfo);
+            },
+            child: const Icon(Icons.location_history),
+          ),
+          FloatingActionButton(
+            onPressed: signOut,
+            child: const Icon(Icons.remove),
+          ),
+        ],
       ),
     );
   }
@@ -105,5 +116,9 @@ class _CurrentLocationScreenState extends State<CurrentLocationScreen> {
     stateInfo.getStopsForLocation(
         currentCenter.latitude.toString(), currentCenter.longitude.toString());
     stateInfo.addCircle(currentCenter, 'searchRadius');
+  }
+
+  Future<void> signOut() async {
+    await Auth().signOut();
   }
 }

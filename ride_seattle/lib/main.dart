@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'Pages/current_location_screen.dart';
 import 'provider/state_info.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'Pages/check_auth.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
 
   var stateInfo = StateInfo();
 
@@ -24,7 +26,7 @@ final _router = GoRouter(
   routes: [
     GoRoute(
       path: '/',
-      builder: (context, state) => const CurrentLocationScreen(),
+      builder: (context, state) => const CheckAuth(),
       routes: [],
     ),
   ],
