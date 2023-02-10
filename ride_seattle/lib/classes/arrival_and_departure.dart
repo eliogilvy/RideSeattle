@@ -1,3 +1,5 @@
+import 'package:ride_seattle/classes/trip_status.dart';
+
 class ArrivalAndDeparture {
   final String routeId;
   final String tripId;
@@ -16,7 +18,7 @@ class ArrivalAndDeparture {
   final int predictedDepartureTime;
   final double distanceFromStop;
   final int numberOfStopsAway;
-  final String tripStatus;
+  final TripStatus tripStatus;
 
   ArrivalAndDeparture({
     required this.routeId,
