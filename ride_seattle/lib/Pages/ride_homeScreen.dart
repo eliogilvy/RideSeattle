@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
@@ -14,11 +15,22 @@ class ride_homeScreen extends StatefulWidget {
 }
 
 class _ride_homeScreenState extends State<ride_homeScreen> {
+
+
+  late String _mapStyle;
+
   GoogleMapController? googleMapController;
   static const CameraPosition initialCameraPosition =
-      CameraPosition(target: LatLng(47.6219, -122.3517), zoom: 16);
+  CameraPosition(target: LatLng(47.6219, -122.3517), zoom: 16);
 
   final TextEditingController _searchController = TextEditingController();
+
+  initState() {
+    super.initState();
+    rootBundle.loadString('assets/map_style.txt').then((string) {
+      _mapStyle = string;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +68,12 @@ class _ride_homeScreenState extends State<ride_homeScreen> {
                 mapType: MapType.normal,
 
                 onMapCreated: (GoogleMapController controller) {
-                  googleMapController = controller;
+                  if (mounted) {
+                    setState(() {
+                      googleMapController = controller;
+                      controller.setMapStyle(_mapStyle);
+                    });
+                  }
                 },
                 onTap: (argument) {
                   stateInfo.showMarkerInfo = false;

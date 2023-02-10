@@ -87,6 +87,7 @@ flutter:
      - assets/images/icons8-trolleybus-30.png
      - assets/images/icons8-standing-man-64.png
      - assets/images/icons8-location-pin-66.png
+     - assets/map_style.txt
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
