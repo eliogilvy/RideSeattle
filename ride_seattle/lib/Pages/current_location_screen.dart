@@ -3,8 +3,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:ride_seattle/widgets/marker_sheet.dart';
-
-import '../classes/stop.dart';
 import '../provider/state_info.dart';
 
 class CurrentLocationScreen extends StatefulWidget {
@@ -17,7 +15,7 @@ class CurrentLocationScreen extends StatefulWidget {
 class _CurrentLocationScreenState extends State<CurrentLocationScreen> {
   GoogleMapController? googleMapController;
   static const CameraPosition initialCameraPosition =
-      CameraPosition(target: LatLng(47.6092, -122.3178), zoom: 16);
+      CameraPosition(target: LatLng(47.6219, -122.3517), zoom: 16);
   Map<String, Marker> markers = {};
 
   set currentCenter(position) => currentCenter = position;
@@ -28,6 +26,8 @@ class _CurrentLocationScreenState extends State<CurrentLocationScreen> {
     return Scaffold(
       body: Builder(
         builder: (context) => GoogleMap(
+          myLocationButtonEnabled: false,
+          myLocationEnabled: true,
           initialCameraPosition: initialCameraPosition,
           markers: stateInfo.markers,
           circles: stateInfo.circles,
@@ -45,7 +45,7 @@ class _CurrentLocationScreenState extends State<CurrentLocationScreen> {
             if (stateInfo.showMarkerInfo) {
               Scaffold.of(context).showBottomSheet(
                 (BuildContext context) {
-                  return const MarkerSheet();
+                  return MarkerSheet(controller: googleMapController!);
                 },
               );
             }
@@ -63,8 +63,10 @@ class _CurrentLocationScreenState extends State<CurrentLocationScreen> {
               ),
             ),
           );
-          stateInfo.addMarker(
-              'currentLocation', LatLng(position.latitude, position.longitude));
+          // await stateInfo.addMarker(
+          //     'currentLocation',
+          //     LatLng(position.latitude, position.longitude),
+          //     stateInfo.getMarkerInfo);
         },
         child: const Icon(Icons.location_history),
       ),
