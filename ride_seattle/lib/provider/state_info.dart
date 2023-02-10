@@ -63,7 +63,6 @@ class StateInfo with ChangeNotifier {
   }
 
   Future<void> getStopsForLocation(String lat, String lon) async {
-    print("Searching for $_radius");
     Response res =
         await get(Uri.parse(Routes.getStopsForLocation(lat, lon, _radius)));
     final document = XmlDocument.parse(res.body);
@@ -72,7 +71,7 @@ class StateInfo with ChangeNotifier {
       var id = stop.findElements("id").first.text;
       var lat = double.parse(stop.findElements("lat").first.text);
       var lon = double.parse(stop.findElements("lon").first.text);
-      var direction;
+      String? direction;
       try {
         direction = stop.findElements("direction").first.text;
       } catch (e) {
@@ -100,7 +99,7 @@ class StateInfo with ChangeNotifier {
         locationType: locationType,
         routeIds: routeIds,
       );
-      addMarker(id, LatLng(lat, lon),
+      addMarker(id, LatLng(lat, lon), getMarkerInfo,
           iconFilepath: 'assets/images/icons8-bus-stop-64.png');
     }
   }
@@ -131,7 +130,7 @@ class StateInfo with ChangeNotifier {
     }
 
     final type = route.findElements('type').first.text;
-    var url;
+    String? url;
     try {
       url = route.findElements('url').first.text;
     } catch (e) {
@@ -176,7 +175,7 @@ class StateInfo with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> addMarker(String id, LatLng location,
+  Future<void> addMarker(String id, LatLng location, Function(String) function,
       {String? iconFilepath}) async {
     BitmapDescriptor markerIcon;
 
@@ -193,9 +192,7 @@ class StateInfo with ChangeNotifier {
       position: location,
       icon: markerIcon,
       onTap: () async {
-        showMarkerInfo = true;
-        await getMarkerInfo(id);
-        notifyListeners();
+        function(id);
       },
     );
     _markers[id] = marker;
@@ -203,9 +200,13 @@ class StateInfo with ChangeNotifier {
   }
 
   Future<void> getMarkerInfo(String id) async {
+    showMarkerInfo = true;
     _currentStopInfo = _stops[id]!;
     await _currentStopInfo.getArrivalAndDeparture();
+    notifyListeners();
   }
+
+  void getVehicleInfo(String id) {}
 
   // Future<void> getAgencies() async {
   //   Response res = await get(Uri.parse(Routes.getAgencies()));
