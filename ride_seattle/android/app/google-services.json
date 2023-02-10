@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "712234018044",
+    "project_id": "rideseattle-c9676",
+    "storage_bucket": "rideseattle-c9676.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:712234018044:android:024914bd9e931ec0212379",
+        "android_client_info": {
+          "package_name": "com.example.ride_seattle"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "712234018044-uum3ku9taahl813j8qs9kb4t59j4f2ff.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDdMm7gfreMg9AGO5arrXWGOtU59dQYMug"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "712234018044-uum3ku9taahl813j8qs9kb4t59j4f2ff.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
