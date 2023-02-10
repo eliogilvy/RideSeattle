@@ -4,6 +4,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:ride_seattle/widgets/marker_sheet.dart';
 import '../provider/state_info.dart';
+import '../widgets/navDrawer.dart';
 
 class CurrentLocationScreen extends StatefulWidget {
   const CurrentLocationScreen({Key? key}) : super(key: key);
@@ -24,6 +25,7 @@ class _CurrentLocationScreenState extends State<CurrentLocationScreen> {
   Widget build(BuildContext context) {
     final stateInfo = Provider.of<StateInfo>(context, listen: true);
     return Scaffold(
+      drawer: navDrawer(),
       body: Builder(
         builder: (context) => GoogleMap(
           myLocationButtonEnabled: false,
