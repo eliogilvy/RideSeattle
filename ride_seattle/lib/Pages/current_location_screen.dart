@@ -17,7 +17,7 @@ class CurrentLocationScreen extends StatefulWidget {
 class _CurrentLocationScreenState extends State<CurrentLocationScreen> {
   GoogleMapController? googleMapController;
   static const CameraPosition initialCameraPosition =
-      CameraPosition(target: LatLng(47.6219, -122.3517), zoom: 16);
+      CameraPosition(target: LatLng(47.6092, -122.3178), zoom: 16);
   Map<String, Marker> markers = {};
 
   set currentCenter(position) => currentCenter = position;

@@ -31,7 +31,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  
+
+  go_router: ^6.0.1
   sqflite: any
   path: any
 
