@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart';
@@ -184,8 +185,8 @@ class StateInfo with ChangeNotifier {
     BitmapDescriptor markerIcon;
 
     if (iconFilepath != null) {
-      markerIcon = await BitmapDescriptor.fromAssetImage(
-          const ImageConfiguration(), iconFilepath);
+      final bytes = await rootBundle.load(iconFilepath);
+      markerIcon = BitmapDescriptor.fromBytes(bytes.buffer.asUint8List());
     } else {
       markerIcon = await BitmapDescriptor.fromAssetImage(
           const ImageConfiguration(),
@@ -195,9 +196,7 @@ class StateInfo with ChangeNotifier {
     var marker = Marker(
       markerId: MarkerId(id),
       position: location,
-      infoWindow: InfoWindow(
-        title: name,
-      ),
+      infoWindow: markerWindow(name),
       icon: markerIcon,
       onTap: () async {
         function(id);
@@ -212,6 +211,12 @@ class StateInfo with ChangeNotifier {
     _currentStopInfo = _stops[id]!;
     await _currentStopInfo.getArrivalAndDeparture();
     notifyListeners();
+  }
+
+  InfoWindow markerWindow(String name) {
+    return InfoWindow(
+      title: name,
+    );
   }
 
   void getVehicleInfo(String id) {}
