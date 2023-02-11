@@ -178,7 +178,8 @@ class StateInfo with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> addMarker(String id, String name, LatLng location, Function(String) function,
+  Future<void> addMarker(
+      String id, String name, LatLng location, Function(String) function,
       {String? iconFilepath}) async {
     BitmapDescriptor markerIcon;
 
