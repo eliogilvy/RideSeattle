@@ -147,8 +147,15 @@ class Stop {
           double.parse(ad.findElements("distanceFromStop").first.text);
       final numberOfStopsAway =
           int.parse(ad.findElements("numberOfStopsAway").first.text);
-      final tripStatus = ad.findElements("tripStatus").first;
-      TripStatus trip = getTripStatus(tripStatus);
+      XmlElement? tripStatus;
+      TripStatus? trip;
+      try {
+        tripStatus = ad.findElements('tripStatus').first;
+        trip = getTripStatus(tripStatus);
+      } catch (e) {
+        tripStatus = null;
+        trip = null;
+      }
 
       _arrivalAndDeparture[tripId] = ArrivalAndDeparture(
         routeId: routeId,
