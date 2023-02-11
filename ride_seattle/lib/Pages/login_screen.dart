@@ -13,13 +13,13 @@ class _LoginPageState extends State<LoginPage> {
   String? errorMessage = '';
   bool isLogin = true;
 
-  final TextEditingController email_controller = TextEditingController();
-  final TextEditingController password_controller = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
   Future<void> signInWithEmailAndPassword() async {
     try {
       await Auth().signInWithEmailAndPassword(
-          email: email_controller.text, password: password_controller.text);
+          email: emailController.text, password: passwordController.text);
     } on FirebaseAuthException catch (e) {
       setState(() {
         errorMessage = e.message;
@@ -30,7 +30,7 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> createUserWithEmailAndPassword() async {
     try {
       await Auth().createUserWithEmailAndPassword(
-          email: email_controller.text, password: password_controller.text);
+          email: emailController.text, password: passwordController.text);
     } on FirebaseAuthException catch (e) {
       setState(() {
         errorMessage = e.message;
@@ -88,8 +88,8 @@ class _LoginPageState extends State<LoginPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              _entryField('email', email_controller),
-              _entryField('password', password_controller),
+              _entryField('email', emailController),
+              _entryField('password', passwordController),
               _errorMessage(),
               _submitButton(),
               _loginOrRegisterButton(),
