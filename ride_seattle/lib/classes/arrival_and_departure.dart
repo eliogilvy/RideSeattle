@@ -18,7 +18,7 @@ class ArrivalAndDeparture {
   final int predictedDepartureTime;
   final double distanceFromStop;
   final int numberOfStopsAway;
-  final TripStatus tripStatus;
+  final TripStatus? tripStatus;
 
   ArrivalAndDeparture({
     required this.routeId,
@@ -38,6 +38,6 @@ class ArrivalAndDeparture {
     required this.predictedDepartureTime,
     required this.distanceFromStop,
     required this.numberOfStopsAway,
-    required this.tripStatus,
+    this.tripStatus,
   });
 }
