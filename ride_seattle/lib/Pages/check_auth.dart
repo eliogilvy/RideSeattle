@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../Pages/ride_homeScreen.dart';
-import '../Pages/home_page.dart';
+import 'maps_screen.dart';
+import 'login_screen.dart';
 import '../classes/auth.dart';
 
 class CheckAuth extends StatefulWidget {
@@ -17,7 +17,7 @@ class _CheckAuthState extends State<CheckAuth> {
       stream: Auth().authStateChanges,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          return const ride_homeScreen();
+          return const MapScreen();
         } else {
           return const LoginPage();
         }
