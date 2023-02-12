@@ -20,7 +20,8 @@ class _ArrivalAndDepartureListState extends State<ArrivalAndDepartureList> {
   @override
   Widget build(BuildContext context) {
     final stateInfo = Provider.of<StateInfo>(context, listen: true);
-    return ListView.builder(
+    if (stateInfo.currentStopInfo.arrivalAndDeparture.values.isNotEmpty) {
+      return ListView.builder(
         controller: widget.scrollController,
         itemCount: stateInfo.currentStopInfo.arrivalAndDeparture.values.length,
         itemBuilder: (BuildContext context, int index) {
@@ -28,6 +29,9 @@ class _ArrivalAndDepartureListState extends State<ArrivalAndDepartureList> {
             adInfo: stateInfo.currentStopInfo.arrivalAndDepartureList[index],
             controller: widget.controller,
           );
-        });
+        },
+      );
+    }
+    return const Text("There are no routes to show at this time.");
   }
 }
