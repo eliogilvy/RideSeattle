@@ -46,13 +46,14 @@ class _MapScreenState extends State<MapScreen> {
         Row(
           children: [
             Expanded(
-                child: TextFormField(
-              controller: _searchController,
-              decoration: const InputDecoration(hintText: 'Search for stops'),
-              onChanged: (value) {
-                print(value);
-              },
-            )),
+              child: TextFormField(
+                controller: _searchController,
+                decoration: const InputDecoration(hintText: 'Search for stops'),
+                onChanged: (value) {
+                  print(value);
+                },
+              ),
+            ),
             IconButton(
               onPressed: () {},
               icon: const Icon(Icons.search),
@@ -66,6 +67,7 @@ class _MapScreenState extends State<MapScreen> {
               myLocationEnabled: true,
               initialCameraPosition: initialCameraPosition,
               markers: stateInfo.markers,
+              mapToolbarEnabled: false,
               //circles: stateInfo.circles,
               zoomControlsEnabled: false,
               mapType: MapType.normal,
@@ -81,22 +83,18 @@ class _MapScreenState extends State<MapScreen> {
                 stateInfo.showMarkerInfo = false;
                 Navigator.of(context).maybePop();
               },
+              onCameraMoveStarted: () => Navigator.of(context).maybePop(),
               onCameraIdle: () {
                 updateView(stateInfo);
                 if (stateInfo.showMarkerInfo) {
-                  Scaffold.of(context).showBottomSheet(
-                    (BuildContext context) {
-                      return MarkerSheet(controller: googleMapController!);
-                    },
-                  );
+                  _showBottomSheet(context, stateInfo);
                 }
               },
             ),
           ),
         ),
       ]),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.small(
         onPressed: () async {
           Position position = stateInfo.position;
           googleMapController!.animateCamera(
@@ -107,15 +105,6 @@ class _MapScreenState extends State<MapScreen> {
               ),
             ),
           );
-          // await stateInfo.addMarker(
-          //     'currentLocation',
-          //     LatLng(position.latitude, position.longitude),
-          //     stateInfo.getMarkerInfo);
-
-          // FloatingActionButton(
-          //   onPressed: signOut,
-          //   child: const Icon(Icons.remove),
-          // ),
         },
         child: const Icon(Icons.location_history),
       ),
@@ -145,7 +134,7 @@ class _MapScreenState extends State<MapScreen> {
     final LatLng center = await getCurrentCenter(googleMapController!);
     final LatLng currentCenter = LatLng(center.latitude, center.longitude);
     await stateInfo.getPosition();
-    await stateInfo.setRadius(
+    stateInfo.setRadius(
         currentCenter,
         await getTopOfScreen(googleMapController!),
         await getBottomOfScreen(googleMapController!));
@@ -154,9 +143,14 @@ class _MapScreenState extends State<MapScreen> {
     stateInfo.addCircle(currentCenter, 'searchRadius');
   }
 
-  Future<void> signOut() async {
-    await Auth().signOut();
+  void _showBottomSheet(BuildContext context, StateInfo stateInfo) {
+    Scaffold.of(context)
+        .showBottomSheet(
+          (BuildContext context) {
+            return MarkerSheet(controller: googleMapController!);
+          },
+        )
+        .closed
+        .whenComplete(() => stateInfo.showMarkerInfo = false);
   }
 }
-
-//
