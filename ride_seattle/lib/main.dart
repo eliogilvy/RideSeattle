@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:ride_seattle/styles/theme.dart';
 import 'provider/state_info.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'Pages/check_auth.dart';
@@ -40,6 +41,7 @@ class RideApp extends StatelessWidget {
     return MaterialApp.router(
       title: 'Ride App',
       routerConfig: _router,
+      theme: RideSeattleTheme.theme(),
     );
   }
 }
