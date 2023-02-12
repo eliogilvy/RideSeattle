@@ -83,7 +83,7 @@ class _MapScreenState extends State<MapScreen> {
                 stateInfo.showMarkerInfo = false;
                 Navigator.of(context).maybePop();
               },
-              onCameraMoveStarted: () => Navigator.of(context).maybePop(),
+
               onCameraIdle: () {
                 updateView(stateInfo);
                 if (stateInfo.showMarkerInfo) {
