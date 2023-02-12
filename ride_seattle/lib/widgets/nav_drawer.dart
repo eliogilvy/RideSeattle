@@ -51,7 +51,7 @@ Widget buildMenuItems(BuildContext context) => Container(
               leading: const Icon(Icons.home_outlined),
               title: const Text('My Routes'),
               onTap: () {
-                context.push('/');
+                context.pop();
               },
             ),
           ),
@@ -61,7 +61,7 @@ Widget buildMenuItems(BuildContext context) => Container(
               leading: const Icon(Icons.home_outlined),
               title: const Text('History'),
               onTap: () {
-                context.push('/');
+                context.pop();
               },
             ),
           ),
@@ -73,7 +73,7 @@ Widget buildMenuItems(BuildContext context) => Container(
               leading: const Icon(Icons.home_outlined),
               title: const Text('Settings'),
               onTap: () {
-                context.push('/');
+                context.pop();
               },
             ),
           ),
