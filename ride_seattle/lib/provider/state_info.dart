@@ -101,7 +101,7 @@ class StateInfo with ChangeNotifier {
         routeIds: routeIds,
       );
       addMarker(id, name, LatLng(lat, lon), getMarkerInfo,
-          iconFilepath: 'assets/images/icons8-bus-stop-64.png');
+          iconFilepath: 'assets/images/bus-stop.png');
     }
   }
 
@@ -181,7 +181,7 @@ class StateInfo with ChangeNotifier {
 
   Future<void> addMarker(
       String id, String name, LatLng location, Function(String) function,
-      {String? iconFilepath}) async {
+      {String? iconFilepath, double? x, double? y}) async {
     BitmapDescriptor markerIcon;
 
     if (iconFilepath != null) {
@@ -196,14 +196,22 @@ class StateInfo with ChangeNotifier {
     var marker = Marker(
       markerId: MarkerId(id),
       position: location,
-      infoWindow: markerWindow(name),
+      //infoWindow: markerWindow(name),
       icon: markerIcon,
       onTap: () async {
         function(id);
+        _markers.remove("current");
+        addMarker("current", name, location, (p0) => null,
+            iconFilepath: "assets/images/dry-clean.png", x: 0.5, y: 0.8);
       },
+      anchor: x == null || y == null ? const Offset(0.5, 1.0) : Offset(x, y),
     );
     _markers[id] = marker;
     notifyListeners();
+  }
+
+  void removeMarker(String id) {
+    _markers.remove(id);
   }
 
   Future<void> getMarkerInfo(String id) async {
