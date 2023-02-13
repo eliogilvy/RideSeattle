@@ -33,7 +33,7 @@ class RouteProvider with ChangeNotifier {
         polylineId: const PolylineId('current_route'),
         points: routeStops,
         color: Colors.orange,
-        width: 3,
+        width: 4,
       ),
     );
     print('added lines');
