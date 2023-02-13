@@ -90,6 +90,7 @@ class _LoginPageState extends State<LoginPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+              Image.asset('assets/images/logo.png'),
               _entryField('email', emailController),
               _entryField('password', passwordController),
               _errorMessage(),
