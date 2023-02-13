@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../classes/auth.dart';
+import '../classes/firebase.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -31,6 +32,7 @@ class _LoginPageState extends State<LoginPage> {
     try {
       await Auth().createUserWithEmailAndPassword(
           email: emailController.text, password: passwordController.text);
+      userSetup();
     } on FirebaseAuthException catch (e) {
       setState(() {
         errorMessage = e.message;

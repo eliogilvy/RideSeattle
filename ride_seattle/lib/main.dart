@@ -30,7 +30,7 @@ final _router = GoRouter(
   routes: [
     GoRoute(
       path: '/',
-      builder: (context, state) => const MapScreen(),
+      builder: (context, state) => const CheckAuth(),
       routes: const [],
     ),
   ],
