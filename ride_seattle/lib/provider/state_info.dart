@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:http/http.dart';
 import 'package:ride_seattle/classes/agency.dart';
 import 'package:xml/xml.dart';
@@ -33,7 +34,6 @@ class StateInfo with ChangeNotifier {
   String get radius => _radius;
   Stop get currentStopInfo => _currentStopInfo;
 
-
   void addCircle(LatLng position, String id) {
     _circles[id] = Circle(
         circleId: const CircleId("id"),
@@ -64,75 +64,46 @@ class StateInfo with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<List<Stop>> getStopsForRoute(String routeId) async {
-
+  Future<List<LatLng>> getStopsForRoute(String routeId) async {
     //assign make sure not to have old stops included in a different route
-    List<Stop> stopsForCurrentRoute = [];
+    List<LatLng> points = [];
 
     Response res = await get(Uri.parse(Routes.getStopsForRoute(routeId)));
 
     //final Map<String, Stop> _stops = {};
-    final document = XmlDocument.parse(res.body);
-    var stops = document.findAllElements('stop');
-    for (var stop in stops) {
-      var id = stop
-          .findElements("id")
-          .first
-          .text;
-      var lat = double.parse(stop
-          .findElements("lat")
-          .first
-          .text);
-      var lon = double.parse(stop
-          .findElements("lon")
-          .first
-          .text);
-      String? direction;
-      try {
-        direction = stop
-            .findElements("direction")
-            .first
-            .text;
-      } catch (e) {
-        if (e is StateError) {
-          direction = null;
-        }
-      }
-      var name = stop
-          .findElements("name")
-          .first
-          .text;
-      var code = stop
-          .findElements("code")
-          .first
-          .text;
-      var locationType =
-      int.parse(stop
-          .findElements("locationType")
-          .first
-          .text);
-      var routeIds = stop
-          .findElements("routeIds")
-          .first
-          .findElements("routeId")
-          .map((e) => e.text)
-          .toList();
+    // var document = XmlDocument.parse(res.body);
+    // var stopIds = document.findAllElements('stopIds').first;
+    // var stops = stopIds.findAllElements('string');
+    // for (var stopId in stops) {
+    //   print("adding ${stopId.text}");
+    //   if (!_stops.containsKey(stopId.text)) {
+    //     res = await get(Uri.parse(Routes.getStop(stopId.text)));
+    //     document = XmlDocument.parse(res.body);
+    //     print(res.body);
+    //     var stop = document.findAllElements('entry').first;
+    //     _addStop(stop);
+    //   }
+    //   stopsForCurrentRoute.add(_stops[stopId.text]!);
+    //   print("added stop");
+    // }
 
-      stopsForCurrentRoute.add(Stop(
-        stopId: id,
-        lat: lat,
-        lon: lon,
-        direction: direction,
-        name: name,
-        code: code,
-        locationType: locationType,
-        routeIds: routeIds,
-      ));
-
+    var document = XmlDocument.parse(res.body);
+    var polylines = document.findAllElements('encodedPolyline').first;
+    var point = polylines.findElements('points').first.text;
+    final coords = PolylinePoints().decodePolyline(point);
+    for (var coord in coords) {
+      points.add(LatLng(coord.latitude, coord.longitude));
     }
 
-    return stopsForCurrentRoute;
+    // for (var polyline in polylines) {
+    //   var point = polyline.findElements('points').first.text;
+    //   final coords = PolylinePoints().decodePolyline(point);
+    //   for (var coord in coords) {
+    //     points.add(LatLng(coord.latitude, coord.longitude));
+    //   }
+    // }
 
+    return points;
   }
 
   Future<void> getStopsForLocation(String lat, String lon) async {
@@ -141,40 +112,43 @@ class StateInfo with ChangeNotifier {
     final document = XmlDocument.parse(res.body);
     var stops = document.findAllElements('stop');
     for (var stop in stops) {
-      var id = stop.findElements("id").first.text;
-      var lat = double.parse(stop.findElements("lat").first.text);
-      var lon = double.parse(stop.findElements("lon").first.text);
-      String? direction;
-      try {
-        direction = stop.findElements("direction").first.text;
-      } catch (e) {
-        if (e is StateError) {
-          direction = null;
-        }
-      }
-      var name = stop.findElements("name").first.text;
-      var code = stop.findElements("code").first.text;
-      var locationType =
-          int.parse(stop.findElements("locationType").first.text);
-      var routeIds = stop
-          .findElements("routeIds")
-          .first
-          .findElements("routeId")
-          .map((e) => e.text)
-          .toList();
-      _stops[id] = Stop(
-        stopId: id,
-        lat: lat,
-        lon: lon,
-        direction: direction,
-        name: name,
-        code: code,
-        locationType: locationType,
-        routeIds: routeIds,
-      );
-      addMarker(id, name, LatLng(lat, lon), getMarkerInfo,
-          iconFilepath: 'assets/images/bus-stop.png');
+      _addStop(stop);
     }
+  }
+
+  void _addStop(XmlElement stop) {
+    var id = stop.findElements("id").first.text;
+    var lat = double.parse(stop.findElements("lat").first.text);
+    var lon = double.parse(stop.findElements("lon").first.text);
+    String? direction;
+    try {
+      direction = stop.findElements("direction").first.text;
+    } catch (e) {
+      if (e is StateError) {
+        direction = null;
+      }
+    }
+    var name = stop.findElements("name").first.text;
+    var code = stop.findElements("code").first.text;
+    var locationType = int.parse(stop.findElements("locationType").first.text);
+    var routeIds = stop
+        .findElements("routeIds")
+        .first
+        .findElements("routeId")
+        .map((e) => e.text)
+        .toList();
+    _stops[id] = Stop(
+      stopId: id,
+      lat: lat,
+      lon: lon,
+      direction: direction,
+      name: name,
+      code: code,
+      locationType: locationType,
+      routeIds: routeIds,
+    );
+    addMarker(id, name, LatLng(lat, lon), getMarkerInfo,
+        iconFilepath: 'assets/images/bus-stop.png');
   }
 
   Future<void> getRoutesForLocation(String lat, String lon) async {
@@ -300,6 +274,8 @@ class StateInfo with ChangeNotifier {
   }
 
   void getVehicleInfo(String id) {}
+
+  void _loadStops() {}
 
   // Future<void> getAgencies() async {
   //   Response res = await get(Uri.parse(Routes.getAgencies()));
