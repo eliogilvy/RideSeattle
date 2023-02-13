@@ -33,6 +33,7 @@ class StateInfo with ChangeNotifier {
   String get radius => _radius;
   Stop get currentStopInfo => _currentStopInfo;
 
+
   void addCircle(LatLng position, String id) {
     _circles[id] = Circle(
         circleId: const CircleId("id"),
@@ -61,6 +62,77 @@ class StateInfo with ChangeNotifier {
 
     _radius = distance.toString();
     notifyListeners();
+  }
+
+  Future<List<Stop>> getStopsForRoute(String routeId) async {
+
+    //assign make sure not to have old stops included in a different route
+    List<Stop> stopsForCurrentRoute = [];
+
+    Response res = await get(Uri.parse(Routes.getStopsForRoute(routeId)));
+
+    //final Map<String, Stop> _stops = {};
+    final document = XmlDocument.parse(res.body);
+    var stops = document.findAllElements('stop');
+    for (var stop in stops) {
+      var id = stop
+          .findElements("id")
+          .first
+          .text;
+      var lat = double.parse(stop
+          .findElements("lat")
+          .first
+          .text);
+      var lon = double.parse(stop
+          .findElements("lon")
+          .first
+          .text);
+      String? direction;
+      try {
+        direction = stop
+            .findElements("direction")
+            .first
+            .text;
+      } catch (e) {
+        if (e is StateError) {
+          direction = null;
+        }
+      }
+      var name = stop
+          .findElements("name")
+          .first
+          .text;
+      var code = stop
+          .findElements("code")
+          .first
+          .text;
+      var locationType =
+      int.parse(stop
+          .findElements("locationType")
+          .first
+          .text);
+      var routeIds = stop
+          .findElements("routeIds")
+          .first
+          .findElements("routeId")
+          .map((e) => e.text)
+          .toList();
+
+      stopsForCurrentRoute.add(Stop(
+        stopId: id,
+        lat: lat,
+        lon: lon,
+        direction: direction,
+        name: name,
+        code: code,
+        locationType: locationType,
+        routeIds: routeIds,
+      ));
+
+    }
+
+    return stopsForCurrentRoute;
+
   }
 
   Future<void> getStopsForLocation(String lat, String lon) async {

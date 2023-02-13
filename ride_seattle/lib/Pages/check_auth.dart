@@ -10,6 +10,9 @@ class CheckAuth extends StatefulWidget {
   State<CheckAuth> createState() => _CheckAuthState();
 }
 
+//TODO hide password when its being typed in
+//TODO register show requirements in a hint text or label
+
 class _CheckAuthState extends State<CheckAuth> {
   @override
   Widget build(BuildContext context) {

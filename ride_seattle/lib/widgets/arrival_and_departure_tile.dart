@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:ride_seattle/classes/arrival_and_departure.dart';
+import 'package:ride_seattle/provider/RouteProvider.dart';
 import 'package:ride_seattle/widgets/route_box.dart';
 
+import '../classes/stop.dart';
 import '../provider/state_info.dart';
 
 class ArrivalAndDepartureTile extends StatelessWidget {
@@ -15,6 +17,7 @@ class ArrivalAndDepartureTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final stateInfo = Provider.of<StateInfo>(context, listen: false);
+    final routeProvider = Provider.of<RouteProvider>(context, listen: false);
     return ListTile(
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -29,9 +32,17 @@ class ArrivalAndDepartureTile extends StatelessWidget {
             icon: const Icon(
               Icons.directions_bus,
             ),
-            onPressed: () {
+            onPressed: () async {
               if (adInfo.tripStatus != null) {
+
+                //get all the stops for the current route
+                List<Stop> routeStops = await stateInfo.getStopsForRoute(adInfo.routeId);
+                //add those stops to the routeProvider
+                routeProvider.assignStops(routeStops);
+                routeProvider.setPolyLines();
+
                 findBus(stateInfo);
+
               }
             },
           ),

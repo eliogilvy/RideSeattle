@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:ride_seattle/Pages/maps_screen.dart';
+import 'package:ride_seattle/provider/RouteProvider.dart';
 import 'package:ride_seattle/styles/theme.dart';
 import 'provider/state_info.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -16,6 +18,7 @@ Future<void> main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider.value(value: stateInfo),
+        ChangeNotifierProvider(create: (context) => RouteProvider()),
       ],
       child: const RideApp(),
     ),
@@ -27,7 +30,7 @@ final _router = GoRouter(
   routes: [
     GoRoute(
       path: '/',
-      builder: (context, state) => const CheckAuth(),
+      builder: (context, state) => const MapScreen(),
       routes: const [],
     ),
   ],

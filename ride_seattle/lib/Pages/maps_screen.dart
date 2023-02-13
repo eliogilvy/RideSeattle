@@ -4,6 +4,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:ride_seattle/widgets/marker_sheet.dart';
+import '../classes/stop.dart';
+import '../provider/RouteProvider.dart';
 import '../provider/state_info.dart';
 import '../widgets/nav_drawer.dart';
 import '../classes/auth.dart';
@@ -25,12 +27,22 @@ class _MapScreenState extends State<MapScreen> {
 
   final TextEditingController _searchController = TextEditingController();
 
+  final Set<Polyline> _polyLine = {};
+
+  List<LatLng> latlng_of_route = [];
+  
+  var routeProvider;
+
   @override
   initState() {
     super.initState();
     rootBundle.loadString('assets/map_style.txt').then((string) {
       _mapStyle = string;
     });
+
+
+    routeProvider = Provider.of<RouteProvider>(context, listen: false);
+
   }
 
   @override
@@ -42,58 +54,63 @@ class _MapScreenState extends State<MapScreen> {
         title: const Text('Ride Seattle'),
       ),
       drawer: const NavDrawer(),
-      body: Column(children: [
-        Row(
-          children: [
+      body: Consumer<RouteProvider>(
+        builder: (context, RouteProvider, _){
+          return Column(children: [
+            Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    controller: _searchController,
+                    decoration: const InputDecoration(hintText: 'Search for stops'),
+                    onChanged: (value) {
+                      print(value);
+                    },
+                  ),
+                ),
+                IconButton(
+                  onPressed: () {},
+                  icon: const Icon(Icons.search),
+                ),
+              ],
+            ),
             Expanded(
-              child: TextFormField(
-                controller: _searchController,
-                decoration: const InputDecoration(hintText: 'Search for stops'),
-                onChanged: (value) {
-                  print(value);
-                },
+              child: Builder(
+                builder: (context) => GoogleMap(
+                  myLocationButtonEnabled: false,
+                  myLocationEnabled: true,
+                  initialCameraPosition: initialCameraPosition,
+                  markers: stateInfo.markers,
+                  mapToolbarEnabled: false,
+                  //circles: stateInfo.circles,
+                  zoomControlsEnabled: false,
+                  mapType: MapType.normal,
+                  onMapCreated: (GoogleMapController controller) {
+                    if (mounted) {
+                      setState(() {
+                        googleMapController = controller;
+                        controller.setMapStyle(_mapStyle);
+                      });
+                    }
+                  },
+                  onTap: (argument) {
+                    stateInfo.showMarkerInfo = false;
+                    Navigator.of(context).maybePop();
+                  },
+
+                  onCameraIdle: () {
+                    updateView(stateInfo);
+                    if (stateInfo.showMarkerInfo) {
+                      _showBottomSheet(context, stateInfo);
+                    }
+                  },
+                  polylines: RouteProvider.routePolyLine,
+                ),
               ),
             ),
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.search),
-            ),
-          ],
-        ),
-        Expanded(
-          child: Builder(
-            builder: (context) => GoogleMap(
-              myLocationButtonEnabled: false,
-              myLocationEnabled: true,
-              initialCameraPosition: initialCameraPosition,
-              markers: stateInfo.markers,
-              mapToolbarEnabled: false,
-              //circles: stateInfo.circles,
-              zoomControlsEnabled: false,
-              mapType: MapType.normal,
-              onMapCreated: (GoogleMapController controller) {
-                if (mounted) {
-                  setState(() {
-                    googleMapController = controller;
-                    controller.setMapStyle(_mapStyle);
-                  });
-                }
-              },
-              onTap: (argument) {
-                stateInfo.showMarkerInfo = false;
-                Navigator.of(context).maybePop();
-              },
-
-              onCameraIdle: () {
-                updateView(stateInfo);
-                if (stateInfo.showMarkerInfo) {
-                  _showBottomSheet(context, stateInfo);
-                }
-              },
-            ),
-          ),
-        ),
-      ]),
+          ]);
+        }
+      ),
       floatingActionButton: FloatingActionButton.small(
         onPressed: () async {
           Position position = stateInfo.position;

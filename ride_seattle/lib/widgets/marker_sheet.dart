@@ -20,6 +20,7 @@ class MarkerSheet extends StatelessWidget {
           child: Column(
             children: [
               RouteName(text: stateInfo.currentStopInfo.name),
+
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(0, 17, 0, 0),
