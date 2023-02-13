@@ -34,15 +34,14 @@ class ArrivalAndDepartureTile extends StatelessWidget {
             ),
             onPressed: () async {
               if (adInfo.tripStatus != null) {
-
                 //get all the stops for the current route
-                List<Stop> routeStops = await stateInfo.getStopsForRoute(adInfo.routeId);
+                List<LatLng> routeStops =
+                    await stateInfo.getStopsForRoute(adInfo.routeId);
                 //add those stops to the routeProvider
-                routeProvider.assignStops(routeStops);
-                routeProvider.setPolyLines();
+
+                routeProvider.setPolyLines(routeStops);
 
                 findBus(stateInfo);
-
               }
             },
           ),
