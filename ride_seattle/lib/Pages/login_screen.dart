@@ -44,8 +44,10 @@ class _LoginPageState extends State<LoginPage> {
     return const Text('Ride Seattle');
   }
 
-  Widget _entryField(String title, TextEditingController controller) {
+  Widget _entryField(String title, TextEditingController controller,
+      {bool password = false}) {
     return TextField(
+      obscureText: password,
       controller: controller,
       decoration: InputDecoration(
         labelText: title,
@@ -82,22 +84,24 @@ class _LoginPageState extends State<LoginPage> {
       appBar: AppBar(
         title: _title(),
       ),
-      body: Container(
-          height: double.infinity,
-          width: double.infinity,
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Image.asset('assets/images/logo.png'),
-              _entryField('email', emailController),
-              _entryField('password', passwordController),
-              _errorMessage(),
-              _submitButton(),
-              _loginOrRegisterButton(),
-            ],
-          )),
+      body: SingleChildScrollView(
+        child: Expanded(
+          child: Container(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Image.asset('assets/images/logo.png'),
+                  _entryField('Email', emailController),
+                  _entryField('Password', passwordController, password: true),
+                  _errorMessage(),
+                  _submitButton(),
+                  _loginOrRegisterButton(),
+                ],
+              )),
+        ),
+      ),
     );
   }
 }
