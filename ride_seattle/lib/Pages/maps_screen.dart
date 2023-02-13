@@ -30,7 +30,7 @@ class _MapScreenState extends State<MapScreen> {
   final Set<Polyline> _polyLine = {};
 
   List<LatLng> latlng_of_route = [];
-  
+
   var routeProvider;
 
   @override
@@ -40,9 +40,7 @@ class _MapScreenState extends State<MapScreen> {
       _mapStyle = string;
     });
 
-
     routeProvider = Provider.of<RouteProvider>(context, listen: false);
-
   }
 
   @override
@@ -55,62 +53,62 @@ class _MapScreenState extends State<MapScreen> {
       ),
       drawer: const NavDrawer(),
       body: Consumer<RouteProvider>(
-        builder: (context, RouteProvider, _){
-          return Column(children: [
-            Row(
-              children: [
-                Expanded(
-                  child: TextFormField(
-                    controller: _searchController,
-                    decoration: const InputDecoration(hintText: 'Search for stops'),
-                    onChanged: (value) {
-                      print(value);
-                    },
-                  ),
-                ),
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.search),
-                ),
-              ],
-            ),
-            Expanded(
-              child: Builder(
-                builder: (context) => GoogleMap(
-                  myLocationButtonEnabled: false,
-                  myLocationEnabled: true,
-                  initialCameraPosition: initialCameraPosition,
-                  markers: stateInfo.markers,
-                  mapToolbarEnabled: false,
-                  //circles: stateInfo.circles,
-                  zoomControlsEnabled: false,
-                  mapType: MapType.normal,
-                  onMapCreated: (GoogleMapController controller) {
-                    if (mounted) {
-                      setState(() {
-                        googleMapController = controller;
-                        controller.setMapStyle(_mapStyle);
-                      });
-                    }
+          builder: (context, RouteProvider routeProvider, _) {
+        return Column(children: [
+          Row(
+            children: [
+              Expanded(
+                child: TextFormField(
+                  controller: _searchController,
+                  decoration:
+                      const InputDecoration(hintText: 'Search for stops'),
+                  onChanged: (value) {
+                    print(value);
                   },
-                  onTap: (argument) {
-                    stateInfo.showMarkerInfo = false;
-                    Navigator.of(context).maybePop();
-                  },
-
-                  onCameraIdle: () {
-                    updateView(stateInfo);
-                    if (stateInfo.showMarkerInfo) {
-                      _showBottomSheet(context, stateInfo);
-                    }
-                  },
-                  polylines: RouteProvider.routePolyLine,
                 ),
               ),
+              IconButton(
+                onPressed: () {},
+                icon: const Icon(Icons.search),
+              ),
+            ],
+          ),
+          Expanded(
+            child: Builder(
+              builder: (context) => GoogleMap(
+                myLocationButtonEnabled: false,
+                myLocationEnabled: true,
+                initialCameraPosition: initialCameraPosition,
+                markers: stateInfo.markers,
+                mapToolbarEnabled: false,
+                //circles: stateInfo.circles,
+                zoomControlsEnabled: false,
+                mapType: MapType.normal,
+                onMapCreated: (GoogleMapController controller) {
+                  if (mounted) {
+                    setState(() {
+                      googleMapController = controller;
+                      controller.setMapStyle(_mapStyle);
+                    });
+                  }
+                },
+                onTap: (argument) {
+                  stateInfo.showMarkerInfo = false;
+                  Navigator.of(context).maybePop();
+                },
+
+                onCameraIdle: () {
+                  updateView(stateInfo);
+                  if (stateInfo.showMarkerInfo) {
+                    _showBottomSheet(context, stateInfo);
+                  }
+                },
+                polylines: routeProvider.routePolyLine,
+              ),
             ),
-          ]);
-        }
-      ),
+          ),
+        ]);
+      }),
       floatingActionButton: FloatingActionButton.small(
         onPressed: () async {
           Position position = stateInfo.position;
