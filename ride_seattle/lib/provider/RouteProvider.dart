@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -15,35 +14,30 @@ class RouteProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void assignStops(List<Stop> stops)
-  {
+  void assignStops(List<Stop> stops) {
     stopsForRoute = stops;
     notifyListeners();
   }
 
-  List<Stop> getStops () {
+  List<Stop> getStops() {
     return stopsForRoute;
   }
 
-  void setPolyLines(){
-    for(var stop in stopsForRoute){
-      latlng_of_route.add(LatLng(stop.lat, stop.lon));
-    }
-
-
-    print("WTF are the stops latlng");
-    print(latlng_of_route);
+  void setPolyLines(List<LatLng> routeStops) {
+    // for (var stop in stopsForRoute) {
+    //   latlng_of_route.add(LatLng(stop.lat, stop.lon));
+    // }
 
     routePolyLine.add(
-        Polyline(
-          polylineId: const PolylineId('current_route'),
-          points:latlng_of_route,
-          color: Colors.orange,
-        )
+      Polyline(
+        polylineId: const PolylineId('current_route'),
+        points: routeStops,
+        color: Colors.orange,
+        width: 3,
+      ),
     );
+    print('added lines');
 
     notifyListeners();
-
   }
-
 }
