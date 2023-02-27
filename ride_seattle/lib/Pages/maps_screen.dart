@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:ride_seattle/provider/localStorageProvider.dart';
 import 'package:ride_seattle/widgets/marker_sheet.dart';
 import '../classes/stop.dart';
 import '../provider/RouteProvider.dart';
@@ -33,6 +34,10 @@ class _MapScreenState extends State<MapScreen> {
 
   var routeProvider;
 
+  var localStorage;
+
+
+
   @override
   initState() {
     super.initState();
@@ -42,6 +47,20 @@ class _MapScreenState extends State<MapScreen> {
 
     routeProvider = Provider.of<RouteProvider>(context, listen: false);
   }
+
+
+  void _onAfterBuild(BuildContext context) {
+    localStorage = Provider.of<localStorageProvider>(context, listen: false);
+
+    try{
+      localStorage.loadData();
+    }
+    catch (e){
+      print(e.toString());
+    }
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
