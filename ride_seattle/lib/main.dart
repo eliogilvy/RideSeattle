@@ -12,12 +12,10 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
-  var stateInfo = StateInfo();
-
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider.value(value: stateInfo),
+        ChangeNotifierProvider(create: (context) => StateInfo()),
         ChangeNotifierProvider(create: (context) => RouteProvider()),
       ],
       child: const RideApp(),
