@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:ride_seattle/Pages/maps_screen.dart';
-import 'package:ride_seattle/provider/RouteProvider.dart';
+import 'package:ride_seattle/provider/route_provider.dart';
 import 'package:ride_seattle/provider/state_info.dart';
 
 import '../mock_classes.dart/mock_state_info.dart';
