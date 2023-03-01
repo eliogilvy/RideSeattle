@@ -16,7 +16,7 @@ class Stop {
   final String code;
   final int locationType;
   final List<String> routeIds;
-  Map<String, ArrivalAndDeparture> _arrivalAndDeparture = {};
+  final Map<String, ArrivalAndDeparture> _arrivalAndDeparture = {};
 
   Stop({
     required this.stopId,
