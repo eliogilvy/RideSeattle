@@ -45,7 +45,7 @@ class StateInfo with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> setRadius(LatLng center, LatLng top, LatLng bottom) async {
+  void setRadius(LatLng center, LatLng top, LatLng bottom) async {
     const earthRadius = 6371000; // Earth's mean radius in kilometers
     final lat1 = center.latitude * pi / 180;
     final lat2 = top.latitude * pi / 180;
@@ -106,7 +106,7 @@ class StateInfo with ChangeNotifier {
     return points;
   }
 
-  Future<void> getStopsForLocation(String lat, String lon) async {
+  void getStopsForLocation(String lat, String lon) async {
     Response res =
         await get(Uri.parse(Routes.getStopsForLocation(lat, lon, _radius)));
     final document = XmlDocument.parse(res.body);
@@ -151,7 +151,7 @@ class StateInfo with ChangeNotifier {
         iconFilepath: 'assets/images/bus-stop.png');
   }
 
-  Future<void> getRoutesForLocation(String lat, String lon) async {
+  void getRoutesForLocation(String lat, String lon) async {
     Response res =
         await get(Uri.parse(Routes.getRoutesForLocation(lat, lon, _radius)));
     final document = XmlDocument.parse(res.body);
@@ -196,7 +196,7 @@ class StateInfo with ChangeNotifier {
         agencyId: agencyId);
   }
 
-  Future<void> getPosition() async {
+  void getPosition() async {
     bool serviceEnabled;
     LocationPermission permission;
 
@@ -225,7 +225,7 @@ class StateInfo with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> addMarker(
+  void addMarker(
       String id, String name, LatLng location, Function(String) function,
       {String? iconFilepath, double? x, double? y}) async {
     BitmapDescriptor markerIcon;
