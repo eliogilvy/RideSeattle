@@ -25,6 +25,7 @@ class StateInfo with ChangeNotifier {
   final Map<String, Circle> _circles = {};
   bool showMarkerInfo = false;
   late Stop _currentStopInfo;
+  String? routeFilter;
 
   Set<Circle> get circles => _circles.values.toSet();
   Set<Marker> get markers => _markers.values.toSet();
@@ -45,7 +46,7 @@ class StateInfo with ChangeNotifier {
     notifyListeners();
   }
 
-  void setRadius(LatLng center, LatLng top, LatLng bottom) async {
+  void setRadius(LatLng center, LatLng top, LatLng bottom) {
     const earthRadius = 6371000; // Earth's mean radius in kilometers
     final lat1 = center.latitude * pi / 180;
     final lat2 = top.latitude * pi / 180;
@@ -64,7 +65,7 @@ class StateInfo with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<List<LatLng>> getStopsForRoute(String routeId) async {
+  Future<List<LatLng>> getRoutePolyline(String routeId) async {
     //assign make sure not to have old stops included in a different route
     List<LatLng> points = [];
 
@@ -106,7 +107,10 @@ class StateInfo with ChangeNotifier {
     return points;
   }
 
+  void getStopsForRoute(String route) {}
+
   void getStopsForLocation(String lat, String lon) async {
+    print('getting sotps');
     Response res =
         await get(Uri.parse(Routes.getStopsForLocation(lat, lon, _radius)));
     final document = XmlDocument.parse(res.body);
@@ -187,13 +191,16 @@ class StateInfo with ChangeNotifier {
     }
 
     final agencyId = route.findElements('agencyId').first.text;
-    _routes[id] = r.Route(
-        routeId: id,
-        shortName: shortName,
-        description: description,
-        type: type,
-        url: url,
-        agencyId: agencyId);
+
+    if (routeFilter == null || shortName == routeFilter) {
+      _routes[id] = r.Route(
+          routeId: id,
+          shortName: shortName,
+          description: description,
+          type: type,
+          url: url,
+          agencyId: agencyId);
+    }
   }
 
   void getPosition() async {
