@@ -4,12 +4,10 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:ride_seattle/widgets/marker_sheet.dart';
-import '../classes/stop.dart';
-import '../provider/RouteProvider.dart';
+import '../provider/route_provider.dart';
 import '../provider/state_info.dart';
 import '../widgets/nav_drawer.dart';
-import '../classes/auth.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:go_router/go_router.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({Key? key}) : super(key: key);
@@ -77,32 +75,40 @@ class _MapScreenState extends State<MapScreen> {
                         context: context,
                         builder: (BuildContext context) {
                           return AlertDialog(
-                            title: Text('Routes'),
-                            content: Container(
-                              width: double.maxFinite,
-                              child: SingleChildScrollView(
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    // Here, you can add a list of all the routes in your app.
-                                    // For example, you can use the ListView.builder widget.
-                                    ListView.builder(
-                                      shrinkWrap: true,
-                                      itemCount: stateInfo.routes.length,
-                                      itemBuilder:
-                                          (BuildContext context, int index) {
-                                        return ListTile(
-                                          title: Text(stateInfo
-                                              .routes[index].shortName!),
-                                          onTap: () {
-                                            // Do something when the user taps on a route.
-                                          },
-                                        );
-                                      },
-                                    ),
-                                  ],
+                            title: const Text('Find a route'),
+                            content: Column(
+                              children: [
+                                Align(
+                                  alignment: Alignment.topRight,
+                                  child: IconButton(
+                                    onPressed: () =>
+                                        stateInfo.routeFilter = null,
+                                    icon: const Icon(Icons.restart_alt_rounded),
+                                  ),
                                 ),
-                              ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Expanded(
+                                  child: ListView.builder(
+                                    shrinkWrap: true,
+                                    itemCount: stateInfo.routes.length,
+                                    itemBuilder:
+                                        (BuildContext context, int index) {
+                                      return ListTile(
+                                        title: Text(
+                                            stateInfo.routes[index].shortName!),
+                                        onTap: () {
+                                          stateInfo.routeFilter =
+                                              stateInfo.routes[index].routeId;
+                                          stateInfo.updateStops();
+                                          context.pop();
+                                        },
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ],
                             ),
                           );
                         },
@@ -132,7 +138,9 @@ class _MapScreenState extends State<MapScreen> {
                   },
                   onTap: (argument) {
                     stateInfo.showMarkerInfo = false;
-                    Navigator.of(context).maybePop();
+                    if (context.canPop()) {
+                      context.pop();
+                    }
                   },
 
                   onCameraIdle: () {
