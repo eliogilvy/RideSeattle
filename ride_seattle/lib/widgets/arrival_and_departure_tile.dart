@@ -50,8 +50,8 @@ class ArrivalAndDepartureTile extends StatelessWidget {
     );
   }
 
-  void findBus(StateInfo stateInfo) async {
-    await stateInfo.addMarker('vehicle', adInfo.routeShortName,
+  void findBus(StateInfo stateInfo) {
+    stateInfo.addMarker('vehicle', adInfo.routeShortName,
         adInfo.tripStatus!.position, stateInfo.getVehicleInfo,
         iconFilepath: 'assets/images/icons8-bus-96.png');
     controller.animateCamera(
