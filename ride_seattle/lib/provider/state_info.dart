@@ -102,10 +102,14 @@ class StateInfo with ChangeNotifier {
   void updateStops() {
     _markers.clear();
     _stops.removeWhere((key, value) => !value.routeIds.contains(_routeFilter));
+    var filepath = 'assets/images/stops/bus-stop.png';
     for (var stop in _stops.values) {
+      if (stop.direction != null) {
+        filepath = 'assets/images/stops/bus-stop-${stop.direction}.png';
+      }
       addMarker(
           stop.stopId, stop.name, LatLng(stop.lat, stop.lon), getMarkerInfo,
-          iconFilepath: 'assets/images/bus-stop.png');
+          iconFilepath: filepath);
     }
     notifyListeners();
   }
@@ -152,8 +156,12 @@ class StateInfo with ChangeNotifier {
         locationType: locationType,
         routeIds: routeIds,
       );
+      var filePath = 'assets/images/stops/bus-stop.png';
+      if (direction != null) {
+        filePath = 'assets/images/stops/bus-stop-$direction.png';
+      }
       addMarker(id, name, LatLng(lat, lon), getMarkerInfo,
-          iconFilepath: 'assets/images/bus-stop.png');
+          iconFilepath: filePath);
     }
   }
 
@@ -240,7 +248,7 @@ class StateInfo with ChangeNotifier {
       String id, String name, LatLng location, Function(String) function,
       {String? iconFilepath, double? x, double? y}) async {
     BitmapDescriptor markerIcon;
-
+    final path = 'assets/images/stops/bus-stop-W.png';
     if (iconFilepath != null) {
       final bytes = await rootBundle.load(iconFilepath);
       markerIcon = BitmapDescriptor.fromBytes(bytes.buffer.asUint8List());
