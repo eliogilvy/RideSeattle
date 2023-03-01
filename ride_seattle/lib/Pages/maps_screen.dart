@@ -57,23 +57,58 @@ class _MapScreenState extends State<MapScreen> {
             children: [
               Row(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(4, 0, 0, 0),
-                    child: SizedBox(
-                      width: MediaQuery.of(context).size.width * .85,
-                      child: TextFormField(
-                        controller: _searchController,
-                        decoration:
-                            const InputDecoration(hintText: 'Search for stops'),
-                        onChanged: (value) {
-                          print(value);
-                        },
-                      ),
+                  Flexible(
+                    child: TextFormField(
+                      controller: _searchController,
+                      decoration:
+                          const InputDecoration(hintText: 'Search for stops'),
+                      onChanged: (value) {
+                        print(value);
+                      },
                     ),
                   ),
                   IconButton(
                     onPressed: () {},
                     icon: const Icon(Icons.search),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text('Routes'),
+                            content: Container(
+                              width: double.maxFinite,
+                              child: SingleChildScrollView(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    // Here, you can add a list of all the routes in your app.
+                                    // For example, you can use the ListView.builder widget.
+                                    ListView.builder(
+                                      shrinkWrap: true,
+                                      itemCount: stateInfo.routes.length,
+                                      itemBuilder:
+                                          (BuildContext context, int index) {
+                                        return ListTile(
+                                          title: Text(stateInfo
+                                              .routes[index].shortName!),
+                                          onTap: () {
+                                            // Do something when the user taps on a route.
+                                          },
+                                        );
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                    icon: const Icon(Icons.filter_alt_outlined),
                   ),
                 ],
               ),
@@ -99,7 +134,7 @@ class _MapScreenState extends State<MapScreen> {
                     stateInfo.showMarkerInfo = false;
                     Navigator.of(context).maybePop();
                   },
-                    
+
                   onCameraIdle: () {
                     updateView(stateInfo);
                     if (stateInfo.showMarkerInfo) {
@@ -158,6 +193,8 @@ class _MapScreenState extends State<MapScreen> {
         await getTopOfScreen(googleMapController!),
         await getBottomOfScreen(googleMapController!));
     stateInfo.getStopsForLocation(
+        currentCenter.latitude.toString(), currentCenter.longitude.toString());
+    stateInfo.getRoutesForLocation(
         currentCenter.latitude.toString(), currentCenter.longitude.toString());
     stateInfo.addCircle(currentCenter, 'searchRadius');
   }
