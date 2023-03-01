@@ -53,7 +53,7 @@ class MockStateInfo extends Mock implements StateInfo {
   late Stop _currentStopInfo;
 
   @override
-  Future<List<LatLng>> getStopsForRoute(String routeId) async {
+  Future<List<LatLng>> getRoutePolyline(String routeId) async {
     return [const LatLng(47.6219, -122.3517)];
   }
 
