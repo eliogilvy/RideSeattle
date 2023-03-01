@@ -9,6 +9,8 @@ import '../provider/state_info.dart';
 import '../widgets/nav_drawer.dart';
 import 'package:go_router/go_router.dart';
 
+import '../widgets/route_list.dart';
+
 class MapScreen extends StatefulWidget {
   const MapScreen({Key? key}) : super(key: key);
 
@@ -57,6 +59,7 @@ class _MapScreenState extends State<MapScreen> {
                 children: [
                   Flexible(
                     child: TextFormField(
+                      showCursor: false,
                       controller: _searchController,
                       decoration:
                           const InputDecoration(hintText: 'Search for stops'),
@@ -76,38 +79,25 @@ class _MapScreenState extends State<MapScreen> {
                         builder: (BuildContext context) {
                           return AlertDialog(
                             title: const Text('Find a route'),
+                            contentPadding:
+                                const EdgeInsets.fromLTRB(24, 20, 24, 0),
                             content: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              mainAxisSize: MainAxisSize.min,
                               children: [
                                 Align(
                                   alignment: Alignment.topRight,
                                   child: IconButton(
-                                    onPressed: () =>
-                                        stateInfo.routeFilter = null,
-                                    icon: const Icon(Icons.restart_alt_rounded),
-                                  ),
-                                ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                Expanded(
-                                  child: ListView.builder(
-                                    shrinkWrap: true,
-                                    itemCount: stateInfo.routes.length,
-                                    itemBuilder:
-                                        (BuildContext context, int index) {
-                                      return ListTile(
-                                        title: Text(
-                                            stateInfo.routes[index].shortName!),
-                                        onTap: () {
-                                          stateInfo.routeFilter =
-                                              stateInfo.routes[index].routeId;
-                                          stateInfo.updateStops();
-                                          context.pop();
-                                        },
-                                      );
+                                    onPressed: () {
+                                      stateInfo.routeFilter = null;
+                                      routeProvider.clearPolylines();
+                                      if (context.canPop()) context.pop();
                                     },
+                                    icon: const Icon(Icons.refresh_rounded),
                                   ),
                                 ),
+                                const SizedBox(height: 16),
+                                const RouteList(),
                               ],
                             ),
                           );
@@ -120,6 +110,7 @@ class _MapScreenState extends State<MapScreen> {
               ),
               Expanded(
                 child: GoogleMap(
+                  rotateGesturesEnabled: false,
                   myLocationButtonEnabled: false,
                   myLocationEnabled: true,
                   initialCameraPosition: initialCameraPosition,
