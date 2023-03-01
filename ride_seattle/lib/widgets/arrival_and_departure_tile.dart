@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:ride_seattle/classes/arrival_and_departure.dart';
-import 'package:ride_seattle/provider/RouteProvider.dart';
+import 'package:ride_seattle/provider/route_provider.dart';
 import 'package:ride_seattle/widgets/route_box.dart';
 
 import '../classes/stop.dart';
