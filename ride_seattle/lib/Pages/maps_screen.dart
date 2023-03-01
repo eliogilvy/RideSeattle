@@ -31,21 +31,17 @@ class _MapScreenState extends State<MapScreen> {
 
   List<LatLng> latlng_of_route = [];
 
-  var routeProvider;
-
   @override
   initState() {
     super.initState();
     rootBundle.loadString('assets/map_style.txt').then((string) {
       _mapStyle = string;
     });
-
-    routeProvider = Provider.of<RouteProvider>(context, listen: false);
   }
 
   @override
   Widget build(BuildContext context) {
-    final User? user = Auth().currentUser;
+    //final User? user = Auth().currentUser;
     final stateInfo = Provider.of<StateInfo>(context, listen: true);
     return Scaffold(
       appBar: AppBar(
@@ -54,60 +50,68 @@ class _MapScreenState extends State<MapScreen> {
       drawer: const NavDrawer(),
       body: Consumer<RouteProvider>(
           builder: (context, RouteProvider routeProvider, _) {
-        return Column(children: [
-          Row(
+        return SizedBox(
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          child: Column(
             children: [
-              Expanded(
-                child: TextFormField(
-                  controller: _searchController,
-                  decoration:
-                      const InputDecoration(hintText: 'Search for stops'),
-                  onChanged: (value) {
-                    print(value);
-                  },
-                ),
+              Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(4, 0, 0, 0),
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width * .85,
+                      child: TextFormField(
+                        controller: _searchController,
+                        decoration:
+                            const InputDecoration(hintText: 'Search for stops'),
+                        onChanged: (value) {
+                          print(value);
+                        },
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(Icons.search),
+                  ),
+                ],
               ),
-              IconButton(
-                onPressed: () {},
-                icon: const Icon(Icons.search),
+              Expanded(
+                child: GoogleMap(
+                  myLocationButtonEnabled: false,
+                  myLocationEnabled: true,
+                  initialCameraPosition: initialCameraPosition,
+                  markers: stateInfo.markers,
+                  mapToolbarEnabled: false,
+                  //circles: stateInfo.circles,
+                  zoomControlsEnabled: false,
+                  mapType: MapType.normal,
+                  onMapCreated: (GoogleMapController controller) {
+                    if (mounted) {
+                      setState(() {
+                        googleMapController = controller;
+                        controller.setMapStyle(_mapStyle);
+                      });
+                    }
+                  },
+                  onTap: (argument) {
+                    stateInfo.showMarkerInfo = false;
+                    Navigator.of(context).maybePop();
+                  },
+                    
+                  onCameraIdle: () {
+                    updateView(stateInfo);
+                    if (stateInfo.showMarkerInfo) {
+                      _showBottomSheet(context, stateInfo);
+                    }
+                  },
+                  polylines: routeProvider.routePolyLine,
+                ),
               ),
             ],
           ),
-          Expanded(
-            child: Builder(
-              builder: (context) => GoogleMap(
-                myLocationButtonEnabled: false,
-                myLocationEnabled: true,
-                initialCameraPosition: initialCameraPosition,
-                markers: stateInfo.markers,
-                mapToolbarEnabled: false,
-                //circles: stateInfo.circles,
-                zoomControlsEnabled: false,
-                mapType: MapType.normal,
-                onMapCreated: (GoogleMapController controller) {
-                  if (mounted) {
-                    setState(() {
-                      googleMapController = controller;
-                      controller.setMapStyle(_mapStyle);
-                    });
-                  }
-                },
-                onTap: (argument) {
-                  stateInfo.showMarkerInfo = false;
-                  Navigator.of(context).maybePop();
-                },
-
-                onCameraIdle: () {
-                  updateView(stateInfo);
-                  if (stateInfo.showMarkerInfo) {
-                    _showBottomSheet(context, stateInfo);
-                  }
-                },
-                polylines: routeProvider.routePolyLine,
-              ),
-            ),
-          ),
-        ]);
+        );
       }),
       floatingActionButton: FloatingActionButton.small(
         onPressed: () async {
@@ -148,7 +152,7 @@ class _MapScreenState extends State<MapScreen> {
   Future<void> updateView(StateInfo stateInfo) async {
     final LatLng center = await getCurrentCenter(googleMapController!);
     final LatLng currentCenter = LatLng(center.latitude, center.longitude);
-    await stateInfo.getPosition();
+    stateInfo.getPosition();
     stateInfo.setRadius(
         currentCenter,
         await getTopOfScreen(googleMapController!),
