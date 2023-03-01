@@ -24,10 +24,6 @@ class RouteProvider with ChangeNotifier {
   }
 
   void setPolyLines(List<LatLng> routeStops) {
-    // for (var stop in stopsForRoute) {
-    //   latlng_of_route.add(LatLng(stop.lat, stop.lon));
-    // }
-
     routePolyLine.add(
       Polyline(
         polylineId: const PolylineId('current_route'),
@@ -36,8 +32,12 @@ class RouteProvider with ChangeNotifier {
         width: 4,
       ),
     );
-    print('added lines');
 
+    notifyListeners();
+  }
+
+  void clearPolylines() {
+    routePolyLine.clear();
     notifyListeners();
   }
 }
