@@ -36,7 +36,7 @@ class ArrivalAndDepartureTile extends StatelessWidget {
               if (adInfo.tripStatus != null) {
                 //get all the stops for the current route
                 List<LatLng> routeStops =
-                    await stateInfo.getStopsForRoute(adInfo.routeId);
+                    await stateInfo.getRoutePolyline(adInfo.routeId);
                 //add those stops to the routeProvider
 
                 routeProvider.setPolyLines(routeStops);
