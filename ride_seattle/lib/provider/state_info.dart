@@ -25,7 +25,7 @@ class StateInfo with ChangeNotifier {
   final Map<String, Circle> _circles = {};
   bool showMarkerInfo = false;
   late Stop _currentStopInfo;
-  String? routeFilter;
+  String? _routeFilter;
 
   Set<Circle> get circles => _circles.values.toSet();
   Set<Marker> get markers => _markers.values.toSet();
@@ -96,21 +96,21 @@ class StateInfo with ChangeNotifier {
       points.add(LatLng(coord.latitude, coord.longitude));
     }
 
-    // for (var polyline in polylines) {
-    //   var point = polyline.findElements('points').first.text;
-    //   final coords = PolylinePoints().decodePolyline(point);
-    //   for (var coord in coords) {
-    //     points.add(LatLng(coord.latitude, coord.longitude));
-    //   }
-    // }
-
     return points;
   }
 
-  void getStopsForRoute(String route) {}
+  void updateStops() {
+    _markers.clear();
+    _stops.removeWhere((key, value) => !value.routeIds.contains(_routeFilter));
+    for (var stop in _stops.values) {
+      addMarker(
+          stop.stopId, stop.name, LatLng(stop.lat, stop.lon), getMarkerInfo,
+          iconFilepath: 'assets/images/bus-stop.png');
+    }
+    notifyListeners();
+  }
 
   void getStopsForLocation(String lat, String lon) async {
-    print('getting sotps');
     Response res =
         await get(Uri.parse(Routes.getStopsForLocation(lat, lon, _radius)));
     final document = XmlDocument.parse(res.body);
@@ -141,18 +141,20 @@ class StateInfo with ChangeNotifier {
         .findElements("routeId")
         .map((e) => e.text)
         .toList();
-    _stops[id] = Stop(
-      stopId: id,
-      lat: lat,
-      lon: lon,
-      direction: direction,
-      name: name,
-      code: code,
-      locationType: locationType,
-      routeIds: routeIds,
-    );
-    addMarker(id, name, LatLng(lat, lon), getMarkerInfo,
-        iconFilepath: 'assets/images/bus-stop.png');
+    if (_routeFilter == null || routeIds.contains(_routeFilter)) {
+      _stops[id] = Stop(
+        stopId: id,
+        lat: lat,
+        lon: lon,
+        direction: direction,
+        name: name,
+        code: code,
+        locationType: locationType,
+        routeIds: routeIds,
+      );
+      addMarker(id, name, LatLng(lat, lon), getMarkerInfo,
+          iconFilepath: 'assets/images/bus-stop.png');
+    }
   }
 
   void getRoutesForLocation(String lat, String lon) async {
@@ -192,15 +194,17 @@ class StateInfo with ChangeNotifier {
 
     final agencyId = route.findElements('agencyId').first.text;
 
-    if (routeFilter == null || shortName == routeFilter) {
-      _routes[id] = r.Route(
-          routeId: id,
-          shortName: shortName,
-          description: description,
-          type: type,
-          url: url,
-          agencyId: agencyId);
-    }
+    _routes[id] = r.Route(
+        routeId: id,
+        shortName: shortName,
+        description: description,
+        type: type,
+        url: url,
+        agencyId: agencyId);
+  }
+
+  set routeFilter(String? filter) {
+    _routeFilter = filter;
   }
 
   void getPosition() async {
