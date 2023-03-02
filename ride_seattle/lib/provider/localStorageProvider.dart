@@ -3,6 +3,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hive/hive.dart';
+import 'package:ride_seattle/classes/LatLng_custom.dart';
 
 class localStorageProvider extends ChangeNotifier {
   Box favRouteBox;
@@ -11,10 +12,10 @@ class localStorageProvider extends ChangeNotifier {
       required this.favRouteBox,
   });
 
-  List<List<LatLng>> favoriteRoutes =[];
+  List<List<LatLng_custom>> favoriteRoutes =[];
 
 
-  List<List<LatLng>> getFavoriteRoutes() {
+  List<List<LatLng_custom>> getFavoriteRoutes() {
     return favoriteRoutes;
   }
 
@@ -27,7 +28,15 @@ class localStorageProvider extends ChangeNotifier {
 
   //add a route to favorites
   void addRoute(List<LatLng> routeStops){
-    favoriteRoutes.add(routeStops);
+
+    List<LatLng_custom> routeStops_custom = [];
+
+    for (LatLng stop in routeStops){
+      routeStops_custom.add(LatLng_custom(Latitude: stop.latitude,
+          Longitude: stop.longitude));
+    }
+
+    favoriteRoutes.add(routeStops_custom);
     updateData();
   }
 

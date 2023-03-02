@@ -79,7 +79,7 @@ class _ArrivalAndDepartureTileState extends State<ArrivalAndDepartureTile>{
       //add polylines to local database
 
       localStorage.addRoute(routeStops);
-      print("route added");
+      print("route added - arrival/departure tile");
     }
 
   }

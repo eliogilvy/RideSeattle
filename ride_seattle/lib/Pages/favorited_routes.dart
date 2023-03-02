@@ -93,7 +93,7 @@ class _favorites_pageState extends State<favorites_page> {
               child:InkWell(
                   onTap: () {
                     //highlight the route
-                    String clickedTaskTileId = favoriteRoutes[index];
+                    String route = favoriteRoutes[index];
                     //navigate to the home page
                     context.push('/');
                   },
