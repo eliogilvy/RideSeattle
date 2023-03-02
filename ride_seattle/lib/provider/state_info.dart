@@ -248,7 +248,6 @@ class StateInfo with ChangeNotifier {
       String id, String name, LatLng location, Function(String) function,
       {String? iconFilepath, double? x, double? y}) async {
     BitmapDescriptor markerIcon;
-    final path = 'assets/images/stops/bus-stop-W.png';
     if (iconFilepath != null) {
       final bytes = await rootBundle.load(iconFilepath);
       markerIcon = BitmapDescriptor.fromBytes(bytes.buffer.asUint8List());
