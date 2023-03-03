@@ -20,13 +20,18 @@ class ArrivalAndDepartureTile extends StatelessWidget {
     final routeProvider = Provider.of<RouteProvider>(context, listen: false);
     return ListTile(
       title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          RouteBox(text: adInfo.routeShortName),
+          RouteBox(
+            text: adInfo.routeShortName,
+            maxW: 150,
+          ),
           Expanded(
             child: Container(),
           ),
-          RouteBox(text: getPredictedArrivalTime(adInfo)),
+          RouteBox(
+            text: getPredictedArrivalTime(adInfo),
+            maxW: double.infinity,
+          ),
           IconButton(
             tooltip: "Find my vehicle",
             icon: const Icon(
