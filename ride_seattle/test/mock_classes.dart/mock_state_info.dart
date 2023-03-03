@@ -15,7 +15,7 @@ class MockStateInfo extends Mock implements StateInfo {
     print(_markers);
   }
   @override
-  void getPosition() async {
+  Future<void> getPosition() async {
     _position = Position(
       longitude: 47.6219,
       latitude: -122.3517,
