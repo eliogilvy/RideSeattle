@@ -24,6 +24,7 @@ class StateInfo with ChangeNotifier {
   final Map<String, Marker> _markers = {};
   final Map<String, Circle> _circles = {};
   bool showMarkerInfo = false;
+  bool showVehicleInfo = false;
   late Stop _currentStopInfo;
   String? _routeFilter;
 
@@ -32,22 +33,23 @@ class StateInfo with ChangeNotifier {
   List<Stop> get stops => _stops.values.toList();
   List<r.Route> get routes {
     List<r.Route> _routeList = _routes.values.toList();
-    _routeList.sort((a, b) {
-      bool isANumber = int.tryParse(a.shortName!) != null;
-      bool isBNumber = int.tryParse(b.shortName!) != null;
+    _routeList.sort(
+      (a, b) {
+        bool isANumber = int.tryParse(a.shortName!) != null;
+        bool isBNumber = int.tryParse(b.shortName!) != null;
 
-      if (!isANumber && !isBNumber) {
-        // Both elements are not numbers, compare them directly
-        return a.shortName!.compareTo(b.shortName!);
-      } else if (isANumber && isBNumber) {
-        // Both elements are numbers, compare them as numbers
-        return int.parse(a.shortName!).compareTo(int.parse(b.shortName!));
-      } else {
-        // One element is a number, the other is not. The non-number element should be after the number element
-        return isANumber ? -1 : 1;
-      }
-    });
-
+        if (!isANumber && !isBNumber) {
+          // Both elements are not numbers, compare them directly
+          return a.shortName!.compareTo(b.shortName!);
+        } else if (isANumber && isBNumber) {
+          // Both elements are numbers, compare them as numbers
+          return int.parse(a.shortName!).compareTo(int.parse(b.shortName!));
+        } else {
+          // One element is a number, the other is not. The non-number element should be after the number element
+          return isANumber ? -1 : 1;
+        }
+      },
+    );
     return _routeList;
   }
 
@@ -57,12 +59,13 @@ class StateInfo with ChangeNotifier {
 
   void addCircle(LatLng position, String id) {
     _circles[id] = Circle(
-        circleId: const CircleId("id"),
-        center: position,
-        radius: double.parse(_radius), // convert to meters
-        fillColor: Colors.blue.withOpacity(0.1),
-        strokeWidth: 1,
-        strokeColor: Colors.blue);
+      circleId: const CircleId("id"),
+      center: position,
+      radius: double.parse(_radius), // convert to meters
+      fillColor: Colors.blue.withOpacity(0.1),
+      strokeWidth: 1,
+      strokeColor: Colors.blue,
+    );
     notifyListeners();
   }
 
@@ -70,8 +73,6 @@ class StateInfo with ChangeNotifier {
     const earthRadius = 6371000; // Earth's mean radius in kilometers
     final lat1 = center.latitude * pi / 180;
     final lat2 = top.latitude * pi / 180;
-    final lng1 = center.longitude * pi / 180;
-    final lng2 = top.longitude * pi / 180;
 
     final dLat = (top.latitude - center.latitude) * pi / 180;
     final dLng = (top.longitude - center.longitude) * pi / 180;
@@ -135,7 +136,6 @@ class StateInfo with ChangeNotifier {
   }
 
   void getStopsForLocation(String lat, String lon) async {
-    print('searching: $lat $lon $_radius');
     Response res =
         await get(Uri.parse(Routes.getStopsForLocation(lat, lon, _radius)));
     final document = XmlDocument.parse(res.body);
@@ -299,6 +299,10 @@ class StateInfo with ChangeNotifier {
     _markers.remove(id);
   }
 
+  Future<void> getVehicleInfo(String id) async {
+    showVehicleInfo = true;
+  }
+
   Future<void> getMarkerInfo(String id) async {
     showMarkerInfo = true;
     _currentStopInfo = _stops[id]!;
@@ -311,8 +315,6 @@ class StateInfo with ChangeNotifier {
       title: name,
     );
   }
-
-  void getVehicleInfo(String id) {}
 
   void _loadStops() {}
 
