@@ -12,24 +12,33 @@ import '../mock_classes.dart/mock_state_info.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  group('MapScreen', () {
-    testWidgets('should render a Google Map', (tester) async {
-      await tester.pumpWidget(testWidget(const MapScreen()));
+  group(
+    'MapScreen',
+    () {
+      testWidgets(
+        'should render a Google Map',
+        (tester) async {
+          await tester.pumpWidget(testWidget(const MapScreen()));
 
-      final googleMapFinder = find.byType(GoogleMap);
+          final googleMapFinder = find.byType(GoogleMap);
 
-      expect(googleMapFinder, findsOneWidget);
-    });
+          expect(googleMapFinder, findsOneWidget);
+        },
+      );
 
-    testWidgets('should show a search field', (tester) async {
-      await tester.pumpWidget(testWidget(const MapScreen()));
+      testWidgets(
+        'should show a search field',
+        (tester) async {
+          await tester.pumpWidget(testWidget(const MapScreen()));
 
-      final searchFieldFinder =
-          find.widgetWithText(TextField, 'Search for stops');
+          final searchFieldFinder =
+              find.widgetWithText(TextField, 'Search for stops');
 
-      expect(searchFieldFinder, findsOneWidget);
-    });
-  });
+          expect(searchFieldFinder, findsOneWidget);
+        },
+      );
+    },
+  );
 }
 
 Widget testWidget(Widget test) {
