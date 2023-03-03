@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:ride_seattle/widgets/arrival_and_departure_tile.dart';
+import 'package:ride_seattle/widgets/loading.dart';
 
 import '../provider/state_info.dart';
 
@@ -21,17 +22,26 @@ class _ArrivalAndDepartureListState extends State<ArrivalAndDepartureList> {
   Widget build(BuildContext context) {
     final stateInfo = Provider.of<StateInfo>(context, listen: true);
     if (stateInfo.currentStopInfo.arrivalAndDeparture.values.isNotEmpty) {
-      return ListView.builder(
-        controller: widget.scrollController,
-        itemCount: stateInfo.currentStopInfo.arrivalAndDeparture.values.length,
-        itemBuilder: (BuildContext context, int index) {
-          return ArrivalAndDepartureTile(
-            adInfo: stateInfo.currentStopInfo.arrivalAndDepartureList[index],
-            controller: widget.controller,
-          );
-        },
+      return Flexible(
+        child: ListView.builder(
+          shrinkWrap: true,
+          controller: widget.scrollController,
+          itemCount:
+              stateInfo.currentStopInfo.arrivalAndDeparture.values.length,
+          itemBuilder: (BuildContext context, int index) {
+            return ArrivalAndDepartureTile(
+              adInfo: stateInfo.currentStopInfo.arrivalAndDepartureList[index],
+              controller: widget.controller,
+            );
+          },
+        ),
       );
     }
-    return const Text("There are no routes to show at this time.");
+    return const Flexible(
+      child: Padding(
+        padding: EdgeInsets.all(30.0),
+        child: LoadingWidget(),
+      ),
+    );
   }
 }
