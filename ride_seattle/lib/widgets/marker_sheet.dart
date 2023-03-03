@@ -20,22 +20,15 @@ class MarkerSheet extends StatelessWidget {
           child: Column(
             children: [
               RouteName(text: stateInfo.currentStopInfo.name),
-
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 17, 0, 0),
-                  child: Center(
-                    child: ArrivalAndDepartureList(
-                      scrollController: scrollController,
-                      controller: controller,
-                    ),
-                  ),
-                ),
+              ArrivalAndDepartureList(
+                scrollController: scrollController,
+                controller: controller,
               ),
             ],
           ),
         );
       },
+      controller: DraggableScrollableController(),
       expand: false,
       initialChildSize: 0.2,
       maxChildSize: 0.5,
