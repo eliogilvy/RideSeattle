@@ -26,7 +26,7 @@ Future<void> main() async {
 
   //initialize hive offline storage
   await Hive.initFlutter();
-  Hive.registerAdapter(LatLngcustomAdapter());
+  //Hive.registerAdapter(LatLngcustomAdapter());
   //Hive adapter for route information
 
   //openboxes
