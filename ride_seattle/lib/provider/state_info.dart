@@ -30,7 +30,27 @@ class StateInfo with ChangeNotifier {
   Set<Circle> get circles => _circles.values.toSet();
   Set<Marker> get markers => _markers.values.toSet();
   List<Stop> get stops => _stops.values.toList();
-  List<r.Route> get routes => _routes.values.toList();
+  List<r.Route> get routes {
+    List<r.Route> _routeList = _routes.values.toList();
+    _routeList.sort((a, b) {
+      bool isANumber = int.tryParse(a.shortName!) != null;
+      bool isBNumber = int.tryParse(b.shortName!) != null;
+
+      if (!isANumber && !isBNumber) {
+        // Both elements are not numbers, compare them directly
+        return a.shortName!.compareTo(b.shortName!);
+      } else if (isANumber && isBNumber) {
+        // Both elements are numbers, compare them as numbers
+        return int.parse(a.shortName!).compareTo(int.parse(b.shortName!));
+      } else {
+        // One element is a number, the other is not. The non-number element should be after the number element
+        return isANumber ? -1 : 1;
+      }
+    });
+
+    return _routeList;
+  }
+
   Position get position => _position;
   String get radius => _radius;
   Stop get currentStopInfo => _currentStopInfo;
@@ -115,6 +135,7 @@ class StateInfo with ChangeNotifier {
   }
 
   void getStopsForLocation(String lat, String lon) async {
+    print('searching: $lat $lon $_radius');
     Response res =
         await get(Uri.parse(Routes.getStopsForLocation(lat, lon, _radius)));
     final document = XmlDocument.parse(res.body);
@@ -215,7 +236,7 @@ class StateInfo with ChangeNotifier {
     _routeFilter = filter;
   }
 
-  void getPosition() async {
+  Future<void> getPosition() async {
     bool serviceEnabled;
     LocationPermission permission;
 
@@ -266,7 +287,7 @@ class StateInfo with ChangeNotifier {
         function(id);
         _markers.remove("current");
         addMarker("current", name, location, (p0) => null,
-            iconFilepath: "assets/images/dry-clean.png", x: 0.5, y: 0.8);
+            iconFilepath: "assets/images/icon-circle.png", x: 0.5, y: 0.8);
       },
       anchor: x == null || y == null ? const Offset(0.5, 1.0) : Offset(x, y),
     );
