@@ -29,7 +29,7 @@ class RouteList extends StatelessWidget {
                     .getRoutePolyline(stateInfo.routes[index].routeId),
               );
               // ignore: use_build_context_synchronously
-              context.pop();
+              if (context.canPop()) context.pop();
             },
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 12),
