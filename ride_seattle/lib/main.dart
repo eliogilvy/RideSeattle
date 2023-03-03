@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import 'package:ride_seattle/provider/route_provider.dart';
 import 'package:ride_seattle/styles/theme.dart';
+import 'Pages/favorited_routes.dart';
 import 'provider/state_info.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'Pages/check_auth.dart';
@@ -44,8 +45,16 @@ final _router = GoRouter(
     GoRoute(
       path: '/',
       builder: (context, state) => const CheckAuth(),
+      routes: [
+      ],
+    ),
+    GoRoute(
+      path: '/favoriteRoutes',
+      builder: (context, state) => const favorites_page(),
       routes: const [],
     ),
+
+
   ],
 );
 
