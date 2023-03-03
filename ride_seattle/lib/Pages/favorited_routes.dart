@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:ride_seattle/classes/LatLng_custom.dart';
 
 import '../provider/localStorageProvider.dart';
 
@@ -93,7 +94,7 @@ class _favorites_pageState extends State<favorites_page> {
               child:InkWell(
                   onTap: () {
                     //highlight the route
-                    String route = favoriteRoutes[index];
+                    List<LatLng_custom> route = favoriteRoutes[index];
                     //navigate to the home page
                     context.push('/');
                   },

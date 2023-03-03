@@ -122,6 +122,7 @@ class _ArrivalAndDepartureTileState extends State<ArrivalAndDepartureTile>{
               onLongPress: () async {
                 //add routes to favorite
                 print("long press");
+                //TODO change this so we are getting the route ID and route number and storing that locally
                 List<LatLng> routeStops =
                 await stateInfo.getStopsForRoute(widget.adInfo.routeId);
                 _showContextMenu(context, routeStops);

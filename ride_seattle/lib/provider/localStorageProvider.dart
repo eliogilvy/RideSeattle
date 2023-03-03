@@ -20,7 +20,7 @@ class localStorageProvider extends ChangeNotifier {
   }
 
   Future<void> loadData() async{
-    favoriteRoutes = favRouteBox.get(0);
+    favoriteRoutes = favRouteBox.get(0).cast<List<LatLng_custom>>();
     notifyListeners();
   }
   //loadData if exists
@@ -42,6 +42,8 @@ class localStorageProvider extends ChangeNotifier {
 
   //remove route
   void removeRoute(int index){
+    print("ROUTE TRYING TO REMOVE");
+    print(favoriteRoutes);
     favoriteRoutes.removeAt(index);
     updateData();
   }
