@@ -14,7 +14,7 @@ class MarkerSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final stateInfo = Provider.of<StateInfo>(context, listen: false);
     return DraggableScrollableSheet(
-      builder: (BuildContext context, ScrollController scrollController) {
+      builder: (context, scrollController) {
         return Container(
           color: Theme.of(context).colorScheme.background,
           child: Column(
