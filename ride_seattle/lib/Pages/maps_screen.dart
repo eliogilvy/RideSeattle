@@ -50,103 +50,104 @@ class _MapScreenState extends State<MapScreen> {
       drawer: const NavDrawer(),
       body: Consumer<RouteProvider>(
           builder: (context, RouteProvider routeProvider, _) {
-        return SizedBox(
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  Flexible(
-                    child: TextFormField(
-                      showCursor: false,
-                      controller: _searchController,
-                      decoration:
-                          const InputDecoration(hintText: 'Search for stops'),
-                      onChanged: (value) {
-                        print(value);
-                      },
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.search),
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: const Text('Find a route'),
-                            contentPadding:
-                                const EdgeInsets.fromLTRB(24, 20, 24, 0),
-                            content: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Align(
-                                  alignment: Alignment.topRight,
-                                  child: IconButton(
-                                    onPressed: () {
-                                      stateInfo.routeFilter = null;
-                                      routeProvider.clearPolylines();
-                                      if (context.canPop()) context.pop();
-                                    },
-                                    icon: const Icon(Icons.refresh_rounded),
-                                  ),
-                                ),
-                                const SizedBox(height: 16),
-                                const RouteList(),
-                              ],
-                            ),
-                          );
-                        },
-                      );
+        return Column(
+          children: [
+            Row(
+              children: [
+                Flexible(
+                  child: TextFormField(
+                    showCursor: false,
+                    controller: _searchController,
+                    decoration:
+                        const InputDecoration(hintText: 'Search for stops'),
+                    onChanged: (value) {
+                      print(value);
                     },
-                    icon: const Icon(Icons.filter_alt_outlined),
                   ),
-                ],
-              ),
-              Expanded(
-                child: GoogleMap(
-                  rotateGesturesEnabled: false,
-                  myLocationButtonEnabled: false,
-                  myLocationEnabled: true,
-                  initialCameraPosition: initialCameraPosition,
-                  markers: stateInfo.markers,
-                  mapToolbarEnabled: false,
-                  //circles: stateInfo.circles,
-                  zoomControlsEnabled: false,
-                  mapType: MapType.normal,
-                  onMapCreated: (GoogleMapController controller) {
-                    if (mounted) {
-                      setState(() {
-                        googleMapController = controller;
-                        controller.setMapStyle(_mapStyle);
-                      });
-                    }
-                  },
-                  onTap: (argument) {
-                    stateInfo.showMarkerInfo = false;
-                    if (context.canPop()) {
-                      context.pop();
-                    }
-                  },
-
-                  onCameraIdle: () {
-                    updateView(stateInfo);
-                    if (stateInfo.showMarkerInfo) {
-                      _showBottomSheet(context, stateInfo);
-                    }
-                  },
-                  polylines: routeProvider.routePolyLine,
                 ),
+                IconButton(
+                  onPressed: () {},
+                  icon: const Icon(Icons.search),
+                ),
+                IconButton(
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          contentPadding:
+                              const EdgeInsets.fromLTRB(24, 20, 24, 0),
+                          content: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  const Text("Find a route"),
+                                  Expanded(
+                                    child: Align(
+                                      alignment: Alignment.centerRight,
+                                      child: IconButton(
+                                        onPressed: () {
+                                          stateInfo.routeFilter = null;
+                                          routeProvider.clearPolylines();
+                                          if (context.canPop()) context.pop();
+                                        },
+                                        icon: const Icon(Icons.refresh_rounded),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 16),
+                              const RouteList(),
+                            ],
+                          ),
+                        );
+                      },
+                    );
+                  },
+                  icon: const Icon(Icons.filter_alt_outlined),
+                ),
+              ],
+            ),
+            Expanded(
+              child: GoogleMap(
+                rotateGesturesEnabled: false,
+                myLocationButtonEnabled: false,
+                myLocationEnabled: true,
+                initialCameraPosition: initialCameraPosition,
+                markers: stateInfo.markers,
+                mapToolbarEnabled: false,
+                //circles: stateInfo.circles,
+                zoomControlsEnabled: false,
+                mapType: MapType.normal,
+                onMapCreated: (GoogleMapController controller) {
+                  if (mounted) {
+                    setState(() {
+                      googleMapController = controller;
+                      controller.setMapStyle(_mapStyle);
+                    });
+                  }
+                },
+                onTap: (argument) {
+                  stateInfo.showMarkerInfo = false;
+                  if (context.canPop()) context.pop();
+                  setState(() {});
+                },
+                onCameraIdle: () {
+                  updateView(stateInfo);
+                },
+                polylines: routeProvider.routePolyLine,
               ),
-            ],
-          ),
+            ),
+          ],
         );
       }),
+      bottomSheet: stateInfo.showMarkerInfo
+          ? MarkerSheet(controller: googleMapController!)
+          : null,
       floatingActionButton: FloatingActionButton.small(
         onPressed: () async {
           Position position = stateInfo.position;
@@ -186,11 +187,12 @@ class _MapScreenState extends State<MapScreen> {
   Future<void> updateView(StateInfo stateInfo) async {
     final LatLng center = await getCurrentCenter(googleMapController!);
     final LatLng currentCenter = LatLng(center.latitude, center.longitude);
-    stateInfo.getPosition();
+    await stateInfo.getPosition();
     stateInfo.setRadius(
         currentCenter,
         await getTopOfScreen(googleMapController!),
         await getBottomOfScreen(googleMapController!));
+    print('searching ${stateInfo.radius}');
     stateInfo.getStopsForLocation(
         currentCenter.latitude.toString(), currentCenter.longitude.toString());
     stateInfo.getRoutesForLocation(

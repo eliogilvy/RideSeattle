@@ -26,11 +26,11 @@ class RouteProvider with ChangeNotifier {
   void setPolyLines(List<LatLng> routeStops) {
     routePolyLine.add(
       Polyline(
-        polylineId: const PolylineId('current_route'),
-        points: routeStops,
-        color: Colors.orange,
-        width: 4,
-      ),
+          polylineId: const PolylineId('current_route'),
+          points: routeStops,
+          color: Colors.orange,
+          width: 4,
+          startCap: Cap.squareCap),
     );
 
     notifyListeners();
