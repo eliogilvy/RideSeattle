@@ -51,7 +51,7 @@ Widget buildMenuItems(BuildContext context) => Container(
               leading: const Icon(Icons.home_outlined),
               title: const Text('My Routes'),
               onTap: () {
-                context.pop();
+                context.push('/favoriteRoutes');
               },
             ),
           ),
