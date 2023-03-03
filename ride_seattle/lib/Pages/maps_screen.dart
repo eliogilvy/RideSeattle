@@ -10,6 +10,7 @@ import '../widgets/nav_drawer.dart';
 import 'package:go_router/go_router.dart';
 
 import '../widgets/route_list.dart';
+import '../widgets/vehicle_sheet.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({Key? key}) : super(key: key);
@@ -43,111 +44,112 @@ class _MapScreenState extends State<MapScreen> {
   Widget build(BuildContext context) {
     //final User? user = Auth().currentUser;
     final stateInfo = Provider.of<StateInfo>(context, listen: true);
+    final routeProvider = Provider.of<RouteProvider>(context, listen: true);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Ride Seattle'),
       ),
       drawer: const NavDrawer(),
-      body: Consumer<RouteProvider>(
-          builder: (context, RouteProvider routeProvider, _) {
-        return Column(
-          children: [
-            Row(
-              children: [
-                Flexible(
-                  child: TextFormField(
-                    showCursor: false,
-                    controller: _searchController,
-                    decoration:
-                        const InputDecoration(hintText: 'Search for stops'),
-                    onChanged: (value) {
-                      print(value);
-                    },
-                  ),
+      body: Column(
+        children: [
+          Row(
+            children: [
+              Flexible(
+                child: TextFormField(
+                  showCursor: false,
+                  controller: _searchController,
+                  decoration:
+                      const InputDecoration(hintText: 'Search for stops'),
+                  onChanged: (value) {
+                    print(value);
+                  },
                 ),
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.search),
-                ),
-                IconButton(
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          contentPadding:
-                              const EdgeInsets.fromLTRB(24, 20, 24, 0),
-                          content: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  const Text("Find a route"),
-                                  Expanded(
-                                    child: Align(
-                                      alignment: Alignment.centerRight,
-                                      child: IconButton(
-                                        onPressed: () {
-                                          stateInfo.routeFilter = null;
-                                          routeProvider.clearPolylines();
-                                          if (context.canPop()) context.pop();
-                                        },
-                                        icon: const Icon(Icons.refresh_rounded),
-                                      ),
+              ),
+              IconButton(
+                onPressed: () {},
+                icon: const Icon(Icons.search),
+              ),
+              IconButton(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        contentPadding:
+                            const EdgeInsets.fromLTRB(24, 20, 24, 0),
+                        content: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                const Text("Find a route"),
+                                Expanded(
+                                  child: Align(
+                                    alignment: Alignment.centerRight,
+                                    child: IconButton(
+                                      onPressed: () {
+                                        stateInfo.routeFilter = null;
+                                        routeProvider.clearPolylines();
+                                        if (context.canPop()) context.pop();
+                                      },
+                                      icon: const Icon(Icons.refresh_rounded),
                                     ),
                                   ),
-                                ],
-                              ),
-                              const SizedBox(height: 16),
-                              const RouteList(),
-                            ],
-                          ),
-                        );
-                      },
-                    );
-                  },
-                  icon: const Icon(Icons.filter_alt_outlined),
-                ),
-              ],
-            ),
-            Expanded(
-              child: GoogleMap(
-                rotateGesturesEnabled: false,
-                myLocationButtonEnabled: false,
-                myLocationEnabled: true,
-                initialCameraPosition: initialCameraPosition,
-                markers: stateInfo.markers,
-                mapToolbarEnabled: false,
-                //circles: stateInfo.circles,
-                zoomControlsEnabled: false,
-                mapType: MapType.normal,
-                onMapCreated: (GoogleMapController controller) {
-                  if (mounted) {
-                    setState(() {
-                      googleMapController = controller;
-                      controller.setMapStyle(_mapStyle);
-                    });
-                  }
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            const RouteList(),
+                          ],
+                        ),
+                      );
+                    },
+                  );
                 },
-                onTap: (argument) {
-                  stateInfo.showMarkerInfo = false;
-                  if (context.canPop()) context.pop();
-                  setState(() {});
-                },
-                onCameraIdle: () {
-                  updateView(stateInfo);
-                },
-                polylines: routeProvider.routePolyLine,
+                icon: const Icon(Icons.filter_alt_outlined),
               ),
+            ],
+          ),
+          Flexible(
+            child: GoogleMap(
+              rotateGesturesEnabled: false,
+              myLocationButtonEnabled: false,
+              myLocationEnabled: true,
+              initialCameraPosition: initialCameraPosition,
+              markers: stateInfo.markers,
+              mapToolbarEnabled: false,
+              //circles: stateInfo.circles,
+              zoomControlsEnabled: false,
+              onMapCreated: (GoogleMapController controller) {
+                if (mounted) {
+                  setState(() {
+                    googleMapController = controller;
+                    controller.setMapStyle(_mapStyle);
+                  });
+                }
+              },
+              onTap: (argument) {
+                stateInfo.showVehicleInfo = false;
+                stateInfo.showMarkerInfo = false;
+                if (context.canPop()) context.pop();
+                stateInfo.removeMarker('current');
+                setState(() {});
+              },
+              onCameraIdle: () {
+                updateView(stateInfo);
+              },
+              polylines: routeProvider.routePolyLine,
             ),
-          ],
-        );
-      }),
+          ),
+        ],
+      ),
       bottomSheet: stateInfo.showMarkerInfo
           ? MarkerSheet(controller: googleMapController!)
-          : null,
+          : stateInfo.showVehicleInfo
+              ? VehicleSheet(controller: googleMapController!)
+              : null,
       floatingActionButton: FloatingActionButton.small(
         onPressed: () async {
           Position position = stateInfo.position;
