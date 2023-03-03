@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:ride_seattle/Pages/favorited_routes.dart';
+import 'package:ride_seattle/classes/LatLng_custom.dart';
 import 'package:ride_seattle/provider/localStorageProvider.dart';
 
 import 'Pages/check_auth.dart';
@@ -25,11 +26,11 @@ Future<void> main() async {
 
   //initialize hive offline storage
   await Hive.initFlutter();
+  Hive.registerAdapter(LatLngcustomAdapter());
   //Hive adapter for route information
 
   //openboxes
   favRouteBox = await Hive.openBox('favorite_routes');
-
 
   var stateInfo = StateInfo();
 
