@@ -41,4 +41,8 @@ class Routes {
   static String getRoutesForLocation(String lat, String lon, String radius) {
     return 'http://api.pugetsound.onebusaway.org/api/where/routes-for-location.xml?key=${Key.oneBusAway}&lat=$lat&lon=$lon&radius=$radius';
   }
+
+  static String getTripDetails(String id) {
+    return 'http://api.pugetsound.onebusaway.org/api/where/trip-details/$id.xml?key=${Key.oneBusAway}';
+  }
 }
