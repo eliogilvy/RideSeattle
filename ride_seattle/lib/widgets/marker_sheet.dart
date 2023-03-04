@@ -32,9 +32,7 @@ class MarkerSheet extends StatelessWidget {
                 )
               : SizedBox(
                   width: MediaQuery.of(context).size.width,
-                  child: const Flexible(
-                    child: Center(child: LoadingWidget()),
-                  ),
+                  child: const Center(child: LoadingWidget()),
                 ),
         );
       },

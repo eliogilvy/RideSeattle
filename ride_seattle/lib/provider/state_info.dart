@@ -322,7 +322,6 @@ class StateInfo with ChangeNotifier {
     showMarkerInfo = true;
     _currentStopInfo = _stops[id]!;
     await _currentStopInfo!.getArrivalAndDeparture();
-    notifyListeners();
   }
 
   InfoWindow markerWindow(String name) {
