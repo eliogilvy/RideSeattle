@@ -135,6 +135,9 @@ class _MapScreenState extends State<MapScreen> {
                 stateInfo.showMarkerInfo = false;
                 if (context.canPop()) context.pop();
                 stateInfo.removeMarker('current');
+                routeProvider.clearPolylines();
+
+                stateInfo.removeMarker(stateInfo.lastVehicle);
                 setState(() {});
               },
               onCameraIdle: () {
@@ -200,16 +203,5 @@ class _MapScreenState extends State<MapScreen> {
     stateInfo.getRoutesForLocation(
         currentCenter.latitude.toString(), currentCenter.longitude.toString());
     stateInfo.addCircle(currentCenter, 'searchRadius');
-  }
-
-  void _showBottomSheet(BuildContext context, StateInfo stateInfo) {
-    Scaffold.of(context)
-        .showBottomSheet(
-          (BuildContext context) {
-            return MarkerSheet(controller: googleMapController!);
-          },
-        )
-        .closed
-        .whenComplete(() => stateInfo.showMarkerInfo = false);
   }
 }
