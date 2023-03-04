@@ -13,32 +13,37 @@ class RouteList extends StatelessWidget {
     final stateInfo = Provider.of<StateInfo>(context);
     final routeProvider = Provider.of<RouteProvider>(context);
     return Expanded(
-      child: ListView.separated(
-        shrinkWrap: true,
-        itemCount: stateInfo.routes.length,
-        separatorBuilder: (BuildContext context, int index) => const Divider(),
-        itemBuilder: (BuildContext context, int index) {
-          final route = stateInfo.routes[index];
-          return InkWell(
-            onTap: () async {
-              stateInfo.routeFilter = route.routeId;
-              stateInfo.updateStops();
+      child: SizedBox(
+        height: 0,
+        width: 0,
+        child: ListView.separated(
+          shrinkWrap: true,
+          itemCount: stateInfo.routes.length,
+          separatorBuilder: (BuildContext context, int index) =>
+              const Divider(),
+          itemBuilder: (BuildContext context, int index) {
+            final route = stateInfo.routes[index];
+            return InkWell(
+              onTap: () async {
+                stateInfo.routeFilter = route.routeId;
+                stateInfo.updateStops();
 
-              routeProvider.setPolyLines(
-                await stateInfo
-                    .getRoutePolyline(stateInfo.routes[index].routeId),
-              );
-              // ignore: use_build_context_synchronously
-              if (context.canPop()) context.pop();
-            },
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              child: Text(
-                route.shortName!,
+                routeProvider.setPolyLines(
+                  await stateInfo
+                      .getRoutePolyline(stateInfo.routes[index].routeId),
+                );
+                // ignore: use_build_context_synchronously
+                if (context.canPop()) context.pop();
+              },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Text(
+                  route.shortName!,
+                ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }
