@@ -5,6 +5,7 @@ import 'package:ride_seattle/widgets/arrival_and_departure_list.dart';
 import 'package:ride_seattle/widgets/route_name.dart';
 
 import '../provider/state_info.dart';
+import 'loading.dart';
 
 class MarkerSheet extends StatelessWidget {
   final GoogleMapController controller;
@@ -17,15 +18,24 @@ class MarkerSheet extends StatelessWidget {
       builder: (context, scrollController) {
         return Container(
           color: Theme.of(context).colorScheme.background,
-          child: Column(
-            children: [
-              RouteName(text: stateInfo.currentStopInfo.name),
-              ArrivalAndDepartureList(
-                scrollController: scrollController,
-                controller: controller,
-              ),
-            ],
-          ),
+          child: stateInfo.currentStopInfo != null &&
+                  stateInfo
+                      .currentStopInfo!.arrivalAndDeparture.values.isNotEmpty
+              ? Column(
+                  children: [
+                    RouteName(text: stateInfo.currentStopInfo!.name),
+                    ArrivalAndDepartureList(
+                      scrollController: scrollController,
+                      controller: controller,
+                    ),
+                  ],
+                )
+              : SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  child: const Flexible(
+                    child: Center(child: LoadingWidget()),
+                  ),
+                ),
         );
       },
       controller: DraggableScrollableController(),

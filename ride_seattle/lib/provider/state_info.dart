@@ -5,6 +5,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:http/http.dart';
 import 'package:ride_seattle/classes/agency.dart';
+import 'package:ride_seattle/classes/arrival_and_departure.dart';
+import 'package:ride_seattle/classes/trip_status.dart';
 import 'package:xml/xml.dart';
 import '../OneBusAway/routes.dart';
 import '../classes/stop.dart';
@@ -25,9 +27,10 @@ class StateInfo with ChangeNotifier {
   final Map<String, Circle> _circles = {};
   bool showMarkerInfo = false;
   bool showVehicleInfo = false;
-  late Stop _currentStopInfo;
+  Stop? _currentStopInfo;
   String? _routeFilter;
-  String? _lastVehicle;
+  String? lastVehicle;
+  TripStatus? vehicleStatus;
 
   Set<Circle> get circles => _circles.values.toSet();
   Set<Marker> get markers => _markers.values.toSet();
@@ -56,11 +59,7 @@ class StateInfo with ChangeNotifier {
 
   Position get position => _position;
   String get radius => _radius;
-  Stop get currentStopInfo => _currentStopInfo;
-  String get lastVehicle => _lastVehicle!;
-  set lastVehicle(String v) {
-    _lastVehicle = v;
-  }
+  Stop? get currentStopInfo => _currentStopInfo;
 
   void addCircle(LatLng position, String id) {
     _circles[id] = Circle(
@@ -300,24 +299,29 @@ class StateInfo with ChangeNotifier {
     notifyListeners();
   }
 
-  void removeMarker(String id) {
-    _markers.remove(id);
+  void removeMarker(String? id) {
+    if (id != null) {
+      _markers.remove(id);
+    }
   }
 
   Future<void> getVehicleInfo(String id) async {
     showMarkerInfo = false;
     showVehicleInfo = true;
-    // await getTripInfo(id);
+    //await getTripInfo(id);
     notifyListeners();
   }
 
-  //Future<> getTripInfo(String id)async {}
+  Future<void> getTripInfo(String id) async {
+    Response res = await get(Uri.parse(Routes.getTripDetails(id)));
+
+  }
 
   Future<void> getMarkerInfo(String id) async {
     showVehicleInfo = false;
     showMarkerInfo = true;
     _currentStopInfo = _stops[id]!;
-    await _currentStopInfo.getArrivalAndDeparture();
+    await _currentStopInfo!.getArrivalAndDeparture();
     notifyListeners();
   }
 
@@ -327,7 +331,7 @@ class StateInfo with ChangeNotifier {
     );
   }
 
-  void _loadStops() {}
+  //void _loadStops() {}
 
   // Future<void> getAgencies() async {
   //   Response res = await get(Uri.parse(Routes.getAgencies()));

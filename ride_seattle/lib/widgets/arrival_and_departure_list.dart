@@ -21,26 +21,18 @@ class _ArrivalAndDepartureListState extends State<ArrivalAndDepartureList> {
   @override
   Widget build(BuildContext context) {
     final stateInfo = Provider.of<StateInfo>(context, listen: true);
-    if (stateInfo.currentStopInfo.arrivalAndDeparture.values.isNotEmpty) {
-      return Flexible(
-        child: ListView.builder(
-          shrinkWrap: true,
-          controller: widget.scrollController,
-          itemCount:
-              stateInfo.currentStopInfo.arrivalAndDeparture.values.length,
-          itemBuilder: (BuildContext context, int index) {
-            return ArrivalAndDepartureTile(
-              adInfo: stateInfo.currentStopInfo.arrivalAndDepartureList[index],
-              controller: widget.controller,
-            );
-          },
-        ),
-      );
-    }
-    return const Flexible(
-      child: Padding(
-        padding: EdgeInsets.all(30.0),
-        child: LoadingWidget(),
+
+    return Flexible(
+      child: ListView.builder(
+        shrinkWrap: true,
+        controller: widget.scrollController,
+        itemCount: stateInfo.currentStopInfo!.arrivalAndDeparture.values.length,
+        itemBuilder: (BuildContext context, int index) {
+          return ArrivalAndDepartureTile(
+            adInfo: stateInfo.currentStopInfo!.arrivalAndDepartureList[index],
+            controller: widget.controller,
+          );
+        },
       ),
     );
   }

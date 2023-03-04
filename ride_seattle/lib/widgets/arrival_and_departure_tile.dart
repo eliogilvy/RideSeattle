@@ -55,8 +55,8 @@ class ArrivalAndDepartureTile extends StatelessWidget {
   }
 
   void findBus(StateInfo stateInfo) {
-    
     stateInfo.removeMarker(stateInfo.lastVehicle);
+    stateInfo.vehicleStatus = adInfo.tripStatus!;
     stateInfo.lastVehicle = adInfo.tripStatus!.activeTripId;
     stateInfo.addMarker(adInfo.tripStatus!.activeTripId, adInfo.routeShortName,
         adInfo.tripStatus!.position, stateInfo.getVehicleInfo,
