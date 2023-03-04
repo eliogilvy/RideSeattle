@@ -13,9 +13,17 @@ class VehicleSheet extends StatelessWidget {
         return Container(
           color: Theme.of(context).colorScheme.background,
           child: Column(
+            children: const [
+              Flexible(child: Placeholder()),
+            ],
           ),
         );
       },
+      controller: DraggableScrollableController(),
+      expand: false,
+      initialChildSize: 0.2,
+      maxChildSize: 0.5,
+      minChildSize: 0.2,
     );
   }
 }
