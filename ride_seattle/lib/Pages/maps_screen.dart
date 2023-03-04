@@ -136,8 +136,7 @@ class _MapScreenState extends State<MapScreen> {
                 if (context.canPop()) context.pop();
                 stateInfo.removeMarker('current');
                 routeProvider.clearPolylines();
-
-                stateInfo.removeMarker(stateInfo.lastVehicle);
+                stateInfo.removeMarker(stateInfo.lastVehicle!);
                 setState(() {});
               },
               onCameraIdle: () {
