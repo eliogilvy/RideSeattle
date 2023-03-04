@@ -18,11 +18,12 @@ late Box favRouteBox;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   //initialize hive offline storage
   await Hive.initFlutter();
-
+  //openboxes
+  favRouteBox = await Hive.openBox('fav_routes');
 
   runApp(
     MultiProvider(

@@ -26,7 +26,6 @@ class localStorageProvider extends ChangeNotifier {
   void addRoute(int routeId){
 
     favoriteRoutes.add(routeId);
-
     updateData();
   }
 

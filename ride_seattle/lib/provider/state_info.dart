@@ -268,6 +268,7 @@ class StateInfo with ChangeNotifier {
   void addMarker(
       String id, String name, LatLng location, Function(String) function,
       {String? iconFilepath, double? x, double? y}) async {
+
     BitmapDescriptor markerIcon;
     if (iconFilepath != null) {
       final bytes = await rootBundle.load(iconFilepath);

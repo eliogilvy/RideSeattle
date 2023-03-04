@@ -4,6 +4,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:ride_seattle/widgets/marker_sheet.dart';
+import '../provider/localStorageProvider.dart';
 import '../provider/route_provider.dart';
 import '../provider/state_info.dart';
 import '../widgets/nav_drawer.dart';
@@ -31,6 +32,8 @@ class _MapScreenState extends State<MapScreen> {
   final Set<Polyline> _polyLine = {};
 
   List<LatLng> latlng_of_route = [];
+
+  var routeProvider;
 
   @override
   initState() {
