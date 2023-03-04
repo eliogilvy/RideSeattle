@@ -27,13 +27,14 @@ class StateInfo with ChangeNotifier {
   bool showVehicleInfo = false;
   late Stop _currentStopInfo;
   String? _routeFilter;
+  String? _lastVehicle;
 
   Set<Circle> get circles => _circles.values.toSet();
   Set<Marker> get markers => _markers.values.toSet();
   List<Stop> get stops => _stops.values.toList();
   List<r.Route> get routes {
-    List<r.Route> _routeList = _routes.values.toList();
-    _routeList.sort(
+    List<r.Route> routeList = _routes.values.toList();
+    routeList.sort(
       (a, b) {
         bool isANumber = int.tryParse(a.shortName!) != null;
         bool isBNumber = int.tryParse(b.shortName!) != null;
@@ -50,12 +51,16 @@ class StateInfo with ChangeNotifier {
         }
       },
     );
-    return _routeList;
+    return routeList;
   }
 
   Position get position => _position;
   String get radius => _radius;
   Stop get currentStopInfo => _currentStopInfo;
+  String get lastVehicle => _lastVehicle!;
+  set lastVehicle(String v) {
+    _lastVehicle = v;
+  }
 
   void addCircle(LatLng position, String id) {
     _circles[id] = Circle(
@@ -300,10 +305,16 @@ class StateInfo with ChangeNotifier {
   }
 
   Future<void> getVehicleInfo(String id) async {
+    showMarkerInfo = false;
     showVehicleInfo = true;
+    // await getTripInfo(id);
+    notifyListeners();
   }
 
+  //Future<> getTripInfo(String id)async {}
+
   Future<void> getMarkerInfo(String id) async {
+    showVehicleInfo = false;
     showMarkerInfo = true;
     _currentStopInfo = _stops[id]!;
     await _currentStopInfo.getArrivalAndDeparture();
