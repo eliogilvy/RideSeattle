@@ -5,7 +5,6 @@ import 'package:ride_seattle/classes/arrival_and_departure.dart';
 import 'package:ride_seattle/provider/route_provider.dart';
 import 'package:ride_seattle/widgets/route_box.dart';
 
-import '../classes/stop.dart';
 import '../provider/state_info.dart';
 
 class ArrivalAndDepartureTile extends StatelessWidget {
@@ -56,7 +55,10 @@ class ArrivalAndDepartureTile extends StatelessWidget {
   }
 
   void findBus(StateInfo stateInfo) {
-    stateInfo.addMarker('vehicle', adInfo.routeShortName,
+    
+    stateInfo.removeMarker(stateInfo.lastVehicle);
+    stateInfo.lastVehicle = adInfo.tripStatus!.activeTripId;
+    stateInfo.addMarker(adInfo.tripStatus!.activeTripId, adInfo.routeShortName,
         adInfo.tripStatus!.position, stateInfo.getVehicleInfo,
         iconFilepath: 'assets/images/icons8-bus-96.png');
     controller.animateCamera(
