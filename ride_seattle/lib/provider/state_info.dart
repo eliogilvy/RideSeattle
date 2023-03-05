@@ -162,6 +162,36 @@ class StateInfo with ChangeNotifier {
       }
     }
     var name = stop.findElements("name").first.text;
+    var routeIds = stop
+        .findElements("routeIds")
+        .first
+        .findElements("routeId")
+        .map((e) => e.text)
+        .toList();
+    if (_routeFilter == null || routeIds.contains(_routeFilter)) {
+      _stops[id] = parseStop(stop);
+      var filePath = 'assets/images/stops/bus-stop.png';
+      if (direction != null) {
+        filePath = 'assets/images/stops/bus-stop-$direction.png';
+      }
+      addMarker(id, name, LatLng(lat, lon), getMarkerInfo,
+          iconFilepath: filePath);
+    }
+  }
+
+  Stop parseStop(XmlElement stop) {
+    var id = stop.findElements("id").first.text;
+    var lat = double.parse(stop.findElements("lat").first.text);
+    var lon = double.parse(stop.findElements("lon").first.text);
+    String? direction;
+    try {
+      direction = stop.findElements("direction").first.text;
+    } catch (e) {
+      if (e is StateError) {
+        direction = null;
+      }
+    }
+    var name = stop.findElements("name").first.text;
     var code = stop.findElements("code").first.text;
     var locationType = int.parse(stop.findElements("locationType").first.text);
     var routeIds = stop
@@ -170,8 +200,8 @@ class StateInfo with ChangeNotifier {
         .findElements("routeId")
         .map((e) => e.text)
         .toList();
-    if (_routeFilter == null || routeIds.contains(_routeFilter)) {
-      _stops[id] = Stop(
+
+    return Stop(
         stopId: id,
         lat: lat,
         lon: lon,
@@ -179,15 +209,7 @@ class StateInfo with ChangeNotifier {
         name: name,
         code: code,
         locationType: locationType,
-        routeIds: routeIds,
-      );
-      var filePath = 'assets/images/stops/bus-stop.png';
-      if (direction != null) {
-        filePath = 'assets/images/stops/bus-stop-$direction.png';
-      }
-      addMarker(id, name, LatLng(lat, lon), getMarkerInfo,
-          iconFilepath: filePath);
-    }
+        routeIds: routeIds);
   }
 
   void getRoutesForLocation(String lat, String lon) async {
@@ -198,6 +220,20 @@ class StateInfo with ChangeNotifier {
     for (var route in routes) {
       _createRoute(route);
     }
+  }
+
+  Future<String> getStop(String id) async {
+    Stop? stop;
+    if (_stops.containsKey(id)) {
+      stop = _stops[id]!;
+    } else {
+      Response res = await get(Uri.parse(Routes.getStop(id)));
+
+      var document = XmlDocument.parse(res.body);
+      var s = document.findAllElements('stop');
+      stop = parseStop(s.first);
+    }
+    return stop.name;
   }
 
   void _createRoute(XmlElement route) {
@@ -314,7 +350,6 @@ class StateInfo with ChangeNotifier {
 
   Future<void> getTripInfo(String id) async {
     Response res = await get(Uri.parse(Routes.getTripDetails(id)));
-
   }
 
   Future<void> getMarkerInfo(String id) async {

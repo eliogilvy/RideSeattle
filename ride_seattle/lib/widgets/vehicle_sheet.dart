@@ -27,9 +27,19 @@ class VehicleSheet extends StatelessWidget {
             padding:
                 const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             children: [
-              ListTile(
-                leading: const Icon(Icons.location_on),
-                title: Text('Next Stop: ${stateInfo.vehicleStatus!.nextStop}'),
+              FutureBuilder<String>(
+                future: stateInfo.getStop(stateInfo.vehicleStatus!
+                    .nextStop), // Future<String> to build your widget tree
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return ListTile(
+                      leading: const Icon(Icons.location_on),
+                      title: Text('Next Stop: ${snapshot.data}'),
+                    );
+                  } else {
+                    return const CircularProgressIndicator(); // Show a loading indicator while waiting for the future to complete
+                  }
+                },
               ),
               ListTile(
                 leading: const Icon(Icons.timer),
