@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../provider/local_storage_provider.dart';
+import '../provider/route_provider.dart';
+import '../provider/state_info.dart';
 
 class favorites_page extends StatefulWidget {
   const favorites_page({Key? key}) : super(key: key);
@@ -17,6 +19,9 @@ class _favorites_pageState extends State<favorites_page> {
   var localStorage;
   var favoriteRoutes;
 
+  var stateInfo;
+  var routeProvider;
+
   @override
   void initState() {
     super.initState();
@@ -26,6 +31,8 @@ class _favorites_pageState extends State<favorites_page> {
 
   void _onAfterBuild(BuildContext context) {
     localStorage = Provider.of<localStorageProvider>(context, listen: false);
+    stateInfo = Provider.of<StateInfo>(context, listen: false);
+    routeProvider = Provider.of<RouteProvider>(context, listen: false);
 
     try{
       localStorage.loadData();
@@ -83,7 +90,7 @@ class _favorites_pageState extends State<favorites_page> {
         Visibility(
             visible: true,
             child: Dismissible(
-              key: Key(index.toString()),
+              key: UniqueKey(),
               background: trashBackground(),
               onDismissed: (direction){
 
@@ -91,9 +98,16 @@ class _favorites_pageState extends State<favorites_page> {
                 localStorage.removeRoute(index);
               },
               child:InkWell(
-                onTap: () {
+                onTap: () async {
                   //highlight the route
-                  int routeId = favoriteRoutes[index];
+                  String routeId = favoriteRoutes[index];
+
+                  stateInfo.routeFilter = routeId;
+                  stateInfo.updateStops();
+
+                  routeProvider.setPolyLines(
+                      await stateInfo.getRoutePolyline(routeId),
+                  );
                   //navigate to the home page
                   context.push('/');
                 },
