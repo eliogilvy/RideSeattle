@@ -133,7 +133,6 @@ class _MapScreenState extends State<MapScreen> {
               onTap: (argument) {
                 stateInfo.showVehicleInfo = false;
                 stateInfo.showMarkerInfo = false;
-                if (context.canPop()) context.pop();
                 stateInfo.removeMarker('current');
                 routeProvider.clearPolylines();
                 stateInfo.removeMarker(stateInfo.lastVehicle!);

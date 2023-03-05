@@ -11,7 +11,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'Pages/check_auth.dart';
 import 'package:flutter/services.dart';
 
-
 late Box favRouteBox;
 
 Future<void> main() async {
@@ -24,16 +23,14 @@ Future<void> main() async {
   //openboxes
   favRouteBox = await Hive.openBox('fav_routes');
 
-
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => StateInfo()),
         ChangeNotifierProvider(create: (context) => RouteProvider()),
-        ListenableProvider<localStorageProvider>(create: (context) =>
-            localStorageProvider(
-                favRouteBox: favRouteBox)
-        ),
+        ListenableProvider<LocalStorageProvider>(
+            create: (context) =>
+                LocalStorageProvider(favRouteBox: favRouteBox)),
       ],
       child: const RideApp(),
     ),
@@ -50,10 +47,9 @@ final _router = GoRouter(
     ),
     GoRoute(
       path: '/favoriteRoutes',
-      builder: (context, state) => const favorites_page(),
+      builder: (context, state) => const Favorites(),
       routes: const [],
     ),
-
   ],
 );
 

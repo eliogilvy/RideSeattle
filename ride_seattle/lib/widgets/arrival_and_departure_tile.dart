@@ -19,8 +19,8 @@ class ArrivalAndDepartureTile extends StatefulWidget {
   State<ArrivalAndDepartureTile> createState() =>
       _ArrivalAndDepartureTileState();
 }
-class _ArrivalAndDepartureTileState extends State<ArrivalAndDepartureTile>{
 
+class _ArrivalAndDepartureTileState extends State<ArrivalAndDepartureTile> {
   var localStorage;
   var favoriteRoutes;
 
@@ -34,50 +34,47 @@ class _ArrivalAndDepartureTileState extends State<ArrivalAndDepartureTile>{
   }
 
   void _onAfterBuild(BuildContext context) {
-    localStorage = Provider.of<localStorageProvider>(context, listen: false);
+    localStorage = Provider.of<LocalStorageProvider>(context, listen: false);
 
-    try{
+    try {
       localStorage.loadData();
-    }
-    catch (e){
+    } catch (e) {
       print(e.toString());
     }
     favoriteRoutes = localStorage.getFavoriteRoutes();
   }
 
-  void _getTapPosition(TapDownDetails tapPos){
+  void _getTapPosition(TapDownDetails tapPos) {
     final RenderBox renderBox = context.findRenderObject() as RenderBox;
 
-    setState((){
+    setState(() {
       _tapPosition = renderBox.globalToLocal(tapPos.globalPosition);
     });
-
   }
 
-  void _showContextMenu(context, String routeId) async{
-    final RenderObject? overlay = Overlay.of(context)?.context.findRenderObject();
+  void _showContextMenu(context, String routeId) async {
+    final RenderObject? overlay =
+        Overlay.of(context).context.findRenderObject();
     final result = await showMenu(
         context: context,
         position: RelativeRect.fromRect(
             Rect.fromLTWH(_tapPosition.dx, _tapPosition.dy, 10, 10),
             Rect.fromLTWH(0, 0, overlay!.paintBounds.size.width,
-                overlay!.paintBounds.size.height)),
+                overlay.paintBounds.size.height)),
         items: [
           const PopupMenuItem(
             value: "favorited",
             child: Text('Add to favorites'),
           ),
-        ]
-    );
+        ]);
 
-    if(result == "favorited"){
+    if (result == "favorited") {
       print("route favorited");
       //add polylines to local database
 
       localStorage.addRoute(routeId);
       print("route added - arrival/departure tile");
     }
-
   }
 
   @override
@@ -98,11 +95,12 @@ class _ArrivalAndDepartureTileState extends State<ArrivalAndDepartureTile>{
             text: getPredictedArrivalTime(widget.adInfo),
             maxW: double.infinity,
           ),
-
+          const SizedBox(
+            width: 10,
+          ),
           GestureDetector(
-            onTapDown: (position){
+            onTapDown: (position) {
               _getTapPosition(position);
-
             },
             child: InkWell(
               //tooltip: "Find my vehicle",
@@ -110,7 +108,7 @@ class _ArrivalAndDepartureTileState extends State<ArrivalAndDepartureTile>{
                 if (widget.adInfo.tripStatus != null) {
                   //get all the stops for the current route
                   List<LatLng> routeStops =
-                  await stateInfo.getRoutePolyline(widget.adInfo.routeId);
+                      await stateInfo.getRoutePolyline(widget.adInfo.routeId);
                   //add those stops to the routeProvider
 
                   routeProvider.setPolyLines(routeStops);
@@ -122,7 +120,7 @@ class _ArrivalAndDepartureTileState extends State<ArrivalAndDepartureTile>{
                 //add routes to favorite
                 print("long press");
                 //TODO change this so we are getting the route ID and route number and storing that locally
-                _showContextMenu(context, widget.adInfo.routeId );
+                _showContextMenu(context, widget.adInfo.routeId);
               },
               child: Ink(
                 child: const Icon(Icons.directions_bus),
@@ -157,8 +155,11 @@ class _ArrivalAndDepartureTileState extends State<ArrivalAndDepartureTile>{
     stateInfo.removeMarker(stateInfo.lastVehicle);
     stateInfo.vehicleStatus = widget.adInfo.tripStatus!;
     stateInfo.lastVehicle = widget.adInfo.tripStatus!.activeTripId;
-    stateInfo.addMarker(widget.adInfo.tripStatus!.activeTripId, widget.adInfo.routeShortName,
-        widget.adInfo.tripStatus!.position, stateInfo.getVehicleInfo,
+    stateInfo.addMarker(
+        widget.adInfo.tripStatus!.activeTripId,
+        widget.adInfo.routeShortName,
+        widget.adInfo.tripStatus!.position,
+        stateInfo.getVehicleInfo,
         iconFilepath: 'assets/images/icons8-bus-96.png');
     widget.controller.animateCamera(
       CameraUpdate.newCameraPosition(

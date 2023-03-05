@@ -40,7 +40,7 @@ Widget buildMenuItems(BuildContext context) => Container(
               leading: const Icon(Icons.home_outlined),
               title: const Text('Home'),
               onTap: () {
-                context.push('/');
+                context.pop();
               },
             ),
           ),
