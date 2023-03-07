@@ -48,70 +48,52 @@ class _MapScreenState extends State<MapScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Ride Seattle'),
+        actions: [
+          IconButton(
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    contentPadding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
+                    content: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            const Text("Find a route"),
+                            Expanded(
+                              child: Align(
+                                alignment: Alignment.centerRight,
+                                child: IconButton(
+                                  onPressed: () {
+                                    stateInfo.routeFilter = null;
+                                    routeProvider.clearPolylines();
+                                    if (context.canPop()) context.pop();
+                                  },
+                                  icon: const Icon(Icons.refresh_rounded),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        const RouteList(),
+                      ],
+                    ),
+                  );
+                },
+              );
+            },
+            icon: const Icon(Icons.filter_alt_outlined),
+          ),
+        ],
       ),
       drawer: const NavDrawer(),
       body: Column(
         children: [
-          Row(
-            children: [
-              Flexible(
-                child: TextFormField(
-                  showCursor: false,
-                  controller: _searchController,
-                  decoration:
-                      const InputDecoration(hintText: 'Search for stops'),
-                  onChanged: (value) {
-                    print(value);
-                  },
-                ),
-              ),
-              IconButton(
-                onPressed: () {},
-                icon: const Icon(Icons.search),
-              ),
-              IconButton(
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        contentPadding:
-                            const EdgeInsets.fromLTRB(24, 20, 24, 0),
-                        content: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                const Text("Find a route"),
-                                Expanded(
-                                  child: Align(
-                                    alignment: Alignment.centerRight,
-                                    child: IconButton(
-                                      onPressed: () {
-                                        stateInfo.routeFilter = null;
-                                        routeProvider.clearPolylines();
-                                        if (context.canPop()) context.pop();
-                                      },
-                                      icon: const Icon(Icons.refresh_rounded),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 16),
-                            const RouteList(),
-                          ],
-                        ),
-                      );
-                    },
-                  );
-                },
-                icon: const Icon(Icons.filter_alt_outlined),
-              ),
-            ],
-          ),
           Flexible(
             child: GoogleMap(
               rotateGesturesEnabled: false,
@@ -136,7 +118,7 @@ class _MapScreenState extends State<MapScreen> {
                 stateInfo.removeMarker('current');
                 routeProvider.clearPolylines();
                 stateInfo.removeMarker(stateInfo.lastVehicle!);
-                setState(() {});
+                //setState(() {});
               },
               onCameraIdle: () {
                 updateView(stateInfo);
