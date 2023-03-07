@@ -21,8 +21,8 @@ class ArrivalAndDepartureTile extends StatefulWidget {
 }
 
 class _ArrivalAndDepartureTileState extends State<ArrivalAndDepartureTile> {
-  var localStorage;
-  var favoriteRoutes;
+  late LocalStorageProvider localStorage;
+  late List<String> favoriteRoutes;
 
   Offset _tapPosition = Offset.zero;
 
@@ -58,9 +58,10 @@ class _ArrivalAndDepartureTileState extends State<ArrivalAndDepartureTile> {
     final result = await showMenu(
         context: context,
         position: RelativeRect.fromRect(
-            Rect.fromLTWH(_tapPosition.dx, _tapPosition.dy, 10, 10),
-            Rect.fromLTWH(0, 0, overlay!.paintBounds.size.width,
-                overlay.paintBounds.size.height)),
+          Rect.fromLTWH(_tapPosition.dx, _tapPosition.dy, 10, 10),
+          Rect.fromLTWH(0, 0, overlay!.paintBounds.size.width,
+              overlay.paintBounds.size.height),
+        ),
         items: [
           const PopupMenuItem(
             value: "favorited",
@@ -82,6 +83,9 @@ class _ArrivalAndDepartureTileState extends State<ArrivalAndDepartureTile> {
     final stateInfo = Provider.of<StateInfo>(context, listen: false);
     final routeProvider = Provider.of<RouteProvider>(context, listen: false);
     return ListTile(
+      onLongPress: () {
+        _showContextMenu(context, widget.adInfo.routeId);
+      },
       title: Row(
         children: [
           RouteBox(
@@ -98,37 +102,34 @@ class _ArrivalAndDepartureTileState extends State<ArrivalAndDepartureTile> {
           const SizedBox(
             width: 10,
           ),
-          GestureDetector(
-            onTapDown: (position) {
-              _getTapPosition(position);
-            },
-            child: InkWell(
-              //tooltip: "Find my vehicle",
-              onTap: () async {
-                if (widget.adInfo.tripStatus != null) {
-                  //get all the stops for the current route
-                  List<LatLng> routeStops =
-                      await stateInfo.getRoutePolyline(widget.adInfo.routeId);
-                  //add those stops to the routeProvider
+          // GestureDetector(
+          //   onTapDown: (position) {
+          //     _getTapPosition(position);
+          //   },
+          //   child: InkWell(
+          //     //tooltip: "Find my vehicle",
+          //     onTap: () async {
+          //       if (widget.adInfo.tripStatus != null) {
+          //         //get all the stops for the current route
+          //         List<LatLng> routeStops =
+          //             await stateInfo.getRoutePolyline(widget.adInfo.routeId);
+          //         //add those stops to the routeProvider
 
-                  routeProvider.setPolyLines(routeStops);
+          //         routeProvider.setPolyLines(routeStops);
 
-                  findBus(stateInfo);
-                }
-              },
-              onLongPress: () async {
-                //add routes to favorite
-                print("long press");
-                //TODO change this so we are getting the route ID and route number and storing that locally
-                _showContextMenu(context, widget.adInfo.routeId);
-              },
-              child: Ink(
-                child: const Icon(Icons.directions_bus),
-              ),
-            ),
-          ),
+          //         findBus(stateInfo);
+          //       }
+          //     },
+          //     onLongPress: () async {
+          //       _showContextMenu(context, widget.adInfo.routeId);
+          //     },
+          //     child: Ink(
+          //       child: const Icon(Icons.directions_bus),
+          //     ),
+          //   ),
+          // ),
 
-/*          IconButton(
+          IconButton(
             tooltip: "Find my vehicle",
             icon: const Icon(
               Icons.directions_bus,
@@ -145,7 +146,7 @@ class _ArrivalAndDepartureTileState extends State<ArrivalAndDepartureTile> {
                 findBus(stateInfo);
               }
             },
-          ),*/
+          ),
         ],
       ),
     );

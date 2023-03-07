@@ -18,7 +18,7 @@ class VehicleSheet extends StatelessWidget {
       expand: false,
       initialChildSize: 0.2,
       minChildSize: 0.2,
-      maxChildSize: 0.5,
+      maxChildSize: 0.3,
       builder: (context, scrollController) {
         return Container(
           color: Theme.of(context).colorScheme.background,
@@ -34,10 +34,15 @@ class VehicleSheet extends StatelessWidget {
                   if (snapshot.hasData) {
                     return ListTile(
                       leading: const Icon(Icons.location_on),
-                      title: Text('Next Stop: ${snapshot.data}'),
+                      title: Text(
+                        'Next Stop: ${snapshot.data}',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
                     );
                   } else {
-                    return const CircularProgressIndicator(); // Show a loading indicator while waiting for the future to complete
+                    return const Center(
+                        child:
+                            CircularProgressIndicator()); // Show a loading indicator while waiting for the future to complete
                   }
                 },
               ),
@@ -45,13 +50,6 @@ class VehicleSheet extends StatelessWidget {
                 leading: const Icon(Icons.timer),
                 title: Text(
                   'Location updated: ${time(stateInfo.vehicleStatus!.lastLocationUpdateTime, 'h:mm a')}',
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-              ),
-              ListTile(
-                leading: const Icon(Icons.access_time),
-                title: Text(
-                  'Scheduled arrival: ${time(stateInfo.vehicleStatus!.nextStopTimeOffset, 'm')}',
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ),

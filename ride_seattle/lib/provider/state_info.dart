@@ -5,7 +5,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:http/http.dart';
 import 'package:ride_seattle/classes/agency.dart';
-import 'package:ride_seattle/classes/arrival_and_departure.dart';
 import 'package:ride_seattle/classes/trip_status.dart';
 import 'package:xml/xml.dart';
 import '../OneBusAway/routes.dart';

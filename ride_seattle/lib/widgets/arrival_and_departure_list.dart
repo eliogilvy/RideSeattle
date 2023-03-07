@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:ride_seattle/widgets/arrival_and_departure_tile.dart';
-import 'package:ride_seattle/widgets/loading.dart';
 
 import '../provider/state_info.dart';
 
@@ -23,7 +22,7 @@ class _ArrivalAndDepartureListState extends State<ArrivalAndDepartureList> {
     final stateInfo = Provider.of<StateInfo>(context, listen: true);
 
     return Flexible(
-      child: ListView.builder(
+      child: ListView.separated(
         shrinkWrap: true,
         controller: widget.scrollController,
         itemCount: stateInfo.currentStopInfo!.arrivalAndDeparture.values.length,
@@ -32,6 +31,12 @@ class _ArrivalAndDepartureListState extends State<ArrivalAndDepartureList> {
             adInfo: stateInfo.currentStopInfo!.arrivalAndDepartureList[index],
             controller: widget.controller,
           );
+        },
+        separatorBuilder: (BuildContext context, int index) {
+          return const Divider(
+            height: 4.0,
+            color: Colors.black,
+          ); // Add a 1 pixel high divider
         },
       ),
     );
