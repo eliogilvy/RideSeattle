@@ -38,8 +38,14 @@ class StateInfo with ChangeNotifier {
     List<r.Route> routeList = _routes.values.toList();
     routeList.sort(
       (a, b) {
-        bool isANumber = int.tryParse(a.shortName!) != null;
-        bool isBNumber = int.tryParse(b.shortName!) != null;
+        bool isANumber = false;
+        bool isBNumber = true;
+        if (a.shortName != null) {
+          isANumber = int.tryParse(a.shortName!) != null;
+        }
+        if (b.shortName != null) {
+          isBNumber = int.tryParse(b.shortName!) != null;
+        }
 
         if (!isANumber && !isBNumber) {
           // Both elements are not numbers, compare them directly

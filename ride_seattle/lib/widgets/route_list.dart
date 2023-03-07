@@ -24,6 +24,12 @@ class RouteList extends StatelessWidget {
                     const Divider(),
                 itemBuilder: (BuildContext context, int index) {
                   final route = stateInfo.routes[index];
+                  String name;
+                  try {
+                    name = route.shortName!;
+                  } catch (e) {
+                    name = route.routeId;
+                  }
                   return InkWell(
                     onTap: () async {
                       stateInfo.routeFilter = route.routeId;
