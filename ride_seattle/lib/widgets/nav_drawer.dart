@@ -48,7 +48,7 @@ Widget buildMenuItems(BuildContext context) => Container(
           //My Routes
           InkWell(
             child: ListTile(
-              leading: const Icon(Icons.home_outlined),
+              leading: const Icon(Icons.star),
               title: const Text('My Routes'),
               onTap: () {
                 context.push('/favoriteRoutes');
@@ -58,7 +58,7 @@ Widget buildMenuItems(BuildContext context) => Container(
           //History
           InkWell(
             child: ListTile(
-              leading: const Icon(Icons.home_outlined),
+              leading: const Icon(Icons.history),
               title: const Text('History'),
               onTap: () {
                 context.pop();
