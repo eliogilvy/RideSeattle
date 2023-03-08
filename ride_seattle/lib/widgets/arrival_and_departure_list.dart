@@ -30,6 +30,7 @@ class _ArrivalAndDepartureListState extends State<ArrivalAndDepartureList> {
           return ArrivalAndDepartureTile(
             adInfo: stateInfo.currentStopInfo!.arrivalAndDepartureList[index],
             controller: widget.controller,
+            callback: _refresh,
           );
         },
         separatorBuilder: (BuildContext context, int index) {
@@ -40,5 +41,9 @@ class _ArrivalAndDepartureListState extends State<ArrivalAndDepartureList> {
         },
       ),
     );
+  }
+
+  void _refresh() {
+    setState(() {});
   }
 }

@@ -7,13 +7,18 @@ import 'package:ride_seattle/widgets/route_box.dart';
 
 import '../provider/local_storage_provider.dart';
 import '../provider/state_info.dart';
+import 'favorite_button.dart';
 
 class ArrivalAndDepartureTile extends StatefulWidget {
   final ArrivalAndDeparture adInfo;
   final GoogleMapController controller;
+  final Function callback;
 
   const ArrivalAndDepartureTile(
-      {super.key, required this.adInfo, required this.controller});
+      {super.key,
+      required this.adInfo,
+      required this.controller,
+      required this.callback});
 
   @override
   State<ArrivalAndDepartureTile> createState() =>
@@ -90,14 +95,14 @@ class _ArrivalAndDepartureTileState extends State<ArrivalAndDepartureTile> {
         children: [
           RouteBox(
             text: widget.adInfo.routeShortName,
-            maxW: 150,
+            maxW: 120,
           ),
           Expanded(
             child: Container(),
           ),
           RouteBox(
             text: getPredictedArrivalTime(widget.adInfo),
-            maxW: double.infinity,
+            maxW: 100,
           ),
           const SizedBox(
             width: 10,
@@ -147,15 +152,10 @@ class _ArrivalAndDepartureTileState extends State<ArrivalAndDepartureTile> {
               }
             },
           ),
-          IconButton(
-              tooltip: "Add to favorites",
-              icon: const Icon(
-                Icons.star_border,
-              ),
-              onPressed: () {
-                localStorage.addRoute(widget.adInfo.routeId);
-                print("route added - arrival/departure tile");
-              }),
+          FavoriteButton(
+            routeId: widget.adInfo.routeId,
+            callback: widget.callback,
+          ),
         ],
       ),
     );

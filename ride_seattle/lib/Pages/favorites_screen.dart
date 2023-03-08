@@ -14,11 +14,11 @@ class Favorites extends StatefulWidget {
 }
 
 class _FavoritesState extends State<Favorites> {
-  late LocalStorageProvider localStorage;
-  late List<String> favoriteRoutes;
+  var localStorage;
+  var favoriteRoutes;
 
-  late StateInfo stateInfo;
-  late RouteProvider routeProvider;
+  var stateInfo;
+  var routeProvider;
 
   @override
   void initState() {

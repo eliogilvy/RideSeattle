@@ -21,16 +21,11 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> {
   late String _mapStyle;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   GoogleMapController? googleMapController;
   static const CameraPosition initialCameraPosition =
       CameraPosition(target: LatLng(47.6219, -122.3517), zoom: 16);
-
-  final TextEditingController _searchController = TextEditingController();
-
-  final Set<Polyline> _polyLine = {};
-
-  List<LatLng> latlng_of_route = [];
 
   @override
   initState() {
@@ -46,6 +41,7 @@ class _MapScreenState extends State<MapScreen> {
     final stateInfo = Provider.of<StateInfo>(context, listen: true);
     final routeProvider = Provider.of<RouteProvider>(context, listen: true);
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: const Text('Ride Seattle'),
         actions: [
@@ -113,12 +109,13 @@ class _MapScreenState extends State<MapScreen> {
                 }
               },
               onTap: (argument) {
-                stateInfo.showVehicleInfo = false;
-                stateInfo.showMarkerInfo = false;
-                stateInfo.removeMarker('current');
-                routeProvider.clearPolylines();
-                stateInfo.removeMarker(stateInfo.lastVehicle);
-                //setState(() {});
+                if (mounted) {
+                  stateInfo.showVehicleInfo = false;
+                  stateInfo.showMarkerInfo = false;
+                  stateInfo.removeMarker('current');
+                  routeProvider.clearPolylines();
+                  stateInfo.removeMarker(stateInfo.lastVehicle);
+                }
               },
               onCameraIdle: () {
                 updateView(stateInfo);
@@ -177,7 +174,6 @@ class _MapScreenState extends State<MapScreen> {
         currentCenter,
         await getTopOfScreen(googleMapController!),
         await getBottomOfScreen(googleMapController!));
-    print('searching ${stateInfo.radius}');
     stateInfo.getStopsForLocation(
         currentCenter.latitude.toString(), currentCenter.longitude.toString());
     stateInfo.getRoutesForLocation(

@@ -4,7 +4,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:http/http.dart';
-import 'package:ride_seattle/classes/agency.dart';
 import 'package:ride_seattle/classes/trip_status.dart';
 import 'package:xml/xml.dart';
 import '../OneBusAway/routes.dart';
@@ -19,7 +18,7 @@ class StateInfo with ChangeNotifier {
 
   String _radius = "0";
   late Position _position;
-  final Map<String, Agency> _agencies = {};
+  //final Map<String, Agency> _agencies = {};
   final Map<String, Stop> _stops = {};
   final Map<String, r.Route> _routes = {};
   final Map<String, Marker> _markers = {};

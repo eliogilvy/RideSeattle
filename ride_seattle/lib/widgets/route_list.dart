@@ -45,7 +45,7 @@ class RouteList extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       child: Text(
-                        route.shortName!,
+                        name,
                       ),
                     ),
                   );

@@ -7,7 +7,6 @@ class RouteProvider with ChangeNotifier {
   List<Stop> stopsForRoute = [];
 
   Set<Polyline> routePolyLine = {};
-  List<LatLng> latlng_of_route = [];
 
   void addItem(Stop stop) {
     stopsForRoute.add(stop);
