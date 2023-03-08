@@ -45,7 +45,7 @@ class MockStateInfo extends Mock implements StateInfo {
 
   String _radius = "0";
   late Position _position;
-  final Map<String, Agency> _agencies = {};
+  //final Map<String, Agency> _agencies = {};
   final Map<String, Stop> _stops = {};
   final Map<String, r.Route> _routes = {};
   final Map<String, Marker> _markers = {};

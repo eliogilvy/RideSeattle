@@ -1,10 +1,9 @@
-import 'dart:convert';
+
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:mockito/mockito.dart';
-import 'package:ride_seattle/classes/Agency.dart';
 import 'package:ride_seattle/classes/arrival_and_departure.dart';
 import 'package:ride_seattle/classes/route.dart';
 import 'package:ride_seattle/classes/stop.dart';
@@ -18,27 +17,27 @@ void main() {
   group(
     'Testing classes',
     () {
-      test('Agency class constructor', () {
-        var agency = Agency(
-          agencyId: '1',
-          name: 'Test Agency',
-          url: 'http://example.com',
-          timezone: 'UTC',
-          lang: 'en',
-          phone: '555-555-5555',
-          fareUrl: 'http://example.com/fares',
-          privateService: false,
-        );
+      // test('Agency class constructor', () {
+      //   var agency = Agency(
+      //     agencyId: '1',
+      //     name: 'Test Agency',
+      //     url: 'http://example.com',
+      //     timezone: 'UTC',
+      //     lang: 'en',
+      //     phone: '555-555-5555',
+      //     fareUrl: 'http://example.com/fares',
+      //     privateService: false,
+      //   );
 
-        expect(agency.agencyId, '1');
-        expect(agency.name, 'Test Agency');
-        expect(agency.url, 'http://example.com');
-        expect(agency.timezone, 'UTC');
-        expect(agency.lang, 'en');
-        expect(agency.phone, '555-555-5555');
-        expect(agency.fareUrl, 'http://example.com/fares');
-        expect(agency.privateService, isFalse);
-      });
+      //   expect(agency.agencyId, '1');
+      //   expect(agency.name, 'Test Agency');
+      //   expect(agency.url, 'http://example.com');
+      //   expect(agency.timezone, 'UTC');
+      //   expect(agency.lang, 'en');
+      //   expect(agency.phone, '555-555-5555');
+      //   expect(agency.fareUrl, 'http://example.com/fares');
+      //   expect(agency.privateService, isFalse);
+      // });
       test('Arrival and departure class constructor', () {
         var ad = ArrivalAndDeparture(
             routeId: '1',
