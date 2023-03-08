@@ -85,22 +85,20 @@ class _LoginPageState extends State<LoginPage> {
         title: _title(),
       ),
       body: SingleChildScrollView(
-        child: Expanded(
-          child: Container(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Image.asset('assets/images/logo.png'),
-                  _entryField('Email', emailController),
-                  _entryField('Password', passwordController, password: true),
-                  _errorMessage(),
-                  _submitButton(),
-                  _loginOrRegisterButton(),
-                ],
-              )),
-        ),
+        child: Container(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Image.asset('assets/images/logo.png'),
+                _entryField('Email', emailController),
+                _entryField('Password', passwordController, password: true),
+                _errorMessage(),
+                _submitButton(),
+                _loginOrRegisterButton(),
+              ],
+            )),
       ),
     );
   }

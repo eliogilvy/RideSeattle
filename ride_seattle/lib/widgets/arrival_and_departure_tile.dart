@@ -52,40 +52,40 @@ class _ArrivalAndDepartureTileState extends State<ArrivalAndDepartureTile> {
     });
   }
 
-  void _showContextMenu(context, String routeId) async {
-    final RenderObject? overlay =
-        Overlay.of(context).context.findRenderObject();
-    final result = await showMenu(
-        context: context,
-        position: RelativeRect.fromRect(
-          Rect.fromLTWH(_tapPosition.dx, _tapPosition.dy, 10, 10),
-          Rect.fromLTWH(0, 0, overlay!.paintBounds.size.width,
-              overlay.paintBounds.size.height),
-        ),
-        items: [
-          const PopupMenuItem(
-            value: "favorited",
-            child: Text('Add to favorites'),
-          ),
-        ]);
+  // void _showContextMenu(context, String routeId) async {
+  //   final RenderObject? overlay =
+  //       Overlay.of(context).context.findRenderObject();
+  //   final result = await showMenu(
+  //       context: context,
+  //       position: RelativeRect.fromRect(
+  //         Rect.fromLTWH(_tapPosition.dx, _tapPosition.dy, 10, 10),
+  //         Rect.fromLTWH(0, 0, overlay!.paintBounds.size.width,
+  //             overlay.paintBounds.size.height),
+  //       ),
+  //       items: [
+  //         const PopupMenuItem(
+  //           value: "favorited",
+  //           child: Text('Add to favorites'),
+  //         ),
+  //       ]);
 
-    if (result == "favorited") {
-      print("route favorited");
-      //add polylines to local database
+  //   if (result == "favorited") {
+  //     print("route favorited");
+  //     //add polylines to local database
 
-      localStorage.addRoute(routeId);
-      print("route added - arrival/departure tile");
-    }
-  }
+  //     localStorage.addRoute(routeId);
+  //     print("route added - arrival/departure tile");
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
     final stateInfo = Provider.of<StateInfo>(context, listen: false);
     final routeProvider = Provider.of<RouteProvider>(context, listen: false);
     return ListTile(
-      onLongPress: () {
-        _showContextMenu(context, widget.adInfo.routeId);
-      },
+      // onLongPress: () {
+      //   _showContextMenu(context, widget.adInfo.routeId);
+      // },
       title: Row(
         children: [
           RouteBox(
@@ -147,6 +147,15 @@ class _ArrivalAndDepartureTileState extends State<ArrivalAndDepartureTile> {
               }
             },
           ),
+          IconButton(
+              tooltip: "Add to favorites",
+              icon: const Icon(
+                Icons.star_border,
+              ),
+              onPressed: () {
+                localStorage.addRoute(widget.adInfo.routeId);
+                print("route added - arrival/departure tile");
+              }),
         ],
       ),
     );
