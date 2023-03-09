@@ -20,7 +20,6 @@ class _FavoriteButtonState extends State<FavoriteButton> {
   void initState() {
     super.initState();
     getData();
-    print(isFavorited);
   }
 
   Future<void> getData() async {
@@ -33,7 +32,7 @@ class _FavoriteButtonState extends State<FavoriteButton> {
         .where('route_id', isEqualTo: widget.routeId)
         .get();
 
-    int dataLength = await data.docs.length;
+    int dataLength = data.docs.length;
     if (dataLength > 0) {
       isFavorited = true;
     }
@@ -48,8 +47,19 @@ class _FavoriteButtonState extends State<FavoriteButton> {
         .collection('routes')
         .add({'route_id': widget.routeId});
 
+    var data = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .collection('routes')
+        .where('route_id', isEqualTo: widget.routeId)
+        .get();
+
+    int dataLength = data.docs.length;
+
     setState(() {
-      isFavorited = true;
+      if (dataLength > 0) {
+        isFavorited = true;
+      }
     });
   }
 
@@ -67,13 +77,24 @@ class _FavoriteButtonState extends State<FavoriteButton> {
     });
     final docTask = FirebaseFirestore.instance
         .collection('users')
-        .doc(user!.uid)
+        .doc(user.uid)
         .collection('routes')
         .doc(routeToDelete.id);
     docTask.delete();
 
+    var data = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .collection('routes')
+        .where('route_id', isEqualTo: widget.routeId)
+        .get();
+
+    int dataLength = data.docs.length;
+
     setState(() {
-      isFavorited = false;
+      if (dataLength > 0) {
+        isFavorited = false;
+      }
     });
   }
 
