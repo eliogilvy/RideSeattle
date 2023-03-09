@@ -6,8 +6,12 @@ import '../classes/auth.dart';
 
 class FavoriteButton extends StatefulWidget {
   const FavoriteButton(
-      {super.key, required this.routeId, required this.callback});
+      {super.key,
+      required this.routeId,
+      required this.routeName,
+      required this.callback});
   final String routeId;
+  final String routeName;
   final Function callback;
 
   @override
@@ -33,9 +37,11 @@ class _FavoriteButtonState extends State<FavoriteButton> {
         .get();
 
     int dataLength = data.docs.length;
-    if (dataLength > 0) {
-      isFavorited = true;
-    }
+    setState(() {
+      if (dataLength > 0) {
+        isFavorited = true;
+      }
+    });
   }
 
   Future<void> uploadingData() async {
@@ -45,7 +51,7 @@ class _FavoriteButtonState extends State<FavoriteButton> {
         .collection("users")
         .doc(user!.uid)
         .collection('routes')
-        .add({'route_id': widget.routeId});
+        .add({'route_id': widget.routeId, 'route_name': widget.routeName});
 
     var data = await FirebaseFirestore.instance
         .collection('users')

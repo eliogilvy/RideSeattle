@@ -153,6 +153,7 @@ class _ArrivalAndDepartureTileState extends State<ArrivalAndDepartureTile> {
           ),
           FavoriteButton(
             routeId: widget.adInfo.routeId,
+            routeName: widget.adInfo.routeShortName,
             callback: widget.callback,
           ),
         ],

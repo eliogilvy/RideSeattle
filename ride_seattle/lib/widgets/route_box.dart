@@ -42,7 +42,9 @@ class _RouteBoxState extends State<RouteBox> {
                 alignment: Alignment.center,
                 child: Text(
                   widget.text,
-                  style: TileStyle.routeNumberStyle(),
+                  style: TextStyle(
+                    fontSize: 20,
+                  ),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),

@@ -72,13 +72,32 @@ class _FavoritesState extends State<Favorites> {
                       scrollDirection: Axis.vertical,
                       shrinkWrap: true,
                       itemBuilder: (context, index) {
+                        var routeName = routes[index].routeName;
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Card(
-                              child: ListTile(
-                                title: Text(routes[index].routeId),
-                                tileColor: Colors.blue[100],
+                            const SizedBox(height: 20),
+                            Center(
+                              child: Card(
+                                child: SizedBox(
+                                  width: 300,
+                                  child: ListTile(
+                                    title: Center(
+                                      child: Text('Route Number : $routeName',
+                                          style: const TextStyle(
+                                            fontSize: 20,
+                                          )),
+                                    ),
+                                    tileColor: Colors.blue[100],
+                                    onTap: () async {
+                                      // List<LatLng> routeStops = await stateInfo.getRoutePolyline(routes[index].routeId);
+
+                                      // routeProvider.setPolyLines(routeStops);
+
+                                      // findBus(stateInfo);
+                                    },
+                                  ),
+                                ),
                               ),
                             )
                           ],
