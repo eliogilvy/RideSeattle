@@ -1,7 +1,6 @@
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mockito/mockito.dart';
-import 'package:ride_seattle/classes/agency.dart';
 import 'package:ride_seattle/classes/arrival_and_departure.dart';
 import 'package:ride_seattle/classes/stop.dart';
 import 'package:ride_seattle/classes/trip_status.dart';
@@ -43,7 +42,7 @@ class MockStateInfo extends Mock implements StateInfo {
   @override
   Stop get currentStopInfo => _currentStopInfo;
 
-  String _radius = "0";
+  final String _radius = "0";
   late Position _position;
   //final Map<String, Agency> _agencies = {};
   final Map<String, Stop> _stops = {};

@@ -12,10 +12,11 @@ import 'dart:math';
 import 'package:ride_seattle/classes/route.dart' as r;
 
 class StateInfo with ChangeNotifier {
-  StateInfo() {
+  StateInfo({required this.locator}) {
     getPosition();
   }
 
+  GeolocatorPlatform locator;
   String _radius = "0";
   late Position _position;
   //final Map<String, Agency> _agencies = {};
@@ -284,17 +285,17 @@ class StateInfo with ChangeNotifier {
     bool serviceEnabled;
     LocationPermission permission;
 
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    serviceEnabled = await locator.isLocationServiceEnabled();
 
     if (!serviceEnabled) {
       return Future.error('Location services are disabled');
     }
 
-    permission = await Geolocator.checkPermission();
+    permission = await locator.checkPermission();
 
     if (permission == LocationPermission.denied ||
         permission == LocationPermission.deniedForever) {
-      permission = await Geolocator.requestPermission();
+      permission = await locator.requestPermission();
 
       if (permission == LocationPermission.denied) {
         return Future.error("Location Permission denied");
@@ -305,7 +306,7 @@ class StateInfo with ChangeNotifier {
       return Future.error("Location permission denied permanently");
     }
 
-    _position = await Geolocator.getCurrentPosition();
+    _position = await locator.getCurrentPosition();
     notifyListeners();
   }
 

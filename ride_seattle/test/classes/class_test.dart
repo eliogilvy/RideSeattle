@@ -1,6 +1,5 @@
-
-
 import 'package:flutter_test/flutter_test.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:mockito/mockito.dart';
@@ -11,7 +10,45 @@ import 'package:ride_seattle/classes/trip_status.dart';
 import 'package:ride_seattle/classes/user.dart';
 import 'package:ride_seattle/classes/vehicle.dart';
 
+import 'package:ride_seattle/provider/state_info.dart';
+
 class MockClient extends Mock implements http.Client {}
+
+class MockGeoLocatorPlatform extends Mock implements GeolocatorPlatform {
+  MockGeoLocatorPlatform({required this.service, required this.permission});
+  bool service;
+  LocationPermission permission;
+  @override
+  Future<bool> isLocationServiceEnabled() async {
+    return service;
+  }
+
+  @override
+  Future<LocationPermission> checkPermission() {
+    return Future.value(permission);
+  }
+
+  @override
+  Future<LocationPermission> requestPermission() {
+    return Future.value(permission);
+  }
+
+  @override
+  Future<Position> getCurrentPosition({LocationSettings? locationSettings}) {
+    return Future.value(
+      Position(
+        longitude: 47.6219,
+        latitude: -122.3517,
+        timestamp: DateTime(2023),
+        accuracy: 3,
+        altitude: 4,
+        heading: 5,
+        speed: 6,
+        speedAccuracy: 7,
+      ),
+    );
+  }
+}
 
 void main() {
   group(
@@ -190,6 +227,79 @@ void main() {
           expect(
               route.url, "http://metro.kingcounty.gov/schedules/162/n0.html");
           expect(route.agencyId, "1");
+        },
+      );
+    },
+  );
+  group(
+    'Testing state info',
+    () {
+      MockGeoLocatorPlatform locator = MockGeoLocatorPlatform(
+          service: true, permission: LocationPermission.always);
+      setUp(() => TestWidgetsFlutterBinding.ensureInitialized());
+      test(
+        'getPosition() returns the current position when location services and permissions are enabled',
+        () async {
+          // Arrange
+          StateInfo stateInfo = StateInfo(locator: locator);
+          await stateInfo.getPosition();
+          expect(
+            stateInfo.position,
+            Position(
+              longitude: 47.6219,
+              latitude: -122.3517,
+              timestamp: DateTime(2023),
+              accuracy: 3,
+              altitude: 4,
+              heading: 5,
+              speed: 6,
+              speedAccuracy: 7,
+            ),
+          );
+        },
+      );
+      test(
+        'getPosition() returns error due to bad privileges',
+        () async {
+          StateInfo stateInfo = StateInfo(locator: locator);
+          stateInfo.locator = MockGeoLocatorPlatform(
+              service: false, permission: LocationPermission.always);
+          try {
+            await stateInfo.getPosition();
+          } catch (e) {
+            expect(e, 'Location services are disabled');
+          }
+
+          stateInfo.locator = MockGeoLocatorPlatform(
+              service: true, permission: LocationPermission.denied);
+          try {
+            await stateInfo.getPosition();
+          } catch (e) {
+            expect(e, 'Location Permission denied');
+          }
+
+          stateInfo.locator = MockGeoLocatorPlatform(
+              service: true, permission: LocationPermission.deniedForever);
+          try {
+            await stateInfo.getPosition();
+          } catch (e) {
+            expect(e, 'Location permission denied permanently');
+          }
+        },
+      );
+      test(
+        'get methods',
+        () {
+          StateInfo stateInfo = StateInfo(locator: locator);
+          stateInfo.addCircle(const LatLng(1, 1), 'circle');
+          expect(stateInfo.circles.length, 1);
+          stateInfo.addMarker(
+              'marker', 'name test', const LatLng(1, 1), (p0) => null);
+
+          stateInfo.setRadius(
+              const LatLng(5, 5), const LatLng(10, 5), const LatLng(0, 5));
+          expect(stateInfo.radius, '555974.6332227937');
+          expect(stateInfo.currentStopInfo, null);
         },
       );
     },
