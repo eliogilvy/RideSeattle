@@ -70,7 +70,7 @@ Widget buildMenuItems(BuildContext context) => Container(
           //Settings
           InkWell(
             child: ListTile(
-              leading: const Icon(Icons.home_outlined),
+              leading: const Icon(Icons.settings),
               title: const Text('Settings'),
               onTap: () {
                 context.pop();
@@ -80,7 +80,7 @@ Widget buildMenuItems(BuildContext context) => Container(
 
           InkWell(
             child: ListTile(
-              leading: const Icon(Icons.home_outlined),
+              leading: const Icon(Icons.logout),
               title: const Text('Sign out'),
               onTap: () async {
                 await Auth().signOut();
