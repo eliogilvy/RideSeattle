@@ -21,7 +21,7 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> {
   late String _mapStyle;
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  //final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   GoogleMapController? googleMapController;
   static const CameraPosition initialCameraPosition =
@@ -36,12 +36,16 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   @override
+  didChangeDependencies() {
+    super.didChangeDependencies();
+  }
+
+  @override
   Widget build(BuildContext context) {
     //final User? user = Auth().currentUser;
     final stateInfo = Provider.of<StateInfo>(context, listen: true);
     final routeProvider = Provider.of<RouteProvider>(context, listen: true);
     return Scaffold(
-      key: _scaffoldKey,
       appBar: AppBar(
         title: const Text('Ride Seattle'),
         actions: [

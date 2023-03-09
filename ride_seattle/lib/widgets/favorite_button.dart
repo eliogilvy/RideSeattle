@@ -53,20 +53,14 @@ class _FavoriteButtonState extends State<FavoriteButton> {
         .collection('routes')
         .add({'route_id': widget.routeId, 'route_name': widget.routeName});
 
-    var data = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(user.uid)
-        .collection('routes')
-        .where('route_id', isEqualTo: widget.routeId)
-        .get();
+    // var data = await FirebaseFirestore.instance
+    //     .collection('users')
+    //     .doc(user.uid)
+    //     .collection('routes')
+    //     .where('route_id', isEqualTo: widget.routeId)
+    //     .get();
 
-    int dataLength = data.docs.length;
-
-    setState(() {
-      if (dataLength > 0) {
-        isFavorited = true;
-      }
-    });
+    // int dataLength = data.docs.length;
   }
 
   Future<void> removeData() async {
@@ -88,20 +82,20 @@ class _FavoriteButtonState extends State<FavoriteButton> {
         .doc(routeToDelete.id);
     docTask.delete();
 
-    var data = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(user.uid)
-        .collection('routes')
-        .where('route_id', isEqualTo: widget.routeId)
-        .get();
+    // var data = await FirebaseFirestore.instance
+    //     .collection('users')
+    //     .doc(user.uid)
+    //     .collection('routes')
+    //     .where('route_id', isEqualTo: widget.routeId)
+    //     .get();
 
-    int dataLength = data.docs.length;
+    // int dataLength = data.docs.length;
 
-    setState(() {
-      if (dataLength > 0) {
-        isFavorited = false;
-      }
-    });
+    // setState(() {
+    //   if (dataLength > 0) {
+    //     isFavorited = true;
+    //   }
+    // });
   }
 
   @override
@@ -117,6 +111,9 @@ class _FavoriteButtonState extends State<FavoriteButton> {
             onPressed: () {
               storage.addRoute(widget.routeId);
               uploadingData();
+              setState(() {
+                isFavorited = true;
+              });
               widget.callback();
             },
           )
@@ -127,6 +124,10 @@ class _FavoriteButtonState extends State<FavoriteButton> {
             ),
             onPressed: () {
               removeData();
+              setState(() {
+                isFavorited = false;
+              });
+              widget.callback();
             },
           );
   }

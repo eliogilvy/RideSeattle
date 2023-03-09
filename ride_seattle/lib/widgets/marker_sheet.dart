@@ -7,13 +7,18 @@ import 'package:ride_seattle/widgets/route_name.dart';
 import '../provider/state_info.dart';
 import 'loading.dart';
 
-class MarkerSheet extends StatelessWidget {
+class MarkerSheet extends StatefulWidget {
   final GoogleMapController controller;
   const MarkerSheet({super.key, required this.controller});
 
   @override
+  State<MarkerSheet> createState() => _MarkerSheetState();
+}
+
+class _MarkerSheetState extends State<MarkerSheet> {
+  @override
   Widget build(BuildContext context) {
-    final stateInfo = Provider.of<StateInfo>(context, listen: false);
+    final stateInfo = Provider.of<StateInfo>(context, listen: true);
     return DraggableScrollableSheet(
       builder: (context, scrollController) {
         return Container(
@@ -26,7 +31,7 @@ class MarkerSheet extends StatelessWidget {
                     RouteName(text: stateInfo.currentStopInfo!.name),
                     ArrivalAndDepartureList(
                       scrollController: scrollController,
-                      controller: controller,
+                      controller: widget.controller,
                     ),
                   ],
                 )

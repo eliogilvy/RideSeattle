@@ -330,10 +330,13 @@ class StateInfo with ChangeNotifier {
       onTap: () async {
         function(id);
         _markers.remove("current");
+        String markerFilePath =
+            iconFilepath!.substring(0, iconFilepath.indexOf('.'));
+        markerFilePath = "$markerFilePath-marked.png";
         addMarker("current", name, location, (p0) => null,
-            iconFilepath: "assets/images/icon-circle.png", x: 0.5, y: 0.8);
+            iconFilepath: markerFilePath, x: 0.5, y: 0.8);
       },
-      anchor: x == null || y == null ? const Offset(0.5, 1.0) : Offset(x, y),
+      anchor: const Offset(0.0, 0.0),
     );
     _markers[id] = marker;
     notifyListeners();
