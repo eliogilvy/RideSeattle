@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:ride_seattle/classes/arrival_and_departure.dart';
 import 'package:ride_seattle/provider/route_provider.dart';
 import 'package:ride_seattle/widgets/route_box.dart';
-
 import '../provider/local_storage_provider.dart';
 import '../provider/state_info.dart';
 import 'favorite_button.dart';
