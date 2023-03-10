@@ -56,11 +56,15 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _errorMessage() {
-    return Text(errorMessage == '' ? '' : 'Error ? $errorMessage');
+    return Text(
+        errorMessage == '' ? '' : 'Error ? $errorMessage',
+        key: const ValueKey('error_message'),
+    );
   }
 
   Widget _submitButton() {
     return ElevatedButton(
+      key: const ValueKey("submit_login_Register_Button"),
       onPressed:
           isLogin ? signInWithEmailAndPassword : createUserWithEmailAndPassword,
       child: Text(isLogin ? 'Login' : 'Register'),
@@ -69,6 +73,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _loginOrRegisterButton() {
     return TextButton(
+      key: const ValueKey("login_or_registerButton"),
       onPressed: () {
         setState(() {
           isLogin = !isLogin;
