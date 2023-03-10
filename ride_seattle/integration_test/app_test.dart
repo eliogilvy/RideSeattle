@@ -1,6 +1,7 @@
 
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 
@@ -13,9 +14,11 @@ void main() {
 
     testWidgets('full app test', (tester) async {
       app.main();
-      tester.pumpAndSettle();
+      await tester.pumpAndSettle();
 
-
+      final textfield = find.byType(TextField);
+      expect(textfield, findsNWidgets(2));
+      
       final loginRegisterBtn = find.byKey(const ValueKey('login_or_registerButton'));
       await tester.tap(loginRegisterBtn);
       await tester.pumpAndSettle(const Duration(milliseconds: 300));
