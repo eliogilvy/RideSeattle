@@ -45,10 +45,36 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _entryField(String title, TextEditingController controller,
-      {bool password = false}) {
+    ValueKey key, {bool password = false}) {
     return TextField(
+      key: key,
       obscureText: password,
       controller: controller,
+
+      decoration: InputDecoration(
+        labelText: title,
+      ),
+    );
+  }
+
+  Widget _passwordField(String title, TextEditingController controller){
+    return TextField(
+      key: const ValueKey("passwordField"),
+      obscureText: true,
+      controller: controller,
+
+      decoration: InputDecoration(
+        labelText: title,
+      ),
+    );
+  }
+
+  Widget _emailField(String title, TextEditingController controller){
+    return TextField(
+      key: const ValueKey("emailField"),
+      obscureText: false,
+      controller: controller,
+
       decoration: InputDecoration(
         labelText: title,
       ),
@@ -97,8 +123,8 @@ class _LoginPageState extends State<LoginPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Image.asset('assets/images/logo.png'),
-                _entryField('Email', emailController),
-                _entryField('Password', passwordController, password: true),
+                _emailField('Email', emailController),
+                _passwordField('Password', passwordController),
                 _errorMessage(),
                 _submitButton(),
                 _loginOrRegisterButton(),

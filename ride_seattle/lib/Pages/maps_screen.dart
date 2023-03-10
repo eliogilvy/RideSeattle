@@ -96,6 +96,7 @@ class _MapScreenState extends State<MapScreen> {
         children: [
           Flexible(
             child: GoogleMap(
+              key: const ValueKey("googleMap"),
               rotateGesturesEnabled: false,
               myLocationButtonEnabled: false,
               myLocationEnabled: true,

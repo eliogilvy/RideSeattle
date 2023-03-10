@@ -122,6 +122,24 @@ void main() {
 
       expect(find.text("Login instead"), findsOneWidget);
 
+      final submit_loginRegisterBtn = find.byKey(const ValueKey('submit_login_Register_Button'));
+      expect(submit_loginRegisterBtn, findsOneWidget);
+
+      final emailField = find.byKey(const ValueKey("emailField"));
+      final passwordField = find.byKey(const ValueKey("passwordField"));
+      expect(emailField, findsOneWidget);
+      expect(passwordField, findsOneWidget);
+
+      await tester.enterText(find.byKey(const ValueKey("emailField")), 'testEmail@test.com');
+      await tester.enterText(find.byKey(const ValueKey("passwordField")), '123456789');
+
+
+      await tester.tap(submit_loginRegisterBtn);
+      await tester.pumpAndSettle(const Duration(milliseconds: 600));
+
+      //Not navigating???
+      //Check if I navigated
+      //expect(find.byKey(ValueKey("googleMap")), findsOneWidget);
 
     });
 
