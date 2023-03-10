@@ -192,6 +192,71 @@ void main() {
   });
 
 
+  group('Router Test', ()
+  {
+
+    final observerMock = MockNavigatorObserver();
+
+
+    final _router = GoRouter(
+      initialLocation: '/',
+      routes: [
+        GoRoute(
+          path: '/',
+          builder: (context, state) => const MapScreen(),
+          routes: const [],
+        ),
+        GoRoute(
+          path: '/favoriteRoutes',
+          builder: (context, state) => const Favorites(),
+          routes: const [],
+        ),
+      ],
+    );
+
+
+    Widget buildTestableWidget() {
+
+      GeolocatorPlatform locator = GeolocatorPlatform.instance;
+      Client client = Client();
+
+      return MediaQuery(
+        data: MediaQueryData(),
+        child: MaterialApp(
+          home:
+          MultiProvider(
+            providers: [
+              ChangeNotifierProvider(
+                  create: (context) => StateInfo(locator: locator, client: client)),
+              ChangeNotifierProvider(create: (context) => RouteProvider()),
+            ],
+            child: MaterialApp.router(
+              title: 'ride seattle',
+              routerConfig: _router,
+            ),
+          ),
+
+        ),
+      );
+    }
+
+    testWidgets('Maps screen loads, navigate to favorites', (WidgetTester tester) async {
+
+      await tester.pumpWidget(buildTestableWidget());
+      final map = find.byKey(const ValueKey('googleMap'));
+      expect(map, findsOneWidget);
+
+      final ScaffoldState scaffoldState = tester.firstState(find.byType(Scaffold));
+      scaffoldState.openDrawer();
+
+      await tester.pump(const Duration(seconds: 1));
+      expect(find.text('My Routes'), findsOneWidget);
+
+    });
+
+  });
+
+
 //   TestWidgetsFlutterBinding.ensureInitialized();
 
 //   group(
