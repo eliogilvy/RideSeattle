@@ -124,8 +124,10 @@ class _MapScreenState extends State<MapScreen> {
                   stateInfo.showVehicleInfo = false;
                   stateInfo.showMarkerInfo = false;
                   stateInfo.removeMarker('current');
+
                   routeProvider.clearPolylines();
                   stateInfo.removeMarker(stateInfo.lastVehicle);
+
                 }
               },
               onCameraIdle: () {
