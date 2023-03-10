@@ -143,6 +143,52 @@ void main() {
 
     });
 
+
+
+
+  });
+
+
+  group('Maps test', ()
+  {
+    Widget buildTestableWidget(Widget widget) {
+
+      GeolocatorPlatform locator = GeolocatorPlatform.instance;
+      Client client = Client();
+
+      return MediaQuery(
+          data: MediaQueryData(),
+          child: MaterialApp(
+              home:
+                MultiProvider(
+                  providers: [
+                    ChangeNotifierProvider(
+                        create: (context) => StateInfo(locator: locator, client: client)),
+                    ChangeNotifierProvider(create: (context) => RouteProvider()),
+                  ],
+                  child: widget,
+                ),
+          ),
+      );
+    }
+
+    testWidgets('Maps screen loads', (WidgetTester tester) async {
+
+      MapScreen map_page = MapScreen();
+      await tester.pumpWidget(buildTestableWidget(map_page));
+      final map = find.byKey(const ValueKey('googleMap'));
+      expect(map, findsOneWidget);
+    });
+
+    testWidgets('Markers load', (WidgetTester tester) async {
+
+      MapScreen map_page = MapScreen();
+      await tester.pumpWidget(buildTestableWidget(map_page));
+      final map = find.byKey(const ValueKey('googleMap'));
+
+
+    });
+
   });
 
 

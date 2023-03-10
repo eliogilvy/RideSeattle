@@ -27,13 +27,18 @@ class _MapScreenState extends State<MapScreen> {
   static const CameraPosition initialCameraPosition =
       CameraPosition(target: LatLng(47.6219, -122.3517), zoom: 16);
 
+
   @override
   initState() {
     super.initState();
+
+    //WidgetsBinding.instance.addPostFrameCallback((_) => _onAfterBuild(context));
+
     rootBundle.loadString('assets/map_style.txt').then((string) {
       _mapStyle = string;
     });
   }
+
 
   @override
   didChangeDependencies() {
@@ -45,6 +50,7 @@ class _MapScreenState extends State<MapScreen> {
     //final User? user = Auth().currentUser;
     final stateInfo = Provider.of<StateInfo>(context, listen: true);
     final routeProvider = Provider.of<RouteProvider>(context, listen: true);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Ride Seattle'),
