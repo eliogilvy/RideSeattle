@@ -63,7 +63,7 @@ class MockStateInfo extends Mock implements StateInfo {
   }
 
   @override
-  void getStopsForLocation(String lat, String lon) async {
+  Future<void> getStopsForLocation(String lat, String lon) async {
     addMarker(
       "Test marker",
       "Test marker",

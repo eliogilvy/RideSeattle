@@ -12,10 +12,11 @@ import 'dart:math';
 import 'package:ride_seattle/classes/route.dart' as r;
 
 class StateInfo with ChangeNotifier {
-  StateInfo({required this.locator}) {
+  StateInfo({required this.locator, required this.client}) {
     getPosition();
   }
 
+  Client client;
   GeolocatorPlatform locator;
   String _radius = "0";
   late Position _position;
@@ -99,24 +100,8 @@ class StateInfo with ChangeNotifier {
     //assign make sure not to have old stops included in a different route
     List<LatLng> points = [];
 
-    Response res = await get(Uri.parse(Routes.getStopsForRoute(routeId)));
-
-    //final Map<String, Stop> _stops = {};
-    // var document = XmlDocument.parse(res.body);
-    // var stopIds = document.findAllElements('stopIds').first;
-    // var stops = stopIds.findAllElements('string');
-    // for (var stopId in stops) {
-    //   print("adding ${stopId.text}");
-    //   if (!_stops.containsKey(stopId.text)) {
-    //     res = await get(Uri.parse(Routes.getStop(stopId.text)));
-    //     document = XmlDocument.parse(res.body);
-    //     print(res.body);
-    //     var stop = document.findAllElements('entry').first;
-    //     _addStop(stop);
-    //   }
-    //   stopsForCurrentRoute.add(_stops[stopId.text]!);
-    //   print("added stop");
-    // }
+    Response res =
+        await client.get(Uri.parse(Routes.getStopsForRoute(routeId)));
 
     var document = XmlDocument.parse(res.body);
     var polylines = document.findAllElements('encodedPolyline').first;
@@ -144,9 +129,9 @@ class StateInfo with ChangeNotifier {
     notifyListeners();
   }
 
-  void getStopsForLocation(String lat, String lon) async {
-    Response res =
-        await get(Uri.parse(Routes.getStopsForLocation(lat, lon, _radius)));
+  Future<void> getStopsForLocation(String lat, String lon) async {
+    Response res = await client
+        .get(Uri.parse(Routes.getStopsForLocation(lat, lon, _radius)));
     final document = XmlDocument.parse(res.body);
     var stops = document.findAllElements('stop');
     for (var stop in stops) {
@@ -175,6 +160,7 @@ class StateInfo with ChangeNotifier {
         .toList();
     if (_routeFilter == null || routeIds.contains(_routeFilter)) {
       _stops[id] = parseStop(stop);
+      print(_stops);
       var filePath = 'assets/images/stops/bus-stop.png';
       if (direction != null) {
         filePath = 'assets/images/stops/bus-stop-$direction.png';
@@ -217,9 +203,9 @@ class StateInfo with ChangeNotifier {
         routeIds: routeIds);
   }
 
-  void getRoutesForLocation(String lat, String lon) async {
-    Response res =
-        await get(Uri.parse(Routes.getRoutesForLocation(lat, lon, _radius)));
+  Future<void> getRoutesForLocation(String lat, String lon) async {
+    Response res = await client
+        .get(Uri.parse(Routes.getRoutesForLocation(lat, lon, _radius)));
     final document = XmlDocument.parse(res.body);
     final routes = document.findAllElements('route');
     for (var route in routes) {
@@ -232,11 +218,12 @@ class StateInfo with ChangeNotifier {
     if (_stops.containsKey(id)) {
       stop = _stops[id]!;
     } else {
-      Response res = await get(Uri.parse(Routes.getStop(id)));
+      Response res = await client.get(Uri.parse(Routes.getStop(id)));
 
       var document = XmlDocument.parse(res.body);
       var s = document.findAllElements('stop');
       stop = parseStop(s.first);
+      _stops[stop.stopId] = stop;
     }
     return stop.name;
   }
@@ -275,6 +262,7 @@ class StateInfo with ChangeNotifier {
         type: type,
         url: url,
         agencyId: agencyId);
+    print(_routes[id]);
   }
 
   set routeFilter(String? filter) {
@@ -310,7 +298,7 @@ class StateInfo with ChangeNotifier {
     notifyListeners();
   }
 
-  void addMarker(
+  Future<void> addMarker(
       String id, String name, LatLng location, Function(String) function,
       {String? iconFilepath, double? x, double? y}) async {
     BitmapDescriptor markerIcon;
@@ -330,12 +318,15 @@ class StateInfo with ChangeNotifier {
       icon: markerIcon,
       onTap: () async {
         function(id);
-        _markers.remove("current");
-        String markerFilePath =
-            iconFilepath!.substring(0, iconFilepath.indexOf('.'));
-        markerFilePath = "$markerFilePath-marked.png";
-        addMarker("current", name, location, (p0) => null,
-            iconFilepath: markerFilePath, x: 0.5, y: 0.8);
+        if (iconFilepath != 'assets/images/bus.png') {
+          _markers.remove("current");
+          String markerFilePath =
+              iconFilepath!.substring(0, iconFilepath.indexOf('.'));
+          markerFilePath = "$markerFilePath-marked.png";
+
+          addMarker("current", name, location, (p0) => null,
+              iconFilepath: markerFilePath, x: 0.5, y: 0.8);
+        }
       },
       anchor: const Offset(0.0, 0.0),
     );
@@ -355,22 +346,12 @@ class StateInfo with ChangeNotifier {
     //await getTripInfo(id);
     notifyListeners();
   }
-
-  Future<void> getTripInfo(String id) async {
-    Response res = await get(Uri.parse(Routes.getTripDetails(id)));
-  }
-
+  
   Future<void> getMarkerInfo(String id) async {
     showVehicleInfo = false;
     showMarkerInfo = true;
     _currentStopInfo = _stops[id]!;
-    await _currentStopInfo!.getArrivalAndDeparture();
-  }
-
-  InfoWindow markerWindow(String name) {
-    return InfoWindow(
-      title: name,
-    );
+    await _currentStopInfo!.getArrivalAndDeparture(client);
   }
 
   //void _loadStops() {}

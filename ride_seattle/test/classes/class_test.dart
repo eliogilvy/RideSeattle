@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 import 'package:mockito/mockito.dart';
 import 'package:ride_seattle/classes/arrival_and_departure.dart';
 import 'package:ride_seattle/classes/route.dart';
@@ -9,10 +10,21 @@ import 'package:ride_seattle/classes/stop.dart';
 import 'package:ride_seattle/classes/trip_status.dart';
 import 'package:ride_seattle/classes/user.dart';
 import 'package:ride_seattle/classes/vehicle.dart';
+import 'package:ride_seattle/provider/route_provider.dart';
 
 import 'package:ride_seattle/provider/state_info.dart';
 
-class MockClient extends Mock implements http.Client {}
+class MockClient extends Mock implements http.Client {
+  MockClient({this.res});
+  String? res;
+  final List<Uri> calls = [];
+
+  @override
+  Future<http.Response> get(Uri url, {Map<String, String>? headers}) {
+    calls.add(url);
+    return Future.value(Response(res!, 200));
+  }
+}
 
 class MockGeoLocatorPlatform extends Mock implements GeolocatorPlatform {
   MockGeoLocatorPlatform({required this.service, required this.permission});
@@ -236,15 +248,20 @@ void main() {
     () {
       MockGeoLocatorPlatform locator = MockGeoLocatorPlatform(
           service: true, permission: LocationPermission.always);
-      setUp(() => TestWidgetsFlutterBinding.ensureInitialized());
+      MockClient client = MockClient();
+      StateInfo? stateInfo;
+      setUp(() {
+        TestWidgetsFlutterBinding.ensureInitialized();
+        stateInfo = StateInfo(locator: locator, client: client);
+      });
       test(
         'getPosition() returns the current position when location services and permissions are enabled',
         () async {
           // Arrange
-          StateInfo stateInfo = StateInfo(locator: locator);
-          await stateInfo.getPosition();
+          //StateInfo stateInfo = StateInfo(locator: locator, client: client);
+          await stateInfo!.getPosition();
           expect(
-            stateInfo.position,
+            stateInfo!.position,
             Position(
               longitude: 47.6219,
               latitude: -122.3517,
@@ -261,7 +278,7 @@ void main() {
       test(
         'getPosition() returns error due to bad privileges',
         () async {
-          StateInfo stateInfo = StateInfo(locator: locator);
+          StateInfo stateInfo = StateInfo(locator: locator, client: client);
           stateInfo.locator = MockGeoLocatorPlatform(
               service: false, permission: LocationPermission.always);
           try {
@@ -290,18 +307,156 @@ void main() {
       test(
         'get methods',
         () {
-          StateInfo stateInfo = StateInfo(locator: locator);
-          stateInfo.addCircle(const LatLng(1, 1), 'circle');
-          expect(stateInfo.circles.length, 1);
-          stateInfo.addMarker(
+          stateInfo!.addCircle(const LatLng(1, 1), 'circle');
+          expect(stateInfo!.circles.length, 1);
+          stateInfo!.addMarker(
               'marker', 'name test', const LatLng(1, 1), (p0) => null);
 
-          stateInfo.setRadius(
+          stateInfo!.setRadius(
               const LatLng(5, 5), const LatLng(10, 5), const LatLng(0, 5));
-          expect(stateInfo.radius, '555974.6332227937');
-          expect(stateInfo.currentStopInfo, null);
+          expect(stateInfo!.radius, '555974.6332227937');
+          expect(stateInfo!.currentStopInfo, null);
         },
       );
+
+      test(
+        'getStopsForLocation',
+        () async {
+          stateInfo!.client = MockClient(
+            res: '''<stop>
+            <id>1_75403</id>
+            <lat>47.6543655</lat>
+            <lon>-122.305206</lon>
+            <direction>S</direction>
+            <name>Stevens Way &amp; BENTON LANE</name>
+            <code>75403</code>
+            <locationType>0</locationType>
+            <routeIds>
+              <string>1_31</string>
+              <string>...</string>
+            </routeIds>
+          </stop>''',
+          );
+          await stateInfo!.getStopsForLocation('24', '24');
+          expect(stateInfo!.stops.length, 1);
+        },
+      );
+      test(
+        'getRoutesForLocation',
+        () async {
+          stateInfo!.client = MockClient(
+            res: '''<route>
+            <id>1_100224</id>
+            <shortName>44</shortName>
+            <description>Ballard - Montlake</description>
+            <type>3</type>
+            <url>http://metro.kingcounty.gov/schedules/044/n0.html</url>
+            <agencyId>1</agencyId>
+        </route>''',
+          );
+
+          await stateInfo!.getRoutesForLocation('24', '24');
+          expect(stateInfo!.routes.length, 1);
+        },
+      );
+
+      test(
+        'getStop',
+        () async {
+          stateInfo!.client = MockClient(
+            res: '''<stop>
+            <id>1_75403</id>
+            <lat>47.6543655</lat>
+            <lon>-122.305206</lon>
+            <direction>S</direction>
+            <name>Stevens Way &amp; BENTON LANE</name>
+            <code>75403</code>
+            <locationType>0</locationType>
+            <routeIds>
+              <string>1_31</string>
+              <string>...</string>
+            </routeIds>
+          </stop>''',
+          );
+
+          // Calling twice to get stop in map and stop not in map
+          String stop = await stateInfo!.getStop('1_75403');
+          expect(stop, 'Stevens Way & BENTON LANE');
+
+          stop = await stateInfo!.getStop('1_75403');
+          expect(stop, 'Stevens Way & BENTON LANE');
+
+          await stateInfo!.getMarkerInfo('1_75403');
+          expect(stateInfo!.currentStopInfo!.stopId, '1_75403');
+        },
+      );
+
+      test('getRoutePolyline', () async {
+        stateInfo!.client = MockClient(res: '''
+        <encodedPolyline>
+<points>qc}aHp|`jVrA?e@cJAIEa@Mc@ISsBkEO[IYGYEWAYAc@@}E?m@AmOAoO?sF?sD?oC?q@?sG?cE?oA?yA?yD@eH?sO?kA@qL?U?OAeF?yH?}@?oJ?gN?_C?yAAwE?oCAq@?U?e@?]@]@QBMDIFMDKJGHKhBsAbCkBJIHGr@e@xAs@rBgAhB}@TM^[`@_@BA\_@r@y@X_@nCaD`@i@BERSLQ\e@Zm@~@oBTc@L[Xw@DM@KDSDSDUB[@M?S@c@?{@?_D?eA?sD?wF?aH?}A@kA?SHm@B[D]@Y@e@?k@?o@Ei@?[?S@}@@kAA[ASCM?UEq@As@Ag@A{D@MBMDQJYl@yARc@P_@Pe@Ri@@qD?aB?gE?yG?M?_B?Y?mD?_A?yD?s@?wC?u@?_@?}F@kF?mF?_A@mD?mF?oC@iE@sD?a@?sE?wE?oD@w@@}D?a@?yD@eC?kA?g@@uB?i@?gA?yC?eA@_@?g@?eA@qB?qB@uB?qB?uB?k@?cA@qB?yB|@?dC?bBDpABtE@hHFlABh@?n@?~B?dBBL?fCDjBBZ?PBJFJJLHX\bB{DdAkCFStCgH|@eC`@iA`A_CISCM?M?MBo@@W?QB[?e@?_@AS</points>
+<length>216</length>
+</encodedPolyline>''');
+
+        List<LatLng> list = await stateInfo!.getRoutePolyline('test');
+
+        expect(list.length, 215);
+      });
+      test('add and remove marker', () async {
+        await stateInfo!
+            .addMarker('marker', 'test', const LatLng(1, 1), (p0) => null);
+        expect(stateInfo!.markers.length, 1);
+        stateInfo!.removeMarker('marker');
+        expect(stateInfo!.markers.length, 0);
+      });
+      test('can call getVehicleInfo, can call set route filter', () async {
+        await stateInfo!.getVehicleInfo('id');
+        stateInfo!.routeFilter = 'test';
+        stateInfo!.updateStops();
+        expect(stateInfo!.markers.length, 0);
+      });
     },
   );
+  group('Route Provider tests', () {
+    late RouteProvider routeProvider;
+
+    setUp(() => routeProvider = RouteProvider());
+
+    test('Adding a stop', () {
+      routeProvider.assignStops([
+        Stop(
+            stopId: 'stopId',
+            lat: 1,
+            lon: 2,
+            direction: 'north',
+            name: 'Test stop',
+            code: 'Test code',
+            locationType: 3,
+            routeIds: ['routeId'])
+      ]);
+      expect(routeProvider.stopsForRoute.first.stopId, 'stopId');
+      expect(routeProvider.getStops().length, 1);
+
+      routeProvider.stopsForRoute.clear();
+
+      expect(routeProvider.getStops().length, 0);
+
+      routeProvider.addItem(Stop(
+          stopId: 'stopId',
+          lat: 1,
+          lon: 2,
+          direction: 'north',
+          name: 'Test stop',
+          code: 'Test code',
+          locationType: 3,
+          routeIds: ['routeId']));
+      expect(routeProvider.getStops().first.stopId, 'stopId');
+    });
+    test('Setting polylines', () {
+      routeProvider.setPolyLines([const LatLng(1, 1)]);
+      expect(routeProvider.routePolyLine.length, 1);
+      routeProvider.clearPolylines();
+      expect(routeProvider.routePolyLine.length, 0);
+    });
+  });
 }

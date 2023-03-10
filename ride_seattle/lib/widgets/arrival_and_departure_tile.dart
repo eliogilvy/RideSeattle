@@ -170,7 +170,7 @@ class _ArrivalAndDepartureTileState extends State<ArrivalAndDepartureTile> {
         widget.adInfo.routeShortName,
         widget.adInfo.tripStatus!.position,
         stateInfo.getVehicleInfo,
-        iconFilepath: 'assets/images/icons8-bus-96.png');
+        iconFilepath: 'assets/images/bus.png');
     widget.controller.animateCamera(
       CameraUpdate.newCameraPosition(
         CameraPosition(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 import 'package:ride_seattle/provider/local_storage_provider.dart';
 import 'package:ride_seattle/provider/route_provider.dart';
@@ -24,12 +25,13 @@ Future<void> main() async {
   //openboxes
   favRouteBox = await Hive.openBox('fav_routes');
   GeolocatorPlatform locator = GeolocatorPlatform.instance;
+  Client client = Client();
 
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
-            create: (context) => StateInfo(locator: locator)),
+            create: (context) => StateInfo(locator: locator, client: client)),
         ChangeNotifierProvider(create: (context) => RouteProvider()),
         ListenableProvider<LocalStorageProvider>(
             create: (context) =>
