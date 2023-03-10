@@ -160,7 +160,6 @@ class StateInfo with ChangeNotifier {
         .toList();
     if (_routeFilter == null || routeIds.contains(_routeFilter)) {
       _stops[id] = parseStop(stop);
-      print(_stops);
       var filePath = 'assets/images/stops/bus-stop.png';
       if (direction != null) {
         filePath = 'assets/images/stops/bus-stop-$direction.png';
@@ -262,7 +261,6 @@ class StateInfo with ChangeNotifier {
         type: type,
         url: url,
         agencyId: agencyId);
-    print(_routes[id]);
   }
 
   set routeFilter(String? filter) {

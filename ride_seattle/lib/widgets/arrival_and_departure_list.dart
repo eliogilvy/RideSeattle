@@ -37,13 +37,14 @@ class _ArrivalAndDepartureListState extends State<ArrivalAndDepartureList> {
           return const Divider(
             height: 4.0,
             color: Colors.black,
-          ); // Add a 1 pixel high divider
+          );
         },
       ),
     );
   }
 
   void _refresh() {
+    print('reloading');
     setState(() {});
   }
 }
