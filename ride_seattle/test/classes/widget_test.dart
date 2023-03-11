@@ -130,7 +130,7 @@ void main() {
       expect(emailField, findsOneWidget);
       expect(passwordField, findsOneWidget);
 
-      await tester.enterText(find.byKey(const ValueKey("emailField")), 'testEmail@test.com');
+      await tester.enterText(find.byKey(const ValueKey("emailField")), 'testEmail2@test.com');
       await tester.enterText(find.byKey(const ValueKey("passwordField")), '123456789');
 
 
@@ -140,6 +140,8 @@ void main() {
       //Not navigating???
       //Check if I navigated
       //expect(find.byKey(ValueKey("googleMap")), findsOneWidget);
+
+      //can't go to maps screen because of permissions?
 
     });
 

@@ -55,28 +55,7 @@ Widget buildMenuItems(BuildContext context) => Container(
               },
             ),
           ),
-          //History
-          InkWell(
-            child: ListTile(
-              leading: const Icon(Icons.history),
-              title: const Text('History'),
-              onTap: () {
-                context.pop();
-              },
-            ),
-          ),
           const Divider(color: Colors.black),
-
-          //Settings
-          InkWell(
-            child: ListTile(
-              leading: const Icon(Icons.settings),
-              title: const Text('Settings'),
-              onTap: () {
-                context.pop();
-              },
-            ),
-          ),
 
           InkWell(
             child: ListTile(
