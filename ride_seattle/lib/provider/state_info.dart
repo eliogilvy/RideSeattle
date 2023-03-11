@@ -296,17 +296,20 @@ class StateInfo with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<BitmapDescriptor> _getImage(String filePath) async {
+    return await BitmapDescriptor.fromAssetImage(
+        const ImageConfiguration(), filePath);
+  }
+
   Future<void> addMarker(
       String id, String name, LatLng location, Function(String) function,
       {String? iconFilepath, double? x, double? y}) async {
     BitmapDescriptor markerIcon;
-    if (iconFilepath != null) {
-      final bytes = await rootBundle.load(iconFilepath);
-      markerIcon = BitmapDescriptor.fromBytes(bytes.buffer.asUint8List());
-    } else {
-      markerIcon = await BitmapDescriptor.fromAssetImage(
-          const ImageConfiguration(),
-          'assets/images/icons8-location-pin-66.png');
+    iconFilepath ??= 'assets/images/icons8-location-pin-66.png';
+    try {
+      markerIcon = await _getImage(iconFilepath);
+    } catch (e) {
+      markerIcon = await _getImage(iconFilepath);
     }
 
     var marker = Marker(
@@ -316,7 +319,7 @@ class StateInfo with ChangeNotifier {
       icon: markerIcon,
       onTap: () async {
         function(id);
-        if (iconFilepath != 'assets/images/bus.png') {
+        if (iconFilepath != 'assets/images/bus.png' && !iconFilepath!.contains('marked')) {
           _markers.remove("current");
           String markerFilePath =
               iconFilepath!.substring(0, iconFilepath.indexOf('.'));
@@ -344,7 +347,7 @@ class StateInfo with ChangeNotifier {
     //await getTripInfo(id);
     notifyListeners();
   }
-  
+
   Future<void> getMarkerInfo(String id) async {
     showVehicleInfo = false;
     showMarkerInfo = true;
