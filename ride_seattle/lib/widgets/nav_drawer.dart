@@ -3,24 +3,20 @@ import 'package:go_router/go_router.dart';
 
 import '../classes/auth.dart';
 
-class NavDrawer extends StatefulWidget {
+class NavDrawer extends StatelessWidget {
   const NavDrawer({Key? key}) : super(key: key);
 
   @override
-  State<NavDrawer> createState() => _NavDrawerState();
-}
-
-class _NavDrawerState extends State<NavDrawer> {
-  @override
   Widget build(BuildContext context) {
     return Drawer(
+        width: MediaQuery.of(context).size.width * .6,
         child: Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        buildHeader(context),
-        buildMenuItems(context),
-      ],
-    ));
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            buildHeader(context),
+            Expanded(child: buildMenuItems(context)),
+          ],
+        ));
   }
 }
 
@@ -31,41 +27,55 @@ Widget buildHeader(BuildContext context) => Container(
 
 Widget buildMenuItems(BuildContext context) => Container(
       padding: const EdgeInsets.all(24),
-      child: Wrap(
-        runSpacing: 16,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           //Home
-          InkWell(
-            child: ListTile(
-              leading: const Icon(Icons.home_outlined),
-              title: const Text('Home'),
-              onTap: () {
-                context.pop();
-              },
+          ListTile(
+            leading: Icon(
+              Icons.home_outlined,
+              color: Theme.of(context).primaryColorDark,
             ),
+            title: Text(
+              'Home',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            onTap: () {
+              context.pop();
+            },
           ),
-
+          Divider(color: Theme.of(context).dividerColor),
           //My Routes
-          InkWell(
-            child: ListTile(
-              leading: const Icon(Icons.star),
-              title: const Text('My Routes'),
-              onTap: () {
-                context.push('/favoriteRoutes');
-              },
+          ListTile(
+            leading: Icon(
+              Icons.star_border,
+              color: Theme.of(context).primaryColorDark,
             ),
+            title: Text(
+              'My Routes',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            onTap: () {
+              context.push('/favoriteRoutes');
+            },
           ),
-          const Divider(color: Colors.black),
 
-          InkWell(
-            child: ListTile(
-              leading: const Icon(Icons.logout),
-              title: const Text('Sign out'),
-              onTap: () async {
-                await Auth().signOut();
-              },
+          Expanded(child: Container()),
+          Divider(color: Theme.of(context).dividerColor),
+          //Sign Out
+          ListTile(
+            leading: Icon(
+              Icons.logout,
+              color: Theme.of(context).primaryColorDark,
             ),
-          )
+            title: Text(
+              'Sign out',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            onTap: () async {
+              await Auth().signOut();
+            },
+          ),
         ],
       ),
     );

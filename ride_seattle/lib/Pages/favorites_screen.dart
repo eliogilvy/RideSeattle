@@ -1,5 +1,7 @@
+import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 
 import '../provider/local_storage_provider.dart';
@@ -20,8 +22,6 @@ class _FavoritesState extends State<Favorites> {
   var localStorage;
   var favoriteRoutes;
   var routeLists;
-  var stateInfo;
-  var routeProvider;
 
   @override
   void initState() {
@@ -31,87 +31,100 @@ class _FavoritesState extends State<Favorites> {
         .collection('users')
         .doc(user!.uid)
         .collection('routes')
-        .orderBy('route_id', descending: false)
+        .orderBy('route_name', descending: false)
         .snapshots()
         .map((snapshot) =>
             snapshot.docs.map((doc) => favRoute.fromJson(doc.data())).toList());
-    WidgetsBinding.instance.addPostFrameCallback((_) => _onAfterBuild(context));
+    //WidgetsBinding.instance.addPostFrameCallback((_) => _onAfterBuild(context));
   }
 
-  void _onAfterBuild(BuildContext context) {
-    localStorage = Provider.of<LocalStorageProvider>(context, listen: false);
-    stateInfo = Provider.of<StateInfo>(context, listen: false);
-    routeProvider = Provider.of<RouteProvider>(context, listen: false);
+  // void _onAfterBuild(BuildContext context) {
+  //   localStorage = Provider.of<LocalStorageProvider>(context, listen: false);
+  //   stateInfo = Provider.of<StateInfo>(context, listen: false);
+  //   routeProvider = Provider.of<RouteProvider>(context, listen: false);
 
-    try {
-      localStorage.loadData();
-    } catch (e) {
-      print(e.toString());
-    }
+  //   try {
+  //     localStorage.loadData();
+  //   } catch (e) {
+  //     print(e.toString());
+  //   }
 
-    favoriteRoutes = localStorage.getFavoriteRoutes();
-  }
+  //   favoriteRoutes = localStorage.getFavoriteRoutes();
+  // }
 
   @override
   Widget build(BuildContext context) {
+    final stateInfo = Provider.of<StateInfo>(context, listen: false);
+    final routeProvider = Provider.of<RouteProvider>(context, listen: false);
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Favorite Routes'),
-        ),
-        body: Column(
-          children: [
-            StreamBuilder<List<dynamic>>(
-                stream: routeLists,
-                builder: (context, snapshot) {
-                  if (snapshot.hasError) {
-                    return const Text('Something went wrong');
-                  } else if (snapshot.hasData) {
-                    final routes = snapshot.data!;
-                    return ListView.builder(
-                      itemCount: routes.length,
-                      scrollDirection: Axis.vertical,
+      appBar: AppBar(
+        title: const Text('Favorite Routes'),
+      ),
+      body: Column(
+        children: [
+          const SizedBox(
+            height: 5,
+          ),
+          StreamBuilder<List<dynamic>>(
+            stream: routeLists,
+            builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                return const Text('Something went wrong');
+              } else if (snapshot.hasData) {
+                final routes = snapshot.data!;
+                return Expanded(
+                  child: SingleChildScrollView(
+                    child: GridView.count(
+                      crossAxisCount: 2,
+                      childAspectRatio: 1.0,
                       shrinkWrap: true,
-                      itemBuilder: (context, index) {
+                      physics: const NeverScrollableScrollPhysics(),
+                      mainAxisSpacing: 4,
+                      crossAxisSpacing: 4,
+                      children: List.generate(routes.length, (index) {
                         var routeName = routes[index].routeName;
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const SizedBox(height: 20),
-                            Center(
-                              child: Card(
-                                child: SizedBox(
-                                  width: 300,
-                                  child: ListTile(
-                                    title: Center(
-                                      child: Text('Route Number : $routeName',
-                                          style: const TextStyle(
-                                            fontSize: 20,
-                                          )),
-                                    ),
-                                    tileColor: Colors.blue[100],
-                                    onTap: () async {
-                                      // List<LatLng> routeStops = await stateInfo.getRoutePolyline(routes[index].routeId);
-
-                                      // routeProvider.setPolyLines(routeStops);
-
-                                      // findBus(stateInfo);
-                                    },
+                        return Container(
+                          color: Theme.of(context).cardTheme.color,
+                          child: Card(
+                            child: SizedBox(
+                              child: ListTile(
+                                title: Center(
+                                  child: Text(
+                                    routeName,
+                                    style:
+                                        Theme.of(context).textTheme.bodyLarge,
                                   ),
                                 ),
+                                tileColor: Theme.of(context).cardTheme.color,
+                                onTap: () async {
+                                  List<LatLng> routeStops = await stateInfo
+                                      .getRoutePolyline(routes[index].routeId);
+                                  stateInfo.routeFilter = routes[index].routeId;
+                                  stateInfo.updateStops();
+
+                                  routeProvider.setPolyLines(routeStops);
+                                  if (mounted) {
+                                    context.go('/');
+                                  }
+                                },
                               ),
-                            )
-                          ],
+                            ),
+                          ),
                         );
-                      },
-                    );
-                  } else {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-                }),
-          ],
-        ));
+                      }),
+                    ),
+                  ),
+                );
+              } else {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+            },
+          ),
+        ],
+      ),
+    );
   }
 
 // Consumer<LocalStorageProvider>(

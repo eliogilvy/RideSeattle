@@ -28,6 +28,8 @@ class _MapScreenState extends State<MapScreen> {
   static const CameraPosition initialCameraPosition =
       CameraPosition(target: LatLng(47.6219, -122.3517), zoom: 16);
 
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
+
   @override
   initState() {
     super.initState();
@@ -40,13 +42,30 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (_scaffoldKey.currentState != null &&
+        _scaffoldKey.currentState!.isDrawerOpen) {
+      _scaffoldKey.currentState!.openEndDrawer();
+    }
     //final User? user = Auth().currentUser;
     final stateInfo = Provider.of<StateInfo>(context, listen: true);
     final routeProvider = Provider.of<RouteProvider>(context, listen: true);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Ride Seattle'),
+        title: Text(
+          'Ride Seattle',
+          style: Theme.of(context).appBarTheme.titleTextStyle,
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.dehaze),
+          onPressed: () {
+            if (!_scaffoldKey.currentState!.isDrawerOpen) {
+              _scaffoldKey.currentState!.openDrawer();
+            } else {
+              _scaffoldKey.currentState!.openEndDrawer();
+            }
+          },
+        ),
         actions: [
           IconButton(
             onPressed: () {
@@ -62,7 +81,10 @@ class _MapScreenState extends State<MapScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
-                            const Text("Find a route"),
+                            Text(
+                              "Find a route",
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            ),
                             Expanded(
                               child: Align(
                                 alignment: Alignment.centerRight,
@@ -90,62 +112,65 @@ class _MapScreenState extends State<MapScreen> {
           ),
         ],
       ),
-      drawer: const NavDrawer(),
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          GoogleMap(
-            key: const ValueKey("googleMap"),
-            rotateGesturesEnabled: false,
-            myLocationButtonEnabled: false,
-            myLocationEnabled: true,
-            initialCameraPosition: initialCameraPosition,
-            markers: stateInfo.markers,
-            mapToolbarEnabled: false,
-            //circles: stateInfo.circles,
-            zoomControlsEnabled: false,
-            onMapCreated: (GoogleMapController controller) {
-              if (mounted) {
-                googleMapController.complete(controller);
-                controller.setMapStyle(_mapStyle);
-              }
-            },
-            onTap: (argument) {
-              if (mounted) {
-                stateInfo.showVehicleInfo = false;
-                stateInfo.showMarkerInfo = false;
-                stateInfo.removeMarker('current');
+      body: Scaffold(
+        key: _scaffoldKey,
+        drawer: const NavDrawer(),
+        body: Stack(
+          fit: StackFit.expand,
+          children: [
+            GoogleMap(
+              key: const ValueKey("googleMap"),
+              rotateGesturesEnabled: false,
+              myLocationButtonEnabled: false,
+              myLocationEnabled: true,
+              initialCameraPosition: initialCameraPosition,
+              markers: stateInfo.markers,
+              mapToolbarEnabled: false,
+              //circles: stateInfo.circles,
+              zoomControlsEnabled: false,
+              onMapCreated: (GoogleMapController controller) {
+                if (mounted) {
+                  googleMapController.complete(controller);
+                  controller.setMapStyle(_mapStyle);
+                }
+              },
+              onTap: (argument) {
+                if (mounted) {
+                  stateInfo.showVehicleInfo = false;
+                  stateInfo.showMarkerInfo = false;
+                  stateInfo.removeMarker('current');
 
-                routeProvider.clearPolylines();
-                stateInfo.removeMarker(stateInfo.lastVehicle);
-              }
-            },
-            onCameraIdle: () {
-              updateView(stateInfo);
-            },
-            polylines: routeProvider.routePolyLine,
-          ),
-          stateInfo.showMarkerInfo
-              ? MarkerSheet(controller: googleMapController)
-              : stateInfo.showVehicleInfo
-                  ? const VehicleSheet()
-                  : const SizedBox.shrink(),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton.small(
-        onPressed: () async {
-          GoogleMapController c = await googleMapController.future;
-          Position position = stateInfo.position;
-          c.animateCamera(
-            CameraUpdate.newCameraPosition(
-              CameraPosition(
-                target: LatLng(position.latitude, position.longitude),
-                zoom: 16,
-              ),
+                  routeProvider.clearPolylines();
+                  stateInfo.removeMarker(stateInfo.lastVehicle);
+                }
+              },
+              onCameraIdle: () {
+                updateView(stateInfo);
+              },
+              polylines: routeProvider.routePolyLine,
             ),
-          );
-        },
-        child: const Icon(Icons.location_history),
+            stateInfo.showMarkerInfo
+                ? MarkerSheet(controller: googleMapController)
+                : stateInfo.showVehicleInfo
+                    ? const VehicleSheet()
+                    : const SizedBox.shrink(),
+          ],
+        ),
+        floatingActionButton: FloatingActionButton.small(
+          onPressed: () async {
+            GoogleMapController c = await googleMapController.future;
+            Position position = stateInfo.position;
+            c.animateCamera(
+              CameraUpdate.newCameraPosition(
+                CameraPosition(
+                  target: LatLng(position.latitude, position.longitude),
+                  zoom: 16,
+                ),
+              ),
+            );
+          },
+          child: const Icon(Icons.location_history),
+        ),
       ),
     );
   }
