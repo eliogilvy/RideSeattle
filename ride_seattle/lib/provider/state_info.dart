@@ -37,16 +37,14 @@ class StateInfo with ChangeNotifier {
   List<Stop> get stops => _stops.values.toList();
   List<r.Route> get routes {
     List<r.Route> routeList = _routes.values.toList();
-    routeList.sort(
-      (a, b) {
-        bool isANumber = false;
-        bool isBNumber = true;
-        if (a.shortName != null) {
-          isANumber = int.tryParse(a.shortName!) != null;
-        }
-        if (b.shortName != null) {
-          isBNumber = int.tryParse(b.shortName!) != null;
-        }
+    routeList.sort((a, b) {
+      if (a.shortName == null) {
+        return 1; // `a` should come after `b`
+      } else if (b.shortName == null) {
+        return -1; // `a` should come before `b`
+      } else {
+        bool isANumber = int.tryParse(a.shortName!) != null;
+        bool isBNumber = int.tryParse(b.shortName!) != null;
 
         if (!isANumber && !isBNumber) {
           // Both elements are not numbers, compare them directly
@@ -58,8 +56,9 @@ class StateInfo with ChangeNotifier {
           // One element is a number, the other is not. The non-number element should be after the number element
           return isANumber ? -1 : 1;
         }
-      },
-    );
+      }
+    });
+
     return routeList;
   }
 
@@ -319,10 +318,11 @@ class StateInfo with ChangeNotifier {
       icon: markerIcon,
       onTap: () async {
         function(id);
-        if (iconFilepath != 'assets/images/bus.png' && !iconFilepath!.contains('marked')) {
+        if (iconFilepath != 'assets/images/bus.png' &&
+            !iconFilepath!.contains('marked')) {
           _markers.remove("current");
           String markerFilePath =
-              iconFilepath!.substring(0, iconFilepath.indexOf('.'));
+              iconFilepath.substring(0, iconFilepath.indexOf('.'));
           markerFilePath = "$markerFilePath-marked.png";
 
           addMarker("current", name, location, (p0) => null,
