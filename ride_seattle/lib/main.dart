@@ -33,9 +33,9 @@ Future<void> main() async {
         ChangeNotifierProvider(
             create: (context) => StateInfo(locator: locator, client: client)),
         ChangeNotifierProvider(create: (context) => RouteProvider()),
-        ListenableProvider<LocalStorageProvider>(
-            create: (context) =>
-                LocalStorageProvider(favRouteBox: favRouteBox)),
+        // ListenableProvider<LocalStorageProvider>(
+        //     create: (context) =>
+        //         LocalStorageProvider(favRouteBox: favRouteBox)),
       ],
       child: const RideApp(),
     ),

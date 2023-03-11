@@ -9,11 +9,9 @@ class FavoriteButton extends StatefulWidget {
   const FavoriteButton(
       {super.key,
       required this.routeId,
-      required this.routeName,
-      required this.callback});
+      required this.routeName,});
   final String routeId;
   final String routeName;
-  final Function callback;
 
   @override
   State<FavoriteButton> createState() => _FavoriteButtonState();
@@ -38,7 +36,7 @@ class _FavoriteButtonState extends State<FavoriteButton> {
 
   @override
   Widget build(BuildContext context) {
-    final storage = Provider.of<LocalStorageProvider>(context, listen: false);
+    // final storage = Provider.of<LocalStorageProvider>(context, listen: false);
     var fb = FirebaseFirestore.instance.collection('users');
     FireProvider fire = FireProvider(
         fb: fb, routeId: widget.routeId, routeName: widget.routeName);
@@ -62,10 +60,9 @@ class _FavoriteButtonState extends State<FavoriteButton> {
                     Icons.star_border,
                   ),
                   onPressed: () async {
-                    storage.addRoute(widget.routeId);
+                    // storage.addRoute(widget.routeId);
                     fire.uploadingData();
                     setState(() {});
-                    widget.callback();
                   },
                 )
               : IconButton(
@@ -76,7 +73,6 @@ class _FavoriteButtonState extends State<FavoriteButton> {
                   onPressed: () async {
                     fire.removeData();
                     setState(() {});
-                    widget.callback();
                   },
                 );
         }

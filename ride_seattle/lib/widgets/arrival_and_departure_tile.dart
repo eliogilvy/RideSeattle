@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
@@ -10,14 +12,13 @@ import 'favorite_button.dart';
 
 class ArrivalAndDepartureTile extends StatefulWidget {
   final ArrivalAndDeparture adInfo;
-  final GoogleMapController controller;
-  final Function callback;
+  final Completer<GoogleMapController> controller;
 
-  const ArrivalAndDepartureTile(
-      {super.key,
-      required this.adInfo,
-      required this.controller,
-      required this.callback});
+  const ArrivalAndDepartureTile({
+    super.key,
+    required this.adInfo,
+    required this.controller,
+  });
 
   @override
   State<ArrivalAndDepartureTile> createState() =>
@@ -34,7 +35,7 @@ class _ArrivalAndDepartureTileState extends State<ArrivalAndDepartureTile> {
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) => _onAfterBuild(context));
+    // WidgetsBinding.instance.addPostFrameCallback((_) => _onAfterBuild(context));
   }
 
   void _onAfterBuild(BuildContext context) {
@@ -154,14 +155,14 @@ class _ArrivalAndDepartureTileState extends State<ArrivalAndDepartureTile> {
           FavoriteButton(
             routeId: widget.adInfo.routeId,
             routeName: widget.adInfo.routeShortName,
-            callback: widget.callback,
           ),
         ],
       ),
     );
   }
 
-  void findBus(StateInfo stateInfo) {
+  void findBus(StateInfo stateInfo) async {
+    GoogleMapController c = await widget.controller.future;
     stateInfo.removeMarker(stateInfo.lastVehicle);
     stateInfo.vehicleStatus = widget.adInfo.tripStatus!;
     stateInfo.lastVehicle = widget.adInfo.tripStatus!.activeTripId;
@@ -171,7 +172,7 @@ class _ArrivalAndDepartureTileState extends State<ArrivalAndDepartureTile> {
         widget.adInfo.tripStatus!.position,
         stateInfo.getVehicleInfo,
         iconFilepath: 'assets/images/bus.png');
-    widget.controller.animateCamera(
+    c.animateCamera(
       CameraUpdate.newCameraPosition(
         CameraPosition(
           target: widget.adInfo.tripStatus!.position,

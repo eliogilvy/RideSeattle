@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
@@ -13,7 +15,7 @@ import '../widgets/route_list.dart';
 import '../widgets/vehicle_sheet.dart';
 
 class MapScreen extends StatefulWidget {
-  const MapScreen({Key? key}) : super(key: key);
+  const MapScreen({super.key});
 
   @override
   State<MapScreen> createState() => _MapScreenState();
@@ -21,28 +23,19 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> {
   late String _mapStyle;
-  //final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  GoogleMapController? googleMapController;
+  Completer<GoogleMapController> googleMapController = Completer();
   static const CameraPosition initialCameraPosition =
       CameraPosition(target: LatLng(47.6219, -122.3517), zoom: 16);
-
 
   @override
   initState() {
     super.initState();
-
-    //WidgetsBinding.instance.addPostFrameCallback((_) => _onAfterBuild(context));
-
-    rootBundle.loadString('assets/map_style.txt').then((string) {
-      _mapStyle = string;
-    });
-  }
-
-
-  @override
-  didChangeDependencies() {
-    super.didChangeDependencies();
+    rootBundle.loadString('assets/map_style.txt').then(
+      (string) {
+        _mapStyle = string;
+      },
+    );
   }
 
   @override
@@ -98,55 +91,52 @@ class _MapScreenState extends State<MapScreen> {
         ],
       ),
       drawer: const NavDrawer(),
-      body: Column(
+      body: Stack(
+        fit: StackFit.expand,
         children: [
-          Flexible(
-            child: GoogleMap(
-              key: const ValueKey("googleMap"),
-              rotateGesturesEnabled: false,
-              myLocationButtonEnabled: false,
-              myLocationEnabled: true,
-              initialCameraPosition: initialCameraPosition,
-              markers: stateInfo.markers,
-              mapToolbarEnabled: false,
-              //circles: stateInfo.circles,
-              zoomControlsEnabled: false,
-              onMapCreated: (GoogleMapController controller) {
-                if (mounted) {
-                  setState(() {
-                    googleMapController = controller;
-                    controller.setMapStyle(_mapStyle);
-                  });
-                }
-              },
-              onTap: (argument) {
-                if (mounted) {
-                  stateInfo.showVehicleInfo = false;
-                  stateInfo.showMarkerInfo = false;
-                  stateInfo.removeMarker('current');
+          GoogleMap(
+            key: const ValueKey("googleMap"),
+            rotateGesturesEnabled: false,
+            myLocationButtonEnabled: false,
+            myLocationEnabled: true,
+            initialCameraPosition: initialCameraPosition,
+            markers: stateInfo.markers,
+            mapToolbarEnabled: false,
+            //circles: stateInfo.circles,
+            zoomControlsEnabled: false,
+            onMapCreated: (GoogleMapController controller) {
+              if (mounted) {
+                googleMapController.complete(controller);
+                controller.setMapStyle(_mapStyle);
+              }
+            },
+            onTap: (argument) {
+              if (mounted) {
+                stateInfo.showVehicleInfo = false;
+                stateInfo.showMarkerInfo = false;
+                stateInfo.removeMarker('current');
 
-                  routeProvider.clearPolylines();
-                  stateInfo.removeMarker(stateInfo.lastVehicle);
-
-                }
-              },
-              onCameraIdle: () {
-                updateView(stateInfo);
-              },
-              polylines: routeProvider.routePolyLine,
-            ),
+                routeProvider.clearPolylines();
+                stateInfo.removeMarker(stateInfo.lastVehicle);
+              }
+            },
+            onCameraIdle: () {
+              updateView(stateInfo);
+            },
+            polylines: routeProvider.routePolyLine,
           ),
+          stateInfo.showMarkerInfo
+              ? MarkerSheet(controller: googleMapController)
+              : stateInfo.showVehicleInfo
+                  ? const VehicleSheet()
+                  : const SizedBox.shrink(),
         ],
       ),
-      bottomSheet: stateInfo.showMarkerInfo
-          ? MarkerSheet(controller: googleMapController!)
-          : stateInfo.showVehicleInfo
-              ? VehicleSheet(controller: googleMapController!)
-              : null,
       floatingActionButton: FloatingActionButton.small(
         onPressed: () async {
+          GoogleMapController c = await googleMapController.future;
           Position position = stateInfo.position;
-          googleMapController!.animateCamera(
+          c.animateCamera(
             CameraUpdate.newCameraPosition(
               CameraPosition(
                 target: LatLng(position.latitude, position.longitude),
@@ -180,13 +170,12 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   Future<void> updateView(StateInfo stateInfo) async {
-    final LatLng center = await getCurrentCenter(googleMapController!);
+    GoogleMapController c = await googleMapController.future;
+    final LatLng center = await getCurrentCenter(c);
     final LatLng currentCenter = LatLng(center.latitude, center.longitude);
     await stateInfo.getPosition();
     stateInfo.setRadius(
-        currentCenter,
-        await getTopOfScreen(googleMapController!),
-        await getBottomOfScreen(googleMapController!));
+        currentCenter, await getTopOfScreen(c), await getBottomOfScreen(c));
     stateInfo.getStopsForLocation(
         currentCenter.latitude.toString(), currentCenter.longitude.toString());
     stateInfo.getRoutesForLocation(

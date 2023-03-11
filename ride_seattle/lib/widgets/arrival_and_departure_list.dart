@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
@@ -7,7 +9,7 @@ import '../provider/state_info.dart';
 
 class ArrivalAndDepartureList extends StatefulWidget {
   final ScrollController scrollController;
-  final GoogleMapController controller;
+  final Completer<GoogleMapController> controller;
   const ArrivalAndDepartureList(
       {super.key, required this.scrollController, required this.controller});
 
@@ -30,7 +32,6 @@ class _ArrivalAndDepartureListState extends State<ArrivalAndDepartureList> {
           return ArrivalAndDepartureTile(
             adInfo: stateInfo.currentStopInfo!.arrivalAndDepartureList[index],
             controller: widget.controller,
-            callback: _refresh,
           );
         },
         separatorBuilder: (BuildContext context, int index) {
@@ -41,10 +42,5 @@ class _ArrivalAndDepartureListState extends State<ArrivalAndDepartureList> {
         },
       ),
     );
-  }
-
-  void _refresh() {
-    print('reloading');
-    setState(() {});
   }
 }

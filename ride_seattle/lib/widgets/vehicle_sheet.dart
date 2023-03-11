@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
@@ -6,9 +8,8 @@ import 'package:intl/intl.dart';
 import '../provider/state_info.dart';
 
 class VehicleSheet extends StatelessWidget {
-  const VehicleSheet({super.key, required this.controller});
+  const VehicleSheet({super.key,});
 
-  final GoogleMapController controller;
 
   @override
   Widget build(BuildContext context) {
