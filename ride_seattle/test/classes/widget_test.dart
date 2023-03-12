@@ -643,10 +643,32 @@ void main() {
         expect(map, findsOneWidget);
       });
 
+      testWidgets('Navigate to favorites', (tester) async {
+        await tester.pumpWidget(buildTestableWidget());
+        final buttonFinder = find.byKey(const Key('drawer_open'));
+        expect(buttonFinder, findsOneWidget);
+        await tester.tap(buttonFinder);
+        await tester.pumpAndSettle();
+
+        expect(find.byType(Drawer), findsOneWidget);
+
+        final routeButton = find.text('My Routes');
+
+        expect(routeButton, findsOneWidget);
+        await tester.tap(routeButton);
+        verify(observerMock.didPush(any, any));
+
+        await tester.pumpAndSettle();
+
+        expect(find.byKey(const Key('favoriteRoutes')), findsOneWidget);
+      });
+
       testWidgets(
         'Open navigation drawer navigate to stop history',
         (WidgetTester tester) async {
           await tester.pumpWidget(buildTestableWidget());
+          router.go('/');
+          await tester.pumpAndSettle();
           final buttonFinder = find.byKey(const Key('drawer_open'));
           expect(buttonFinder, findsOneWidget);
           await tester.tap(buttonFinder);
@@ -671,17 +693,6 @@ void main() {
           // expect(stopHistory, findsOneWidget);
         },
       );
-
-      // testWidgets('Open drawer and navigate to favorite routes',
-      //     (tester) async {
-      //   await tester.pumpWidget(buildTestableWidget());
-      //   final buttonFinder = find.byKey(const Key('drawer_open'));
-      //   expect(buttonFinder, findsOneWidget);
-      //   await tester.tap(buttonFinder);
-      //   await tester.pumpAndSettle();
-
-      //   expect(find.byType(Drawer), findsOneWidget);
-      // });
     }
   });
 }
