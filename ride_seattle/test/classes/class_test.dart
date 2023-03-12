@@ -4,12 +4,14 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:mockito/mockito.dart';
+import 'dart:convert';
 import 'package:ride_seattle/classes/arrival_and_departure.dart';
 import 'package:ride_seattle/classes/route.dart';
 import 'package:ride_seattle/classes/stop.dart';
 import 'package:ride_seattle/classes/trip_status.dart';
 import 'package:ride_seattle/classes/user.dart';
 import 'package:ride_seattle/classes/vehicle.dart';
+import 'package:ride_seattle/classes/fav_route.dart';
 import 'package:ride_seattle/provider/route_provider.dart';
 
 import 'package:ride_seattle/provider/state_info.dart';
@@ -233,6 +235,21 @@ void main() {
         expect(userFromMap.lastName, 'Ogilvy');
         expect(userFromMap.email, 'test@gmail.com');
         expect(userFromMap.favoriteRoutes, []);
+      });
+      test('Favroute class constructor', () {
+        var favRoute = FavoriteRoute(routeId: '123123', routeName: '45');
+
+        expect(favRoute.routeId, '123123');
+        expect(favRoute.routeName, '45');
+      });
+      test('Favroute from and to JSON', () {
+        var favRoute = FavoriteRoute(routeId: '123123', routeName: '45');
+        var favRouteJson = favRoute.toJson();
+
+        var fromJson = FavoriteRoute.fromJson(favRouteJson);
+
+        expect(fromJson.routeId, '123123');
+        expect(fromJson.routeName, '45');
       });
       test(
         'Vehicle class constructor',
