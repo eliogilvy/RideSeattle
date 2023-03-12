@@ -61,6 +61,7 @@ class MockStateInfo extends Mock implements StateInfo {
   @override
   Stop get currentStopInfo => _currentStopInfo;
 
+
   final String _radius = "0";
   late Position _position;
   //final Map<String, Agency> _agencies = {};
@@ -68,7 +69,15 @@ class MockStateInfo extends Mock implements StateInfo {
   final Map<String, r.Route> _routes = {};
   final Map<String, Marker> _markers = {};
   final Map<String, Circle> _circles = {};
-  late Stop _currentStopInfo;
+  final Stop _currentStopInfo = Stop(
+      stopId: 'stopId',
+      lat: 1,
+      lon: 2,
+      direction: 'north',
+      name: 'Test stop',
+      code: 'Test code',
+      locationType: 3,
+      routeIds: ['routeId']);
 
   @override
   Future<List<LatLng>> getRoutePolyline(String routeId) async {
@@ -110,15 +119,6 @@ class MockStateInfo extends Mock implements StateInfo {
 
   @override
   Future<void> getMarkerInfo(String id) async {
-    _currentStopInfo = Stop(
-        stopId: 'stopId',
-        lat: 1,
-        lon: 2,
-        direction: 'north',
-        name: 'Test stop',
-        code: 'Test code',
-        locationType: 3,
-        routeIds: ['routeId']);
     _currentStopInfo.arrivalAndDeparture['routeId'] = ArrivalAndDeparture(
       routeId: 'routeId',
       tripId: 'tripId',

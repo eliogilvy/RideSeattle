@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -29,7 +31,9 @@ import 'package:ride_seattle/provider/state_info.dart';
 
 import 'package:http/http.dart';
 import 'package:ride_seattle/styles/theme.dart';
+import 'package:ride_seattle/widgets/arrival_and_departure_list.dart';
 import 'package:ride_seattle/widgets/loading.dart';
+import 'package:ride_seattle/widgets/marker_sheet.dart';
 import 'package:ride_seattle/widgets/nav_drawer.dart';
 import 'package:ride_seattle/widgets/route_box.dart';
 import 'package:ride_seattle/widgets/route_name.dart';
@@ -306,6 +310,57 @@ void main() {
               'Location updated: ${time(customStateInfo.vehicleStatus!.lastLocationUpdateTime, 'h:mm a')}'),
           findsOneWidget);
     });
+  });
+
+  group('marker sheet', () {
+    TestWidgetsFlutterBinding.ensureInitialized();
+    Completer<GoogleMapController> controller = Completer();
+    MarkerSheet markerSheet = MarkerSheet(controller: controller);
+    final StateInfo mock = MockStateInfo();
+
+    Widget buildTestableWidget(Widget widget) {
+      return MediaQuery(
+        data: MediaQueryData(),
+        child: MaterialApp(
+          home: MultiProvider(
+              providers: [
+                ChangeNotifierProvider(
+                  create: (context) => mock,
+                ),
+                ChangeNotifierProvider(create: (context) => RouteProvider()),
+                ChangeNotifierProvider(
+                  create: (context) => FireProvider(
+                    fb: FakeFirebaseFirestore().collection('users'),
+                    auth: Auth(
+                      firebaseAuth: auth,
+                    ),
+                  ),
+                ),
+              ],
+              child: MaterialApp(
+                home: Scaffold(body: widget),
+                theme: RideSeattleTheme.theme(),
+              )),
+        ),
+      );
+    }
+
+    testWidgets('sheet loads but only has a progress indicator',
+        (tester) async {
+      await tester.pumpWidget(buildTestableWidget(markerSheet));
+      expect(find.byType(SizedBox), findsOneWidget);
+
+      await tester.pump(const Duration(seconds: 10));
+    });
+    testWidgets(
+      'sheet loads with a routename and tile list',
+      (tester) async {
+        await mock.getMarkerInfo('id');
+        await tester.pumpWidget(buildTestableWidget(markerSheet));
+        expect(find.byType(RouteName), findsOneWidget);
+        expect(find.byType(ArrivalAndDepartureList), findsOneWidget);
+      },
+    );
   });
 
   group('route_name', () {
