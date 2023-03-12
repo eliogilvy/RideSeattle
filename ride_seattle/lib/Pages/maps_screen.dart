@@ -52,9 +52,9 @@ class _MapScreenState extends State<MapScreen> {
           'Ride Seattle',
           style: Theme.of(context).appBarTheme.titleTextStyle,
         ),
-        leading: _scaffoldKey.currentState != null &&
-                _backButton
+        leading: _scaffoldKey.currentState != null && _backButton
             ? IconButton(
+                key: const Key('drawer_closed'),
                 onPressed: () {
                   setState(() {
                     _scaffoldKey.currentState!.openEndDrawer();
@@ -62,6 +62,7 @@ class _MapScreenState extends State<MapScreen> {
                 },
                 icon: const Icon(Icons.arrow_back))
             : IconButton(
+                key: const Key('drawer_open'),
                 icon: const Icon(Icons.dehaze),
                 onPressed: () {
                   setState(() {

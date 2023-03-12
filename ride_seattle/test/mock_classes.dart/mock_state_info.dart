@@ -12,6 +12,7 @@ class MockStateInfo extends Mock implements StateInfo {
     getPosition();
     _addMarker();
   }
+
   @override
   Future<void> getPosition() async {
     _position = Position(
@@ -61,6 +62,11 @@ class MockStateInfo extends Mock implements StateInfo {
   @override
   Stop get currentStopInfo => _currentStopInfo;
 
+  @override
+  bool showMarkerInfo = false;
+
+  @override
+  bool showVehicleInfo = false;
 
   final String _radius = "0";
   late Position _position;

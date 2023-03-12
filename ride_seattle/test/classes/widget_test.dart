@@ -14,27 +14,21 @@ import 'package:intl/intl.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:provider/provider.dart';
-import 'package:ride_seattle/Pages/check_auth.dart';
-import 'package:ride_seattle/Pages/favorites_screen.dart';
 import 'package:ride_seattle/Pages/favorites_screen.dart';
 import 'package:ride_seattle/Pages/login_screen.dart';
 import 'package:ride_seattle/Pages/maps_screen.dart';
 import 'package:ride_seattle/Pages/stop_history.dart';
 import 'package:ride_seattle/classes/auth.dart';
-import 'package:ride_seattle/classes/old_stops.dart';
-import 'package:ride_seattle/classes/trip_status.dart';
 import 'package:ride_seattle/main.dart';
 import 'package:ride_seattle/provider/firebase_provider.dart';
 import 'package:ride_seattle/provider/local_storage_provider.dart';
 import 'package:ride_seattle/provider/route_provider.dart';
 import 'package:ride_seattle/provider/state_info.dart';
 
-import 'package:http/http.dart';
 import 'package:ride_seattle/styles/theme.dart';
 import 'package:ride_seattle/widgets/arrival_and_departure_list.dart';
 import 'package:ride_seattle/widgets/loading.dart';
 import 'package:ride_seattle/widgets/marker_sheet.dart';
-import 'package:ride_seattle/widgets/nav_drawer.dart';
 import 'package:ride_seattle/widgets/route_box.dart';
 import 'package:ride_seattle/widgets/route_name.dart';
 import 'package:ride_seattle/widgets/vehicle_sheet.dart';
@@ -470,133 +464,156 @@ void main() {
     });
   });
 
-  // group('nav_drawer', () {
-  //   {
-  //     MockGeoLocatorPlatform locator = MockGeoLocatorPlatform(
-  //         service: true, permission: LocationPermission.always);
+  group('nav_drawer', () {
+    {
+      GeolocatorPlatform locator = MockGeoLocatorPlatform(
+          service: true, permission: LocationPermission.always);
 
-  //     MockClient client = MockClient();
+      MockClient client = MockClient();
 
-  //     StateInfo? stateInfo;
+      StateInfo stateInfo = MockStateInfo();
 
-  //     //MOCK HIVE BOX???
-  //     MockHiveBox mockHiveBox;
+      //MOCK HIVE BOX???
+      MockHiveBox mockHiveBox;
 
-  //     setUp(() {
-  //       TestWidgetsFlutterBinding.ensureInitialized();
-  //       stateInfo = StateInfo(locator: locator, client: client);
-  //     });
+      final router = GoRouter(
+        initialLocation: '/',
+        routes: [
+          GoRoute(
+            path: '/',
+            builder: (context, state) => const MapScreen(),
+            routes: const [],
+          ),
+          GoRoute(
+            path: '/favoriteRoutes',
+            builder: (context, state) => const Placeholder(
+              key: Key('favoriteRoutes'),
+            ),
+            routes: const [],
+          ),
+          GoRoute(
+            path: '/history',
+            builder: (context, state) => const Placeholder(
+              key: Key('History'),
+            ),
+          )
+        ],
+      );
+      final observerMock = MockNavigatorObserver();
 
-  //     final _router = GoRouter(
-  //       initialLocation: '/',
-  //       routes: [
-  //         GoRoute(
-  //           path: '/',
-  //           builder: (context, state) => const MapScreen(),
-  //           routes: const [],
-  //         ),
-  //         GoRoute(
-  //           path: '/favoriteRoutes',
-  //           builder: (context, state) => const Favorites(),
-  //           routes: const [],
-  //         ),
-  //         GoRoute(
-  //           path: '/history',
-  //           builder: (context, state) => const StopHistory(),
-  //         )
-  //       ],
-  //     );
-  //     final observerMock = MockNavigatorObserver();
+      Widget buildTestableWidget() {
+        //inherently has access to hive box
+        return MediaQuery(
+          data: MediaQueryData(),
+          child: MaterialApp(
+            home: MultiProvider(
+              providers: [
+                ChangeNotifierProvider(create: (context) => stateInfo),
+                ChangeNotifierProvider(create: (context) => RouteProvider()),
+                ListenableProvider<LocalStorageProvider>(
+                  create: (context) => LocalStorageProvider(history),
+                ),
+                ChangeNotifierProvider(
+                  create: (context) => FireProvider(
+                    fb: FakeFirebaseFirestore().collection('users'),
+                    auth: Auth(
+                      firebaseAuth: auth,
+                    ),
+                  ),
+                )
+              ],
+              child: MaterialApp.router(
+                title: 'ride seattle',
+                routerConfig: router,
+              ),
+            ),
+            navigatorObservers: [observerMock],
+          ),
+        );
+      }
 
-  //     Widget buildTestableWidget() {
-  //       //inherently has access to hive box
-  //       return MediaQuery(
-  //         data: MediaQueryData(),
-  //         child: MaterialApp(
-  //           home: MultiProvider(
-  //             providers: [
-  //               ChangeNotifierProvider(
-  //                   create: (context) =>
-  //                       StateInfo(locator: locator, client: client)),
-  //               ChangeNotifierProvider(create: (context) => RouteProvider()),
-  //               ListenableProvider<LocalStorageProvider>(
-  //                 create: (context) => LocalStorageProvider(history),
-  //               )
-  //             ],
-  //             child: MaterialApp.router(
-  //               title: 'ride seattle',
-  //               routerConfig: _router,
-  //             ),
-  //           ),
-  //           navigatorObservers: [observerMock],
-  //         ),
-  //       );
-  //     }
+      testWidgets('Open navigation drawer all tabs appear',
+          (WidgetTester tester) async {
+        await tester.pumpWidget(buildTestableWidget());
+        final map = find.byKey(const ValueKey('googleMap'));
+        expect(map, findsOneWidget);
 
-  //     testWidgets('Open navigation drawer all tabs appear',
-  //         (WidgetTester tester) async {
-  //       await tester.pumpWidget(buildTestableWidget());
-  //       final map = find.byKey(const ValueKey('googleMap'));
-  //       expect(map, findsOneWidget);
+        var scaffolds = find.byType(Scaffold);
 
-  //       var scaffolds = find.byType(Scaffold);
+        final ScaffoldState state = tester.firstState(scaffolds.last);
+        state.openDrawer();
+        await tester.pump(const Duration(seconds: 1));
 
-  //       final ScaffoldState state = tester.firstState(scaffolds.last);
-  //       state.openDrawer();
-  //       await tester.pump(const Duration(seconds: 1));
+        expect(find.byType(Drawer), findsOneWidget);
+        expect(find.text('Home'), findsOneWidget);
+        expect(find.text('My Routes'), findsOneWidget);
+        expect(find.text('History'), findsOneWidget);
+        expect(find.text('Sign out'), findsOneWidget);
+      });
 
-  //       expect(find.byType(Drawer), findsOneWidget);
-  //       expect(find.text('Home'), findsOneWidget);
-  //       expect(find.text('My Routes'), findsOneWidget);
-  //       expect(find.text('History'), findsOneWidget);
-  //       expect(find.text('Sign out'), findsOneWidget);
-  //     });
+      testWidgets('Open navigation drawer navigate to home',
+          (WidgetTester tester) async {
+        await tester.pumpWidget(buildTestableWidget());
+        final map = find.byKey(const ValueKey('googleMap'));
 
-  //     testWidgets('Open navigation drawer navigate to home',
-  //         (WidgetTester tester) async {
-  //       await tester.pumpWidget(buildTestableWidget());
-  //       final map = find.byKey(const ValueKey('googleMap'));
+        // var scaffolds = find.byType(Scaffold);
+        // final ScaffoldState state = tester.firstState(scaffolds.last);
+        // state.openDrawer();
+        final buttonFinder = find.byKey(const Key('drawer_open'));
+        expect(buttonFinder, findsOneWidget);
+        await tester.tap(buttonFinder);
+        await tester.pumpAndSettle();
 
-  //       var scaffolds = find.byType(Scaffold);
-  //       final ScaffoldState state = tester.firstState(scaffolds.last);
-  //       state.openDrawer();
-  //       await tester.pump(const Duration(seconds: 1));
+        expect(find.byType(Drawer), findsOneWidget);
 
-  //       expect(find.byType(Drawer), findsOneWidget);
+        final homeButton = find.text('Home');
 
-  //       final homeButton = find.text('Home');
+        expect(homeButton, findsOneWidget);
+        await tester.tap(homeButton);
+        verify(observerMock.didPush(any, any));
+        await tester.pumpAndSettle();
+        expect(map, findsOneWidget);
+      });
 
-  //       expect(homeButton, findsOneWidget);
-  //       await tester.tap(homeButton);
-  //       verify(observerMock.didPush(any, any));
-  //       await tester.pumpAndSettle();
-  //       expect(map, findsOneWidget);
-  //     });
+      testWidgets(
+        'Open navigation drawer navigate to stop history',
+        (WidgetTester tester) async {
+          await tester.pumpWidget(buildTestableWidget());
+          final buttonFinder = find.byKey(const Key('drawer_open'));
+          expect(buttonFinder, findsOneWidget);
+          await tester.tap(buttonFinder);
+          await tester.pumpAndSettle();
 
-  //     testWidgets('Open navigation drawer navigate to stop history',
-  //         (WidgetTester tester) async {
-  //       await tester.pumpWidget(buildTestableWidget());
+          expect(find.byType(Drawer), findsOneWidget);
 
-  //       var scaffolds = find.byType(Scaffold);
-  //       final ScaffoldState state = tester.firstState(scaffolds.last);
-  //       state.openDrawer();
-  //       await tester.pump(const Duration(seconds: 1));
+          final historyButton = find.text('History');
 
-  //       expect(find.byType(Drawer), findsOneWidget);
+          expect(historyButton, findsOneWidget);
+          await tester.tap(historyButton);
+          verify(observerMock.didPush(any, any));
 
-  //       final historyButton = find.text('History');
+          await tester.pumpAndSettle();
 
-  //       expect(historyButton, findsOneWidget);
-  //       await tester.tap(historyButton);
-  //       verify(observerMock.didPush(any, any));
-  //       await tester.pumpAndSettle();
+          expect(find.byKey(const Key('History')), findsOneWidget);
 
-  //       final body = find.byType(Scaffold);
-  //       expect(body, findsAtLeastNWidgets(1));
+          // final body = find.byType(Scaffold);
+          // expect(body, findsAtLeastNWidgets(1));
 
-  //       final stopHistory = find.text('Stop History');
-  //       expect(stopHistory, findsOneWidget);
-  //     });
-  //   }
-  // });
+          // final stopHistory = find.text('Stop History');
+          // expect(stopHistory, findsOneWidget);
+        },
+      );
+
+      // testWidgets('Open drawer and navigate to favorite routes',
+      //     (tester) async {
+      //   await tester.pumpWidget(buildTestableWidget());
+      //   final buttonFinder = find.byKey(const Key('drawer_open'));
+      //   expect(buttonFinder, findsOneWidget);
+      //   await tester.tap(buttonFinder);
+      //   await tester.pumpAndSettle();
+
+      //   expect(find.byType(Drawer), findsOneWidget);
+      // });
+    }
+  });
 }
