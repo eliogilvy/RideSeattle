@@ -383,7 +383,6 @@ void main() {
 
     testWidgets('Check route list on empty routes',
         (WidgetTester tester) async {
-      //fails need to dependency injection of firebase auth
       RouteList route_list = const RouteList();
       await tester.pumpWidget(buildTestableWidget(route_list));
 
@@ -395,9 +394,7 @@ void main() {
     });
 
     testWidgets('Check route list with routes', (WidgetTester tester) async {
-      //fails need to dependency injection of firebase auth
-      RouteList route_list = const RouteList();
-      Widget buildTestableWidget(Widget widget) {
+      Widget buildTestableWidgetTest(Widget widget) {
         return MediaQuery(
           data: MediaQueryData(),
           child: MaterialApp(
@@ -416,7 +413,8 @@ void main() {
         );
       }
 
-      await tester.pumpWidget(buildTestableWidget(route_list));
+      RouteList route_list = const RouteList();
+      await tester.pumpWidget(buildTestableWidgetTest(route_list));
 
       await tester.pump(const Duration(seconds: 10));
 
