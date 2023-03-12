@@ -199,6 +199,41 @@ void main() {
         expect(user.email, 'test@gmail.com');
         expect(user.favoriteRoutes, []);
       });
+      test('User toMap', () {
+        var user = User(
+          userId: 1,
+          firstName: 'Eli',
+          lastName: 'Ogilvy',
+          email: 'test@gmail.com',
+          favoriteRoutes: [],
+        );
+
+        var testUser = user.toMap();
+
+        expect(testUser["id"], 1);
+        expect(testUser["firstName"], 'Eli');
+        expect(testUser["lastName"], 'Ogilvy');
+        expect(testUser["email"], 'test@gmail.com');
+        expect(testUser["favoriteRoutes"], []);
+      });
+      test('User fromMap', () {
+        var user = User(
+          userId: 1,
+          firstName: 'Eli',
+          lastName: 'Ogilvy',
+          email: 'test@gmail.com',
+          favoriteRoutes: [],
+        );
+
+        var userMap = user.toMap();
+        var userFromMap = User.fromMap(userMap);
+
+        expect(userFromMap.userId, 1);
+        expect(userFromMap.firstName, 'Eli');
+        expect(userFromMap.lastName, 'Ogilvy');
+        expect(userFromMap.email, 'test@gmail.com');
+        expect(userFromMap.favoriteRoutes, []);
+      });
       test(
         'Vehicle class constructor',
         () {
@@ -418,8 +453,6 @@ void main() {
     },
   );
 
-
-
   group('Route Provider tests', () {
     late RouteProvider routeProvider;
 
@@ -462,8 +495,4 @@ void main() {
       expect(routeProvider.routePolyLine.length, 0);
     });
   });
-
-
-
-
 }
