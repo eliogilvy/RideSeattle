@@ -11,7 +11,6 @@ class MockStateInfo extends Mock implements StateInfo {
   MockStateInfo() {
     getPosition();
     _addMarker();
-    print(_markers);
   }
   @override
   Future<void> getPosition() async {
@@ -27,6 +26,26 @@ class MockStateInfo extends Mock implements StateInfo {
     );
   }
 
+  @override
+  TripStatus? get vehicleStatus => TripStatus(
+        activeTripId: '123',
+        blockTripSequence: 1,
+        serviceDate: DateTime.now().millisecondsSinceEpoch,
+        scheduledDistanceAlongTrip: 1000,
+        totalDistanceAlongTrip: 1200,
+        position: const LatLng(47.6062, -122.3321),
+        orientation: 90,
+        closestStop: 'Stop A',
+        closestStopTimeOffset: 0,
+        nextStop: 'Stop B',
+        nextStopTimeOffset: 300,
+        phase: 'in_progress',
+        status: 'running',
+        predicted: true,
+        lastUpdateTime: DateTime.now().millisecondsSinceEpoch,
+        lastLocationUpdateTime: DateTime.now().millisecondsSinceEpoch,
+        lastKnownLocation: const LatLng(47.6074, -122.3384),
+      );
   @override
   Set<Circle> get circles => _circles.values.toSet();
   @override
@@ -60,6 +79,11 @@ class MockStateInfo extends Mock implements StateInfo {
     _markers['test marker'] = const Marker(
         markerId: MarkerId('test marker'),
         position: LatLng(47.6219, -122.3517));
+  }
+
+  @override
+  Future<String> getStop(String id) async {
+    return 'test stop';
   }
 
   @override

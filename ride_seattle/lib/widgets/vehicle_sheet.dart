@@ -1,14 +1,13 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
 import '../provider/state_info.dart';
 
 class VehicleSheet extends StatelessWidget {
-  const VehicleSheet({super.key,});
+  const VehicleSheet({
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -26,11 +25,9 @@ class VehicleSheet extends StatelessWidget {
             controller: scrollController,
             padding:
                 const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-
             children: [
               FutureBuilder<String>(
-                future: stateInfo.getStop(stateInfo.vehicleStatus!
-                    .nextStop), 
+                future: stateInfo.getStop(stateInfo.vehicleStatus!.nextStop),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     return ListTile(
@@ -41,9 +38,7 @@ class VehicleSheet extends StatelessWidget {
                       ),
                     );
                   } else {
-                    return const Center(
-                        child:
-                            CircularProgressIndicator()); 
+                    return const Center(child: CircularProgressIndicator());
                   }
                 },
               ),
