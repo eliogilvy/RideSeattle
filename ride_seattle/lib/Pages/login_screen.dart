@@ -118,25 +118,33 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     final fire = Provider.of<FireProvider>(context);
     return Scaffold(
-      body: Center(
-        child: SingleChildScrollView(
-          child: Container(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Image.asset('assets/images/logo.png'),
-                _emailField('Email', emailController),
-                _passwordField('Password', passwordController),
-                _errorMessage(),
-                _submitButton(fire.auth),
-                _loginOrRegisterButton(),
-              ],
+      appBar: AppBar(
+        title: _title(),
+      ),
+      body: SingleChildScrollView(
+        child: Container(
+          decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/skyline.jpg'),
+                fit: BoxFit.cover,
+              )
+          ),
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              const SizedBox(height: 175),
+              Image.asset('assets/images/logo.png'),
+              _emailField('Email', emailController),
+              _passwordField('Password', passwordController),
+              _errorMessage(),
+              _submitButton(fire.auth),
+              _loginOrRegisterButton(),
+            ],
             ),
           ),
         ),
-      ),
     );
   }
 }
