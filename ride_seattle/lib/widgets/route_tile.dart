@@ -19,54 +19,71 @@ class RouteTile extends StatefulWidget {
 }
 
 class _RouteTileState extends State<RouteTile> {
-  
   @override
   Widget build(BuildContext context) {
     final fire = Provider.of<FireProvider>(context);
     final stateInfo = Provider.of<StateInfo>(context);
     final routeProvider = Provider.of<RouteProvider>(context);
-    return ListTile(
-      title: Center(
-        child: Text(
-          widget.routeName,
-          style: Theme.of(context).textTheme.bodyLarge,
-        ),
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
       ),
-      tileColor: Theme.of(context).cardTheme.color,
-      onTap: () async {
-        List<LatLng> routeStops =
-            await stateInfo.getRoutePolyline(widget.routeId);
-        stateInfo.routeFilter = widget.routeId;
-        stateInfo.updateStops();
+      color: Theme.of(context).primaryColorLight,
+      elevation: 0,
+      child: Stack(
+        children: [
+          ListTile(
+            title: Center(
+              child: Text(
+                widget.routeName,
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+            ),
+            onTap: () async {
+              List<LatLng> routeStops =
+                  await stateInfo.getRoutePolyline(widget.routeId);
+              stateInfo.routeFilter = widget.routeId;
+              stateInfo.updateStops();
 
-        routeProvider.setPolyLines(routeStops);
-        if (mounted) {
-          context.go('/');
-        }
-      },
-      onLongPress: () => setState(() {
-        widget.longpress = true;
-      }),
-      leading: widget.longpress
-          ? IconButton(
-              onPressed: () => setState(() {
-                    widget.longpress = false;
-                  }),
-              icon: Icon(
-                Icons.close,
-                color: Theme.of(context).iconTheme.color,
-              ))
-          : null,
-      trailing: widget.longpress
-          ? IconButton(
-              onPressed: () {
-                fire.removeData(widget.routeId);
-              },
-              icon: Icon(
-                Icons.delete_forever_outlined,
-                color: Theme.of(context).iconTheme.color,
-              ))
-          : null,
+              routeProvider.setPolyLines(routeStops);
+              if (mounted) {
+                context.go('/');
+              }
+            },
+            onLongPress: () => setState(() {
+              widget.longpress = true;
+            }),
+          ),
+          widget.longpress
+              ? Positioned(
+                  left: 0,
+                  child: IconButton(
+                    onPressed: () => setState(() {
+                      widget.longpress = false;
+                    }),
+                    icon: Icon(
+                      Icons.close,
+                      color: Theme.of(context).iconTheme.color,
+                    ),
+                  ),
+                )
+              : const SizedBox.shrink(),
+          widget.longpress
+              ? Positioned(
+                  right: 0,
+                  child: IconButton(
+                    onPressed: () {
+                      fire.removeData(widget.routeId);
+                    },
+                    icon: Icon(
+                      Icons.delete_forever_outlined,
+                      color: Theme.of(context).iconTheme.color,
+                    ),
+                  ),
+                )
+              : const SizedBox.shrink(),
+        ],
+      ),
     );
   }
 }

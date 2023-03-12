@@ -52,15 +52,8 @@ class _FavoritesState extends State<Favorites> {
                       children: List.generate(routes.length, (index) {
                         var routeName = routes[index].routeName;
                         var routeId = routes[index].routeId;
-                        return Container(
-                          color: Theme.of(context).cardTheme.color,
-                          child: Card(
-                            child: SizedBox(
-                              child: RouteTile(
-                                  routeName: routeName, routeId: routeId),
-                            ),
-                          ),
-                        );
+                        return RouteTile(
+                            routeName: routeName, routeId: routeId);
                       }),
                     ),
                   ),
