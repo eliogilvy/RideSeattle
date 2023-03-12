@@ -20,6 +20,7 @@ class RouteName extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
         child: Align(
           alignment: Alignment.centerLeft,
+
           child: SizedBox(
             width: MediaQuery.of(context).size.width * .8,
             child: Text(

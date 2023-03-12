@@ -5,6 +5,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:ride_seattle/provider/local_storage_provider.dart';
 import 'package:ride_seattle/widgets/arrival_and_departure_list.dart';
+import 'package:ride_seattle/widgets/route_box.dart';
 import 'package:ride_seattle/widgets/route_name.dart';
 
 import '../provider/state_info.dart';
@@ -26,7 +27,26 @@ class MarkerSheet extends StatelessWidget {
                       .currentStopInfo!.arrivalAndDeparture.values.isNotEmpty
               ? Column(
                   children: [
-                    RouteName(text: stateInfo.currentStopInfo!.name),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [RouteName(text: stateInfo.currentStopInfo!.name),],
+                    ),
+
+                    const SizedBox(height: 15,),
+                    Row(
+                      children: const [
+                        SizedBox(width: 15,),
+                        Text("Route Name"),
+                        SizedBox(width: 45,),
+                        Text("Arrival Time"),
+                        SizedBox(
+                          width: 10,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 15,),
+
                     ArrivalAndDepartureList(
                       scrollController: scrollController,
                       controller: controller,
