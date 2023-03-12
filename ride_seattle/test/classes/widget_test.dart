@@ -23,8 +23,11 @@ import 'package:ride_seattle/provider/state_info.dart';
 
 import 'package:http/http.dart';
 import 'package:ride_seattle/widgets/loading.dart';
+import 'package:ride_seattle/widgets/route_name.dart';
+import 'package:ride_seattle/widgets/vehicle_sheet.dart';
 
 import '../mock_classes.dart/mock_state_info.dart';
+import 'class_test.dart';
 import 'firebase_mock.dart';
 import 'widget_test.mocks.dart';
 
@@ -42,8 +45,16 @@ void main() {
   // TestWidgetsFlutterBinding.ensureInitialized(); Gets called in setupFirebaseAuthMocks()
   setupFirebaseAuthMocks();
 
+  Widget buildTestableWidget(Widget widget) {
+    return MediaQuery(
+        data: MediaQueryData(),
+        child: MaterialApp(home: widget)
+    );
+  }
+
   setUpAll(() async {
     await Firebase.initializeApp();
+
   });
 
   testWidgets("Check Sign in", (WidgetTester tester) async {
@@ -334,6 +345,63 @@ void main() {
       });
     });
 
+  });
+
+  group('vehicle_sheet', (){
+
+    //TODO does not work WIP
+
+    MockGeoLocatorPlatform locator = MockGeoLocatorPlatform(
+        service: true, permission: LocationPermission.always);
+    MockClient client = MockClient();
+    StateInfo? stateInfo;
+    setUp(() {
+      TestWidgetsFlutterBinding.ensureInitialized();
+      stateInfo = StateInfo(locator: locator, client: client);
+    });
+
+
+    Widget buildTestableWidget(Widget widget) {
+
+      return MediaQuery(
+        data: MediaQueryData(),
+        child: MaterialApp(
+          home:
+          MultiProvider(
+            providers: [
+              ChangeNotifierProvider(
+                  create: (context) => StateInfo(locator: locator, client: client)),
+              ChangeNotifierProvider(create: (context) => RouteProvider()),
+            ],
+              child: MaterialApp(home: widget)
+          ),
+
+        ),
+      );
+    }
+
+    testWidgets('Check vehicle sheet', (WidgetTester tester) async{
+      //fails need to dependency injection of firebase auth
+      VehicleSheet vehicle_sheet = const VehicleSheet();
+      await tester.pumpWidget(buildTestableWidget(vehicle_sheet));
+
+    });
+
+
+  });
+
+  group('route_tile', (){
+
+    testWidgets('route tile text', (WidgetTester tester) async{
+      //fails need to dependency injection of firebase auth
+      RouteName routeName = const RouteName(text: 'routeBlah');
+      await tester.pumpWidget(buildTestableWidget(routeName));
+      await tester.pumpAndSettle();
+
+      final fake_route = find.text('routeBlah');
+      expect(fake_route, findsOneWidget);
+
+    });
 
   });
 

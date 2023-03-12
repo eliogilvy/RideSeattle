@@ -10,7 +10,6 @@ import '../provider/state_info.dart';
 class VehicleSheet extends StatelessWidget {
   const VehicleSheet({super.key,});
 
-
   @override
   Widget build(BuildContext context) {
     final stateInfo = Provider.of<StateInfo>(context, listen: true);
@@ -27,6 +26,7 @@ class VehicleSheet extends StatelessWidget {
             controller: scrollController,
             padding:
                 const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+
             children: [
               FutureBuilder<String>(
                 future: stateInfo.getStop(stateInfo.vehicleStatus!
