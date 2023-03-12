@@ -16,6 +16,7 @@ import 'package:ride_seattle/classes/fav_route.dart';
 import 'package:ride_seattle/provider/route_provider.dart';
 
 import 'package:ride_seattle/provider/state_info.dart';
+import 'package:xml/xml.dart';
 
 class MockClient extends Mock implements http.Client {
   MockClient({this.res});
@@ -521,5 +522,74 @@ void main() {
       routeProvider.clearPolylines();
       expect(routeProvider.routePolyLine.length, 0);
     });
+  });
+
+  group('stop class methods', () {
+    late Stop stop;
+    final Client client = MockClient(
+      res: '''<arrivalAndDeparture>
+                <routeId>1_65</routeId>
+                <tripId>1_15551341</tripId>
+                <serviceDate>1291536000000</serviceDate>
+                <stopId>1_75403</stopId>
+                <stopSequence>42</stopSequence>
+                <blockTripSequence>2</blockTripSequence>
+                <routeShortName>65</routeShortName>
+                <routeLongName>...</routeLongName>
+                <tripHeadsign>UNIVERSITY DISTRICT</tripHeadsign>
+                <arrivalEnabled>true</arrivalEnabled>
+                <departureEnabled>true</departureEnabled>
+                <scheduledArrivalTime>1291581547000</scheduledArrivalTime>
+                <scheduledDepartureTime>1291581547000</scheduledDepartureTime>
+                <frequency>...</frequency>
+                <predicted>true</predicted>
+                <predictedArrivalTime>1291581546000</predictedArrivalTime>
+                <predictedDepartureTime>1291581546000</predictedDepartureTime>
+                <distanceFromStop>7982.740408789774</distanceFromStop>
+                <numberOfStopsAway>31</numberOfStopsAway>
+                <tripStatus>...</tripStatus>
+              </arrivalAndDeparture>''',
+    );
+    setUp(
+      () => stop = Stop(
+          stopId: 'stopId',
+          lat: 1,
+          lon: 2,
+          direction: 'north',
+          name: 'Test stop',
+          code: 'Test code',
+          locationType: 3,
+          routeIds: ['routeId']),
+    );
+
+    test(
+      'set and get arrival and departure info',
+      () async {
+        expect(stop.arrivalAndDeparture.isEmpty, true);
+        await stop.getArrivalAndDeparture(client);
+        expect(stop.arrivalAndDeparture.isNotEmpty, true);
+        expect(stop.arrivalAndDepartureList.length, 1);
+
+        final arrivalAndDeparture = stop.arrivalAndDepartureList.first;
+        expect(arrivalAndDeparture.routeId, '1_65');
+        expect(arrivalAndDeparture.tripId, '1_15551341');
+        expect(arrivalAndDeparture.serviceDate, 1291536000000);
+        expect(arrivalAndDeparture.stopId, '1_75403');
+        expect(arrivalAndDeparture.stopSequence, 42);
+        expect(arrivalAndDeparture.blockTripSequence, 2);
+        expect(arrivalAndDeparture.routeShortName, '65');
+        expect(arrivalAndDeparture.tripHeadsign, 'UNIVERSITY DISTRICT');
+        expect(arrivalAndDeparture.arrivalEnabled, true);
+        expect(arrivalAndDeparture.departureEnabled, true);
+        expect(arrivalAndDeparture.scheduledArrivalTime,1291581547000);
+        expect(arrivalAndDeparture.scheduledDepartureTime,1291581547000);
+        expect(arrivalAndDeparture.predicted, true);
+        expect(arrivalAndDeparture.predictedArrivalTime,1291581546000);
+        expect(arrivalAndDeparture.predictedDepartureTime, 1291581546000);
+        expect(arrivalAndDeparture.distanceFromStop, 7982.740408789774);
+        expect(arrivalAndDeparture.numberOfStopsAway, 31);
+        expect(arrivalAndDeparture.tripStatus, null);
+      },
+    );
   });
 }

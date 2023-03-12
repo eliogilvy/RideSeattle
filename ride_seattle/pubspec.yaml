@@ -64,6 +64,8 @@ dependencies:
   firebase_auth_mocks: ^0.10.3
   hive_generator: ^2.0.0
   fake_cloud_firestore: ^2.4.0
+  path_provider: ^2.0.13
+  hive_test: ^1.0.1
 
 dev_dependencies:
 
