@@ -38,6 +38,7 @@ import 'package:ride_seattle/widgets/nav_drawer.dart';
 import 'package:ride_seattle/widgets/route_box.dart';
 import 'package:ride_seattle/widgets/route_name.dart';
 import 'package:ride_seattle/widgets/vehicle_sheet.dart';
+import 'package:ride_seattle/widgets/route_tile.dart';
 
 import '../mock_classes.dart/mock_state_info.dart';
 import 'class_test.dart';
@@ -259,6 +260,57 @@ void main() {
             findsOneWidget);
       },
     );
+  });
+
+  group('route tile', () {
+    TestWidgetsFlutterBinding.ensureInitialized();
+    Completer<GoogleMapController> controller = Completer();
+    RouteTile routeTile = RouteTile(routeId: '123', routeName: '24');
+    final StateInfo mock = MockStateInfo();
+
+    Widget buildTestableWidget(Widget widget) {
+      return MediaQuery(
+        data: MediaQueryData(),
+        child: MaterialApp(
+          home: MultiProvider(
+              providers: [
+                ChangeNotifierProvider(
+                  create: (context) => mock,
+                ),
+                ChangeNotifierProvider(create: (context) => RouteProvider()),
+                ChangeNotifierProvider(
+                  create: (context) => FireProvider(
+                    fb: FakeFirebaseFirestore().collection('users'),
+                    auth: Auth(
+                      firebaseAuth: auth,
+                    ),
+                  ),
+                ),
+              ],
+              child: MaterialApp(
+                home: Scaffold(body: widget),
+                theme: RideSeattleTheme.theme(),
+              )),
+        ),
+      );
+    }
+
+    testWidgets('Route Tile loads ', (tester) async {
+      await tester.pumpWidget(buildTestableWidget(routeTile));
+      expect(find.byType(Text), findsOneWidget);
+
+      await tester.pump(const Duration(seconds: 10));
+    });
+
+    testWidgets('Route Tile long press ', (tester) async {
+      await tester.pumpWidget(buildTestableWidget(routeTile));
+
+      await tester.longPress(find.byType(ListTile));
+
+      await tester.pump(const Duration(seconds: 10));
+
+      expect(find.byType(IconButton), findsNWidgets(2));
+    });
   });
 
   group('vehicle_sheet', () {
