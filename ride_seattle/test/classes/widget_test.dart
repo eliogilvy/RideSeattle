@@ -23,6 +23,7 @@ import 'package:ride_seattle/provider/state_info.dart';
 
 import 'package:http/http.dart';
 import 'package:ride_seattle/widgets/loading.dart';
+import 'package:ride_seattle/widgets/route_box.dart';
 import 'package:ride_seattle/widgets/route_name.dart';
 import 'package:ride_seattle/widgets/vehicle_sheet.dart';
 
@@ -35,7 +36,9 @@ import 'widget_test.mocks.dart';
 @GenerateMocks(
   [],
   customMocks: [
-    MockSpec<NavigatorObserver>()
+    MockSpec<NavigatorObserver>(
+      returnNullOnMissingStub: true,
+    )
   ],
 )
 
@@ -406,15 +409,44 @@ void main() {
   group('route_box', (){
 
     testWidgets('route name has correct text', (WidgetTester tester) async{
+
       //fails need to dependency injection of firebase auth
-      RouteName routeName = const RouteName(text: 'routeBlah');
-      await tester.pumpWidget(buildTestableWidget(routeName));
+      RouteBox routeBox = RouteBox(text: 'route_box_text', maxW: 50,);
+      await tester.pumpWidget(buildTestableWidget(routeBox));
       await tester.pumpAndSettle();
 
-      final fake_route = find.text('routeBlah');
-      expect(fake_route, findsOneWidget);
+      final route_box_text = find.text('route_box_text');
+      expect(route_box_text, findsOneWidget);
+    });
+
+    testWidgets('route box is expanded', (WidgetTester tester) async{
+
+      final observerMock = MockNavigatorObserver();
+
+      Widget buildTestableWidget(Widget widget) {
+        return MediaQuery(
+            data: MediaQueryData(),
+            child: MaterialApp(home: widget,
+              navigatorObservers: [
+                observerMock
+              ],)
+        );
+      }
+
+      //fails need to dependency injection of firebase auth
+      RouteBox routeBox = RouteBox(text: 'route_box_text', maxW: 50,);
+      await tester.pumpWidget(buildTestableWidget(routeBox));
+      await tester.pumpAndSettle();
+
+      final route_box = find.byKey(const ValueKey("route_box"));
+      expect(route_box, findsOneWidget);
+
+      await tester.tap(route_box);
+      verify(observerMock.didPush(any, any));
+      await tester.pumpAndSettle();
 
     });
+
   });
 
 

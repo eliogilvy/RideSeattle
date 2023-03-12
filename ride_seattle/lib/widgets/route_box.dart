@@ -18,6 +18,7 @@ class _RouteBoxState extends State<RouteBox> {
   Widget build(BuildContext context) {
     return IntrinsicWidth(
       child: Container(
+        key: const ValueKey("route_box"),
         constraints:
             BoxConstraints(maxHeight: 40, minWidth: 40, maxWidth: widget.maxW),
         decoration: BoxDecoration(

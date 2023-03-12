@@ -21,10 +21,6 @@ import 'package:mockito/mockito.dart' as _i1;
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockNavigatorObserver extends _i1.Mock implements _i2.NavigatorObserver {
-  MockNavigatorObserver() {
-    _i1.throwOnMissingStub(this);
-  }
-
   @override
   void didPush(
     _i2.Route<dynamic>? route,
