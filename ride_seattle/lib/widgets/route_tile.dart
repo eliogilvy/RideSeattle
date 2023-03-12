@@ -19,9 +19,10 @@ class RouteTile extends StatefulWidget {
 }
 
 class _RouteTileState extends State<RouteTile> {
-  final fire = FireProvider(fb: FirebaseFirestore.instance.collection('users'));
+  
   @override
   Widget build(BuildContext context) {
+    final fire = Provider.of<FireProvider>(context);
     final stateInfo = Provider.of<StateInfo>(context);
     final routeProvider = Provider.of<RouteProvider>(context);
     return ListTile(

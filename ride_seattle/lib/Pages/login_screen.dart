@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
+import 'package:ride_seattle/provider/firebase_provider.dart';
 import '../classes/auth.dart';
 import '../classes/firebase.dart';
 
@@ -17,9 +19,9 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
-  Future<void> signInWithEmailAndPassword() async {
+  Future<void> signInWithEmailAndPassword(Auth auth) async {
     try {
-      await Auth().signInWithEmailAndPassword(
+      await auth.signInWithEmailAndPassword(
           email: emailController.text, password: passwordController.text);
     } on FirebaseAuthException catch (e) {
       setState(() {
@@ -28,9 +30,9 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  Future<void> createUserWithEmailAndPassword() async {
+  Future<void> createUserWithEmailAndPassword(Auth auth) async {
     try {
-      await Auth().createUserWithEmailAndPassword(
+      await auth.createUserWithEmailAndPassword(
           email: emailController.text, password: passwordController.text);
       userSetup();
     } on FirebaseAuthException catch (e) {
@@ -44,37 +46,35 @@ class _LoginPageState extends State<LoginPage> {
     return const Text('Ride Seattle');
   }
 
-  Widget _entryField(String title, TextEditingController controller,
-    ValueKey key, {bool password = false}) {
+  Widget _entryField(
+      String title, TextEditingController controller, ValueKey key,
+      {bool password = false}) {
     return TextField(
       key: key,
       obscureText: password,
       controller: controller,
-
       decoration: InputDecoration(
         labelText: title,
       ),
     );
   }
 
-  Widget _passwordField(String title, TextEditingController controller){
+  Widget _passwordField(String title, TextEditingController controller) {
     return TextField(
       key: const ValueKey("passwordField"),
       obscureText: true,
       controller: controller,
-
       decoration: InputDecoration(
         labelText: title,
       ),
     );
   }
 
-  Widget _emailField(String title, TextEditingController controller){
+  Widget _emailField(String title, TextEditingController controller) {
     return TextField(
       key: const ValueKey("emailField"),
       obscureText: false,
       controller: controller,
-
       decoration: InputDecoration(
         labelText: title,
       ),
@@ -83,16 +83,21 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _errorMessage() {
     return Text(
-        errorMessage == '' ? '' : 'Error ? $errorMessage',
-        key: const ValueKey('error_message'),
+      errorMessage == '' ? '' : 'Error ? $errorMessage',
+      key: const ValueKey('error_message'),
     );
   }
 
-  Widget _submitButton() {
+  Widget _submitButton(Auth auth) {
     return ElevatedButton(
       key: const ValueKey("submit_login_Register_Button"),
-      onPressed:
-          isLogin ? signInWithEmailAndPassword : createUserWithEmailAndPassword,
+      onPressed: () {
+        if (isLogin) {
+          signInWithEmailAndPassword(auth);
+        } else {
+          createUserWithEmailAndPassword(auth);
+        }
+      },
       child: Text(isLogin ? 'Login' : 'Register'),
     );
   }
@@ -111,25 +116,27 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final fire = Provider.of<FireProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: _title(),
       ),
       body: SingleChildScrollView(
         child: Container(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Image.asset('assets/images/logo.png'),
-                _emailField('Email', emailController),
-                _passwordField('Password', passwordController),
-                _errorMessage(),
-                _submitButton(),
-                _loginOrRegisterButton(),
-              ],
-            )),
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Image.asset('assets/images/logo.png'),
+              _emailField('Email', emailController),
+              _passwordField('Password', passwordController),
+              _errorMessage(),
+              _submitButton(fire.auth),
+              _loginOrRegisterButton(),
+            ],
+          ),
+        ),
       ),
     );
   }

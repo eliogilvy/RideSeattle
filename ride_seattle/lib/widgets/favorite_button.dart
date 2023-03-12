@@ -38,8 +38,7 @@ class _FavoriteButtonState extends State<FavoriteButton> {
   @override
   Widget build(BuildContext context) {
     // final storage = Provider.of<LocalStorageProvider>(context, listen: false);
-    var fb = FirebaseFirestore.instance.collection('users');
-    FireProvider fire = FireProvider(fb: fb);
+    final fire = Provider.of<FireProvider>(context);
     Stream<QuerySnapshot> stream = fire.routeStream(widget.routeId);
 
     return StreamBuilder<QuerySnapshot>(

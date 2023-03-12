@@ -57,8 +57,7 @@ class _FavoritesState extends State<Favorites> {
   Widget build(BuildContext context) {
     final stateInfo = Provider.of<StateInfo>(context, listen: false);
     final routeProvider = Provider.of<RouteProvider>(context, listen: false);
-    final fire =
-        FireProvider(fb: FirebaseFirestore.instance.collection('users'));
+    final fire = Provider.of<FireProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Favorite Routes'),

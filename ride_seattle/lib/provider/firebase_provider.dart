@@ -1,12 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:ride_seattle/classes/auth.dart';
 import 'package:ride_seattle/classes/fav_route.dart';
 
-class FireProvider {
-  FireProvider({required this.fb});
+class FireProvider with ChangeNotifier{
+  FireProvider({required this.fb, required this.auth}) {
+    user = auth.currentUser;
+  }
+
+  Auth auth;
 
   CollectionReference<Map<String, dynamic>> fb;
-  var user = Auth().currentUser;
+  var user;
 
   Stream<QuerySnapshot> routeStream(String routeId) {
     return fb
@@ -26,7 +31,7 @@ class FireProvider {
           .toList());
 
   Future<void> removeData(String routeId) async {
-    var user = Auth().currentUser;
+    var user = auth.currentUser;
     final routeToDelete = await fb
         .doc(user!.uid)
         .collection('routes')
@@ -42,7 +47,7 @@ class FireProvider {
   }
 
   Future<void> uploadingData(String routeId, String routeName) async {
-    var user = Auth().currentUser;
+    var user = auth.currentUser;
 
     fb
         .doc(user!.uid)

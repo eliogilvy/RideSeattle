@@ -20,10 +20,9 @@ class HistoryTile extends StatefulWidget {
 }
 
 class _HistoryTileState extends State<HistoryTile> {
-  final fire = FireProvider(fb: FirebaseFirestore.instance.collection('users'));
-
   @override
   Widget build(BuildContext context) {
+    final fire = Provider.of<FireProvider>(context);
     final hive = Provider.of<LocalStorageProvider>(context);
     return ListTile(
       title: Center(
@@ -52,11 +51,8 @@ class _HistoryTileState extends State<HistoryTile> {
       trailing: widget.longpress
           ? IconButton(
               onPressed: () async {
-                print('deleting ${widget.stopName}');
+                widget.longpress = false;
                 await hive.history.delete(widget.stopId);
-                setState(() {
-                  widget.longpress = false;
-                });
               },
               icon: Icon(
                 Icons.delete_forever_outlined,

@@ -43,11 +43,6 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // if (_scaffoldKey.currentState != null &&
-    //     _scaffoldKey.currentState!.isDrawerOpen) {
-    //   _scaffoldKey.currentState!.openEndDrawer();
-    // }
-    //final User? user = Auth().currentUser;
     final stateInfo = Provider.of<StateInfo>(context, listen: true);
     final routeProvider = Provider.of<RouteProvider>(context, listen: true);
 

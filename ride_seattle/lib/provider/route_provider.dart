@@ -5,13 +5,11 @@ import '../classes/auth.dart';
 import '../classes/stop.dart';
 
 class RouteProvider with ChangeNotifier {
-
-  var user = Auth().currentUser;
+  //var user = Auth().currentUser;
   var favorite_routes;
 
   List<Stop> stopsForRoute = [];
   Set<Polyline> routePolyLine = {};
-
 
   void addItem(Stop stop) {
     stopsForRoute.add(stop);

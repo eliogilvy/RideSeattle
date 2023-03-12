@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:ride_seattle/provider/firebase_provider.dart';
 
 import '../classes/auth.dart';
 
@@ -26,71 +28,74 @@ Widget buildHeader(BuildContext context) => Container(
       top: MediaQuery.of(context).padding.top,
     ));
 
-Widget buildMenuItems(BuildContext context) => Container(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          //Home
-          ListTile(
-            leading: Icon(
-              Icons.home_outlined,
-              color: Theme.of(context).primaryColorDark,
-            ),
-            title: Text(
-              'Home',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            onTap: () {
-              context.pop();
-            },
+Widget buildMenuItems(BuildContext context) {
+  final fire = Provider.of<FireProvider>(context);
+  return Container(
+    padding: const EdgeInsets.all(24),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        //Home
+        ListTile(
+          leading: Icon(
+            Icons.home_outlined,
+            color: Theme.of(context).primaryColorDark,
           ),
-          Divider(color: Theme.of(context).dividerColor),
-          //My Routes
-          ListTile(
-            leading: Icon(
-              Icons.star_border,
-              color: Theme.of(context).primaryColorDark,
-            ),
-            title: Text(
-              'My Routes',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            onTap: () {
-              context.push('/favoriteRoutes');
-            },
+          title: Text(
+            'Home',
+            style: Theme.of(context).textTheme.bodyMedium,
           ),
-          Divider(color: Theme.of(context).dividerColor),
-          ListTile(
-            leading: Icon(
-              Icons.history_rounded,
-              color: Theme.of(context).primaryColorDark,
-            ),
-            title: Text(
-              'History',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            onTap: () {
-              context.push('/history');
-            },
+          onTap: () {
+            context.pop();
+          },
+        ),
+        Divider(color: Theme.of(context).dividerColor),
+        //My Routes
+        ListTile(
+          leading: Icon(
+            Icons.star_border,
+            color: Theme.of(context).primaryColorDark,
           ),
+          title: Text(
+            'My Routes',
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+          onTap: () {
+            context.push('/favoriteRoutes');
+          },
+        ),
+        Divider(color: Theme.of(context).dividerColor),
+        ListTile(
+          leading: Icon(
+            Icons.history_rounded,
+            color: Theme.of(context).primaryColorDark,
+          ),
+          title: Text(
+            'History',
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+          onTap: () {
+            context.push('/history');
+          },
+        ),
 
-          Expanded(child: Container()),
-          Divider(color: Theme.of(context).dividerColor),
-          //Sign Out
-          ListTile(
-            leading: Icon(
-              Icons.logout,
-              color: Theme.of(context).primaryColorDark,
-            ),
-            title: Text(
-              'Sign out',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            onTap: () async {
-              await Auth().signOut();
-            },
+        Expanded(child: Container()),
+        Divider(color: Theme.of(context).dividerColor),
+        //Sign Out
+        ListTile(
+          leading: Icon(
+            Icons.logout,
+            color: Theme.of(context).primaryColorDark,
           ),
-        ],
-      ),
-    );
+          title: Text(
+            'Sign out',
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+          onTap: () async {
+            await fire.auth.signOut();
+          },
+        ),
+      ],
+    ),
+  );
+}

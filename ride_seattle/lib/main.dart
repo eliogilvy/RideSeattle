@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
@@ -6,10 +8,12 @@ import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 import 'package:ride_seattle/Pages/stop_history.dart';
 import 'package:ride_seattle/classes/old_stops.dart';
+import 'package:ride_seattle/provider/firebase_provider.dart';
 import 'package:ride_seattle/provider/local_storage_provider.dart';
 import 'package:ride_seattle/provider/route_provider.dart';
 import 'package:ride_seattle/styles/theme.dart';
 import 'Pages/favorites_screen.dart';
+import 'classes/auth.dart';
 import 'provider/state_info.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'Pages/check_auth.dart';
@@ -27,6 +31,7 @@ Future<void> main() async {
   Hive.registerAdapter(OldStopsAdapter());
   //openboxes
   history = await Hive.openBox('old_stops');
+  var fb = FirebaseFirestore.instance.collection('users');
 
   GeolocatorPlatform locator = GeolocatorPlatform.instance;
   Client client = Client();
@@ -40,6 +45,12 @@ Future<void> main() async {
         ListenableProvider<LocalStorageProvider>(
           create: (context) => LocalStorageProvider(history),
         ),
+        ChangeNotifierProvider<FireProvider>(
+          create: (context) => FireProvider(
+            fb: fb,
+            auth: Auth(firebaseAuth: FirebaseAuth.instance),
+          ),
+        )
       ],
       child: const RideApp(),
     ),
