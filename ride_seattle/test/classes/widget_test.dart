@@ -15,6 +15,7 @@ import 'package:ride_seattle/Pages/favorites_screen.dart';
 import 'package:ride_seattle/Pages/favorites_screen.dart';
 import 'package:ride_seattle/Pages/login_screen.dart';
 import 'package:ride_seattle/Pages/maps_screen.dart';
+import 'package:ride_seattle/Pages/stop_history.dart';
 import 'package:ride_seattle/classes/auth.dart';
 import 'package:ride_seattle/classes/old_stops.dart';
 import 'package:ride_seattle/main.dart';
@@ -43,6 +44,9 @@ import 'widget_test.mocks.dart';
     )
   ],
 )
+
+
+class MockHiveBox extends Mock implements Box {}
 
 
 void main() {
@@ -349,15 +353,45 @@ void main() {
 
       MockGeoLocatorPlatform locator = MockGeoLocatorPlatform(
           service: true, permission: LocationPermission.always);
+
       MockClient client = MockClient();
+
       StateInfo? stateInfo;
+
+      //MOCK HIVE BOX???
+      MockHiveBox mockHiveBox;
+
+
       setUp(() {
         TestWidgetsFlutterBinding.ensureInitialized();
         stateInfo = StateInfo(locator: locator, client: client);
       });
 
-      Widget buildTestableWidget(Widget widget) {
+      final _router = GoRouter(
+        initialLocation: '/',
+        routes: [
+          GoRoute(
+            path: '/',
+            builder: (context, state) => const MapScreen(),
+            routes: const [],
+          ),
+          GoRoute(
+            path: '/favoriteRoutes',
+            builder: (context, state) => const Favorites(),
+            routes: const [],
+          ),
+          GoRoute(
+            path: '/history',
+            builder: (context, state) => const StopHistory(),
+          )
+        ],
+      );
+      final observerMock = MockNavigatorObserver();
 
+
+      Widget buildTestableWidget() {
+
+        //inherently has access to hive box
         return MediaQuery(
           data: MediaQueryData(),
           child: MaterialApp(
@@ -368,16 +402,24 @@ void main() {
                     create: (context) =>
                         StateInfo(locator: locator, client: client)),
                 ChangeNotifierProvider(create: (context) => RouteProvider()),
+                ListenableProvider<LocalStorageProvider>(create: (context) =>
+                    LocalStorageProvider(history),)
               ],
-              child: widget,
+              child:  MaterialApp.router(
+                title: 'ride seattle',
+                routerConfig: _router,
+              ),
             ),
+            navigatorObservers: [
+              observerMock
+            ],
           ),
         );
       }
 
-      testWidgets('Open navigation drawer with text', (WidgetTester tester) async {
-        MapScreen map_page = MapScreen();
-        await tester.pumpWidget(buildTestableWidget(map_page));
+
+      testWidgets('Open navigation drawer all tabs appear', (WidgetTester tester) async {
+        await tester.pumpWidget(buildTestableWidget());
         final map = find.byKey(const ValueKey('googleMap'));
         expect(map, findsOneWidget);
 
@@ -388,10 +430,56 @@ void main() {
         await tester.pump(const Duration(seconds: 1));
 
         expect(find.byType(Drawer), findsOneWidget);
-        //expect(find.byKey(const ValueKey("navigation_drawer")), findsOneWidget);
         expect(find.text('Home'), findsOneWidget);
-
+        expect(find.text('My Routes'), findsOneWidget);
+        expect(find.text('History'), findsOneWidget);
+        expect(find.text('Sign out'), findsOneWidget);
       });
+
+      testWidgets('Open navigation drawer navigate to home', (WidgetTester tester) async {
+        await tester.pumpWidget(buildTestableWidget());
+        final map = find.byKey(const ValueKey('googleMap'));
+
+        var scaffolds = find.byType(Scaffold);
+        final ScaffoldState state = tester.firstState(scaffolds.last);
+        state.openDrawer();
+        await tester.pump(const Duration(seconds: 1));
+
+        expect(find.byType(Drawer), findsOneWidget);
+
+        final homeButton = find.text('Home');
+
+        expect(homeButton, findsOneWidget);
+        await tester.tap(homeButton);
+        verify(observerMock.didPush(any, any));
+        await tester.pumpAndSettle();
+        expect(map, findsOneWidget);
+      });
+
+      testWidgets('Open navigation drawer navigate to stop history', (WidgetTester tester) async {
+        await tester.pumpWidget(buildTestableWidget());
+
+        var scaffolds = find.byType(Scaffold);
+        final ScaffoldState state = tester.firstState(scaffolds.last);
+        state.openDrawer();
+        await tester.pump(const Duration(seconds: 1));
+
+        expect(find.byType(Drawer), findsOneWidget);
+
+        final historyButton = find.text('History');
+
+        expect(historyButton, findsOneWidget);
+        await tester.tap(historyButton);
+        verify(observerMock.didPush(any, any));
+        await tester.pumpAndSettle();
+
+        final body = find.byType(Scaffold);
+        expect(body, findsAtLeastNWidgets(1));
+
+        final stopHistory = find.text('Stop History');
+        expect(stopHistory, findsOneWidget);
+      });
+
     }
   });
 
