@@ -16,6 +16,7 @@ import 'package:ride_seattle/Pages/favorites_screen.dart';
 import 'package:ride_seattle/Pages/login_screen.dart';
 import 'package:ride_seattle/Pages/maps_screen.dart';
 import 'package:ride_seattle/classes/auth.dart';
+import 'package:ride_seattle/classes/old_stops.dart';
 import 'package:ride_seattle/main.dart';
 import 'package:ride_seattle/provider/local_storage_provider.dart';
 import 'package:ride_seattle/provider/route_provider.dart';
@@ -68,7 +69,7 @@ void main() {
     //initialize hive offline storage
     await Hive.initFlutter();
     //openboxes
-    Box favRouteBox = await Hive.openBox('fav_routes');
+    Box<OldStops> history = await Hive.openBox('stop_test');
     final observerMock = MockNavigatorObserver();
 
     final loginRegisterBtn = find.byKey(const ValueKey('login_registerButton'));
@@ -83,7 +84,7 @@ void main() {
               ChangeNotifierProvider(create: (context) => RouteProvider()),
               ListenableProvider<LocalStorageProvider>(
                   create: (context) =>
-                      LocalStorageProvider(favRouteBox: favRouteBox)),
+                      LocalStorageProvider(history)),
             ],
             child:const CheckAuth(),
 

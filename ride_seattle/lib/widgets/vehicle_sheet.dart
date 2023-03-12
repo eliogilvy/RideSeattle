@@ -30,7 +30,7 @@ class VehicleSheet extends StatelessWidget {
             children: [
               FutureBuilder<String>(
                 future: stateInfo.getStop(stateInfo.vehicleStatus!
-                    .nextStop), // Future<String> to build your widget tree
+                    .nextStop), 
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     return ListTile(
@@ -43,7 +43,7 @@ class VehicleSheet extends StatelessWidget {
                   } else {
                     return const Center(
                         child:
-                            CircularProgressIndicator()); // Show a loading indicator while waiting for the future to complete
+                            CircularProgressIndicator()); 
                   }
                 },
               ),

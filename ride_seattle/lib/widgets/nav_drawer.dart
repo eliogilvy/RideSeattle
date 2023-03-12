@@ -60,6 +60,20 @@ Widget buildMenuItems(BuildContext context) => Container(
               context.push('/favoriteRoutes');
             },
           ),
+          Divider(color: Theme.of(context).dividerColor),
+          ListTile(
+            leading: Icon(
+              Icons.history_rounded,
+              color: Theme.of(context).primaryColorDark,
+            ),
+            title: Text(
+              'History',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            onTap: () {
+              context.push('/history');
+            },
+          ),
 
           Expanded(child: Container()),
           Divider(color: Theme.of(context).dividerColor),

@@ -6,10 +6,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../classes/auth.dart';
 
 class FavoriteButton extends StatefulWidget {
-  const FavoriteButton(
-      {super.key,
-      required this.routeId,
-      required this.routeName,});
+  const FavoriteButton({
+    super.key,
+    required this.routeId,
+    required this.routeName,
+  });
   final String routeId;
   final String routeName;
 
@@ -38,9 +39,8 @@ class _FavoriteButtonState extends State<FavoriteButton> {
   Widget build(BuildContext context) {
     // final storage = Provider.of<LocalStorageProvider>(context, listen: false);
     var fb = FirebaseFirestore.instance.collection('users');
-    FireProvider fire = FireProvider(
-        fb: fb, routeId: widget.routeId, routeName: widget.routeName);
-    Stream<QuerySnapshot> stream = fire.stream;
+    FireProvider fire = FireProvider(fb: fb);
+    Stream<QuerySnapshot> stream = fire.routeStream(widget.routeId);
 
     return StreamBuilder<QuerySnapshot>(
       stream: stream,
@@ -61,7 +61,7 @@ class _FavoriteButtonState extends State<FavoriteButton> {
                   ),
                   onPressed: () async {
                     // storage.addRoute(widget.routeId);
-                    fire.uploadingData();
+                    fire.uploadingData(widget.routeId, widget.routeName);
                   },
                 )
               : IconButton(
@@ -70,7 +70,7 @@ class _FavoriteButtonState extends State<FavoriteButton> {
                     Icons.star,
                   ),
                   onPressed: () async {
-                    fire.removeData();
+                    fire.removeData(widget.routeId);
                   },
                 );
         }

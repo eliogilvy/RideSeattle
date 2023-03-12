@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:ride_seattle/provider/local_storage_provider.dart';
 import 'package:ride_seattle/widgets/arrival_and_departure_list.dart';
 import 'package:ride_seattle/widgets/route_name.dart';
 

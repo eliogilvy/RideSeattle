@@ -23,6 +23,7 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> {
   late String _mapStyle;
+  bool _backButton = false;
 
   Completer<GoogleMapController> googleMapController = Completer();
   static const CameraPosition initialCameraPosition =
@@ -42,10 +43,10 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (_scaffoldKey.currentState != null &&
-        _scaffoldKey.currentState!.isDrawerOpen) {
-      _scaffoldKey.currentState!.openEndDrawer();
-    }
+    // if (_scaffoldKey.currentState != null &&
+    //     _scaffoldKey.currentState!.isDrawerOpen) {
+    //   _scaffoldKey.currentState!.openEndDrawer();
+    // }
     //final User? user = Auth().currentUser;
     final stateInfo = Provider.of<StateInfo>(context, listen: true);
     final routeProvider = Provider.of<RouteProvider>(context, listen: true);
@@ -56,16 +57,23 @@ class _MapScreenState extends State<MapScreen> {
           'Ride Seattle',
           style: Theme.of(context).appBarTheme.titleTextStyle,
         ),
-        leading: IconButton(
-          icon: const Icon(Icons.dehaze),
-          onPressed: () {
-            if (!_scaffoldKey.currentState!.isDrawerOpen) {
-              _scaffoldKey.currentState!.openDrawer();
-            } else {
-              _scaffoldKey.currentState!.openEndDrawer();
-            }
-          },
-        ),
+        leading: _scaffoldKey.currentState != null &&
+                _backButton
+            ? IconButton(
+                onPressed: () {
+                  setState(() {
+                    _scaffoldKey.currentState!.openEndDrawer();
+                  });
+                },
+                icon: const Icon(Icons.arrow_back))
+            : IconButton(
+                icon: const Icon(Icons.dehaze),
+                onPressed: () {
+                  setState(() {
+                    _scaffoldKey.currentState!.openDrawer();
+                  });
+                },
+              ),
         actions: [
           IconButton(
             onPressed: () {
@@ -115,6 +123,11 @@ class _MapScreenState extends State<MapScreen> {
       body: Scaffold(
         key: _scaffoldKey,
         drawer: const NavDrawer(),
+        onDrawerChanged: (isOpened) {
+          setState(() {
+            _backButton = !_backButton;
+          });
+        },
         body: Stack(
           fit: StackFit.expand,
           children: [

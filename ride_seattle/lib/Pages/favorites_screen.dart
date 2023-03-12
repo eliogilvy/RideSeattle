@@ -3,14 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:ride_seattle/provider/firebase_provider.dart';
 
-import '../provider/firebase_provider.dart';
 import '../provider/local_storage_provider.dart';
 import '../provider/route_provider.dart';
 import '../provider/state_info.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../classes/auth.dart';
-import '../classes/favroute.dart';
+import '../classes/fav_route.dart';
+import '../widgets/route_tile.dart';
 
 class Favorites extends StatefulWidget {
   const Favorites({Key? key}) : super(key: key);
@@ -23,25 +24,20 @@ class _FavoritesState extends State<Favorites> {
   var localStorage;
   var favoriteRoutes;
   var routeLists;
-  var routeProvider;
-
-  @override
-  void initState() {
-    super.initState();
-
-    var user = Auth().currentUser;
-    routeLists = FirebaseFirestore.instance
-        .collection('users')
-        .doc(user!.uid)
-        .collection('routes')
-        .orderBy('route_name', descending: false)
-        .snapshots()
-        .map((snapshot) =>
-            snapshot.docs.map((doc) => favRoute.fromJson(doc.data())).toList());
-
-
-    //WidgetsBinding.instance.addPostFrameCallback((_) => _onAfterBuild(context));
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   var user = Auth().currentUser;
+  //   routeLists = FirebaseFirestore.instance
+  //       .collection('users')
+  //       .doc(user!.uid)
+  //       .collection('routes')
+  //       .orderBy('route_name', descending: false)
+  //       .snapshots()
+  //       .map((snapshot) =>
+  //           snapshot.docs.map((doc) => favRoute.fromJson(doc.data())).toList());
+  //   //WidgetsBinding.instance.addPostFrameCallback((_) => _onAfterBuild(context));
+  // }
 
   // void _onAfterBuild(BuildContext context) {
   //   localStorage = Provider.of<LocalStorageProvider>(context, listen: false);
@@ -61,6 +57,8 @@ class _FavoritesState extends State<Favorites> {
   Widget build(BuildContext context) {
     final stateInfo = Provider.of<StateInfo>(context, listen: false);
     final routeProvider = Provider.of<RouteProvider>(context, listen: false);
+    final fire =
+        FireProvider(fb: FirebaseFirestore.instance.collection('users'));
     return Scaffold(
       appBar: AppBar(
         title: const Text('Favorite Routes'),
@@ -71,7 +69,7 @@ class _FavoritesState extends State<Favorites> {
             height: 5,
           ),
           StreamBuilder<List<dynamic>>(
-            stream: routeLists,
+            stream: fire.routeList,
             builder: (context, snapshot) {
               if (snapshot.hasError) {
                 return const Text('Something went wrong');
@@ -88,31 +86,13 @@ class _FavoritesState extends State<Favorites> {
                       crossAxisSpacing: 4,
                       children: List.generate(routes.length, (index) {
                         var routeName = routes[index].routeName;
+                        var routeId = routes[index].routeId;
                         return Container(
                           color: Theme.of(context).cardTheme.color,
                           child: Card(
                             child: SizedBox(
-                              child: ListTile(
-                                title: Center(
-                                  child: Text(
-                                    routeName,
-                                    style:
-                                        Theme.of(context).textTheme.bodyLarge,
-                                  ),
-                                ),
-                                tileColor: Theme.of(context).cardTheme.color,
-                                onTap: () async {
-                                  List<LatLng> routeStops = await stateInfo
-                                      .getRoutePolyline(routes[index].routeId);
-                                  stateInfo.routeFilter = routes[index].routeId;
-                                  stateInfo.updateStops();
-
-                                  routeProvider.setPolyLines(routeStops);
-                                  if (mounted) {
-                                    context.go('/');
-                                  }
-                                },
-                              ),
+                              child: RouteTile(
+                                  routeName: routeName, routeId: routeId),
                             ),
                           ),
                         );

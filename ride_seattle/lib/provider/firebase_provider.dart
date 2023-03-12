@@ -1,17 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ride_seattle/classes/auth.dart';
+import 'package:ride_seattle/classes/fav_route.dart';
 
 class FireProvider {
-  FireProvider(
-      {required this.fb, required this.routeId, required this.routeName});
+  FireProvider({required this.fb});
 
-  String routeId;
-  String routeName;
-  
   CollectionReference<Map<String, dynamic>> fb;
   var user = Auth().currentUser;
 
-  Stream<QuerySnapshot> get stream {
+  Stream<QuerySnapshot> routeStream(String routeId) {
     return fb
         .doc(user!.uid)
         .collection('routes')
@@ -19,7 +16,16 @@ class FireProvider {
         .snapshots();
   }
 
-  Future<void> removeData() async {
+  Stream<List<FavoriteRoute>> get routeList => fb
+      .doc(user!.uid)
+      .collection('routes')
+      .orderBy('route_name', descending: false)
+      .snapshots()
+      .map((snapshot) => snapshot.docs
+          .map((doc) => FavoriteRoute.fromJson(doc.data()))
+          .toList());
+
+  Future<void> removeData(String routeId) async {
     var user = Auth().currentUser;
     final routeToDelete = await fb
         .doc(user!.uid)
@@ -31,15 +37,11 @@ class FireProvider {
       return snapshot.docs[0].reference;
     });
 
-    final docTask = FirebaseFirestore.instance
-        .collection('users')
-        .doc(user.uid)
-        .collection('routes')
-        .doc(routeToDelete.id);
+    final docTask = fb.doc(user.uid).collection('routes').doc(routeToDelete.id);
     await docTask.delete();
   }
 
-  Future<void> uploadingData() async {
+  Future<void> uploadingData(String routeId, String routeName) async {
     var user = Auth().currentUser;
 
     fb

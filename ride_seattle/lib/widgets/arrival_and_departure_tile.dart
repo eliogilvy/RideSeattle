@@ -38,17 +38,6 @@ class _ArrivalAndDepartureTileState extends State<ArrivalAndDepartureTile> {
     // WidgetsBinding.instance.addPostFrameCallback((_) => _onAfterBuild(context));
   }
 
-/*  void _onAfterBuild(BuildContext context) {
-    localStorage = Provider.of<LocalStorageProvider>(context, listen: false);
-
-    try {
-      localStorage.loadData();
-    } catch (e) {
-      print(e.toString());
-    }
-    favoriteRoutes = localStorage.getFavoriteRoutes();
-  }*/
-
   void _getTapPosition(TapDownDetails tapPos) {
     final RenderBox renderBox = context.findRenderObject() as RenderBox;
 

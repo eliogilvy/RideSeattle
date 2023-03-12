@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import 'package:hive/hive.dart';
 import 'package:http/http.dart';
+import 'package:ride_seattle/classes/fav_route.dart';
+import 'package:ride_seattle/classes/old_stops.dart';
 import 'package:ride_seattle/classes/trip_status.dart';
 import 'package:xml/xml.dart';
 import '../OneBusAway/routes.dart';
@@ -324,6 +326,17 @@ class StateInfo with ChangeNotifier {
           String markerFilePath =
               iconFilepath.substring(0, iconFilepath.indexOf('.'));
           markerFilePath = "$markerFilePath-marked.png";
+
+          Box<OldStops> box = await Hive.openBox('old_stops');
+          await box.put(
+            id,
+            OldStops(
+              stopId: id,
+              name: name,
+              lon: location.longitude,
+              lat: location.latitude,
+            ),
+          );
 
           addMarker("current", name, location, (p0) => null,
               iconFilepath: markerFilePath, x: 0.5, y: 0.8);
