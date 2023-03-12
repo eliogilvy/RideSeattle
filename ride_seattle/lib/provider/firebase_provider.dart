@@ -10,6 +10,7 @@ class FireProvider {
   
   CollectionReference<Map<String, dynamic>> fb;
   var user = Auth().currentUser;
+
   Stream<QuerySnapshot> get stream {
     return fb
         .doc(user!.uid)

@@ -14,6 +14,7 @@ class _LoadingWidgetState extends State<LoadingWidget> {
   @override
   void initState() {
     super.initState();
+
     Future.delayed(Duration(seconds: timeout)).then((value) {
       if (mounted) {
         setState(() {
@@ -26,7 +27,9 @@ class _LoadingWidgetState extends State<LoadingWidget> {
   @override
   Widget build(BuildContext context) {
     return _loading
-        ? const CircularProgressIndicator()
+        ? const CircularProgressIndicator(
+          key: ValueKey("loader"),
+        )
         : const Text("No data available, try tapping on the stop again.");
   }
 }

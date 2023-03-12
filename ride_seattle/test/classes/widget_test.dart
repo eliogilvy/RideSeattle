@@ -1,3 +1,4 @@
+import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -11,6 +12,7 @@ import 'package:mockito/mockito.dart';
 import 'package:provider/provider.dart';
 import 'package:ride_seattle/Pages/check_auth.dart';
 import 'package:ride_seattle/Pages/favorites_screen.dart';
+import 'package:ride_seattle/Pages/favorites_screen.dart';
 import 'package:ride_seattle/Pages/login_screen.dart';
 import 'package:ride_seattle/Pages/maps_screen.dart';
 import 'package:ride_seattle/classes/auth.dart';
@@ -20,6 +22,7 @@ import 'package:ride_seattle/provider/route_provider.dart';
 import 'package:ride_seattle/provider/state_info.dart';
 
 import 'package:http/http.dart';
+import 'package:ride_seattle/widgets/loading.dart';
 
 import '../mock_classes.dart/mock_state_info.dart';
 import 'firebase_mock.dart';
@@ -145,9 +148,6 @@ void main() {
 
     });
 
-
-
-
   });
 
 
@@ -255,6 +255,85 @@ void main() {
       expect(find.text('My Routes'), findsOneWidget);
 
     });
+
+  });
+
+  group('favorites page test', () {
+
+    Widget buildTestableWidget(Widget widget) {
+      return MediaQuery(
+          data: MediaQueryData(),
+          child: MaterialApp(home: widget)
+      );
+    }
+
+    final user = MockUser(
+      isAnonymous: true,
+      uid: 'someuid',
+      email: 'bob@somedomain.com',
+      displayName: 'Bob',
+    );
+
+    final auth = MockFirebaseAuth(mockUser: user);
+    //await??
+    final result = auth.signInAnonymously();
+
+    //final user = await result.user;
+    //print(user.displayName);
+
+    testWidgets('Favorites Page is empty find no widgets', (WidgetTester tester) async {
+
+      //fails need to dependency injection of firebase auth
+      Favorites favorite_screen = const Favorites();
+      await tester.pumpWidget(buildTestableWidget(favorite_screen));
+      await tester.pumpAndSettle();
+
+      final tiles = find.byType(ListTile);
+      expect(tiles, findsNothing);
+
+    });
+
+  });
+
+  group('loader test', () {
+    Widget buildTestableWidget(Widget widget) {
+      return MediaQuery(
+          data: MediaQueryData(),
+          child: MaterialApp(home: widget)
+      );
+    }
+
+
+    testWidgets('Loader does not appear after 10 seconds', (WidgetTester tester) async{
+
+      //fails need to dependency injection of firebase auth
+      LoadingWidget loader = const LoadingWidget();
+      await tester.pumpWidget(buildTestableWidget(loader));
+
+      await tester.runAsync(() async {
+        await tester.pumpWidget(buildTestableWidget(loader));
+        await tester.pumpAndSettle(const Duration(seconds: 11));
+
+        final loadingWidget = find.byType(CircularProgressIndicator);
+        expect(loadingWidget, findsNothing);
+      });
+    });
+
+    testWidgets('Loader appears', (WidgetTester tester) async{
+
+      //fails need to dependency injection of firebase auth
+      LoadingWidget loader = const LoadingWidget();
+      await tester.pumpWidget(buildTestableWidget(loader));
+
+      await tester.runAsync(() async {
+        await tester.pumpWidget(buildTestableWidget(loader));
+        await tester.pumpAndSettle(const Duration(seconds: 5));
+
+        final loadingWidget = find.byType(CircularProgressIndicator);
+        expect(loadingWidget, findsOneWidget);
+      });
+    });
+
 
   });
 

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 
+import '../provider/firebase_provider.dart';
 import '../provider/local_storage_provider.dart';
 import '../provider/route_provider.dart';
 import '../provider/state_info.dart';
@@ -22,10 +23,12 @@ class _FavoritesState extends State<Favorites> {
   var localStorage;
   var favoriteRoutes;
   var routeLists;
+  var routeProvider;
 
   @override
   void initState() {
     super.initState();
+
     var user = Auth().currentUser;
     routeLists = FirebaseFirestore.instance
         .collection('users')
@@ -35,6 +38,8 @@ class _FavoritesState extends State<Favorites> {
         .snapshots()
         .map((snapshot) =>
             snapshot.docs.map((doc) => favRoute.fromJson(doc.data())).toList());
+
+
     //WidgetsBinding.instance.addPostFrameCallback((_) => _onAfterBuild(context));
   }
 

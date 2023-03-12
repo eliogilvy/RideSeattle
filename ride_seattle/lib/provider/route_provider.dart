@@ -1,12 +1,20 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import '../classes/auth.dart';
 import '../classes/stop.dart';
 
-class RouteProvider with ChangeNotifier {
-  List<Stop> stopsForRoute = [];
+import '../classes/favroute.dart';
 
+class RouteProvider with ChangeNotifier {
+
+  var user = Auth().currentUser;
+  var favorite_routes;
+
+  List<Stop> stopsForRoute = [];
   Set<Polyline> routePolyLine = {};
+
 
   void addItem(Stop stop) {
     stopsForRoute.add(stop);
