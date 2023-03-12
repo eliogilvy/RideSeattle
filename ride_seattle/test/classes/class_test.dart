@@ -11,6 +11,7 @@ import 'package:ride_seattle/classes/stop.dart';
 import 'package:ride_seattle/classes/trip_status.dart';
 import 'package:ride_seattle/classes/user.dart';
 import 'package:ride_seattle/classes/vehicle.dart';
+import 'package:ride_seattle/classes/old_stops.dart';
 import 'package:ride_seattle/classes/fav_route.dart';
 import 'package:ride_seattle/provider/route_provider.dart';
 
@@ -235,6 +236,15 @@ void main() {
         expect(userFromMap.lastName, 'Ogilvy');
         expect(userFromMap.email, 'test@gmail.com');
         expect(userFromMap.favoriteRoutes, []);
+      });
+      test('Old_stops class constructor', () {
+        var oldStopTest =
+            OldStops(name: 'test', stopId: '1', lat: 1.2, lon: 1.3);
+
+        expect(oldStopTest.name, 'test');
+        expect(oldStopTest.stopId, '1');
+        expect(oldStopTest.lat, 1.2);
+        expect(oldStopTest.lon, 1.3);
       });
       test('Favroute class constructor', () {
         var favRoute = FavoriteRoute(routeId: '123123', routeName: '45');
