@@ -33,6 +33,7 @@ import 'package:ride_seattle/widgets/route_box.dart';
 import 'package:ride_seattle/widgets/route_name.dart';
 import 'package:ride_seattle/widgets/vehicle_sheet.dart';
 import 'package:ride_seattle/widgets/route_tile.dart';
+import 'package:ride_seattle/widgets/route_list.dart';
 
 import '../mock_classes.dart/mock_state_info.dart';
 import 'class_test.dart';
@@ -355,6 +356,75 @@ void main() {
           find.text(
               'Location updated: ${time(customStateInfo.vehicleStatus!.lastLocationUpdateTime, 'h:mm a')}'),
           findsOneWidget);
+    });
+  });
+
+  group('route_list', () {
+    StateInfo customStateInfo = MockStateInfo();
+
+    Widget buildTestableWidget(Widget widget) {
+      return MediaQuery(
+        data: MediaQueryData(),
+        child: MaterialApp(
+          home: MultiProvider(
+              providers: [
+                ChangeNotifierProvider(
+                  create: (context) => customStateInfo,
+                ),
+                ChangeNotifierProvider(create: (context) => RouteProvider()),
+              ],
+              child: MaterialApp(
+                home: Scaffold(body: widget),
+                theme: RideSeattleTheme.theme(),
+              )),
+        ),
+      );
+    }
+
+    testWidgets('Check route list on empty routes',
+        (WidgetTester tester) async {
+      //fails need to dependency injection of firebase auth
+      RouteList route_list = const RouteList();
+      await tester.pumpWidget(buildTestableWidget(route_list));
+
+      expect(find.byType(SizedBox), findsOneWidget);
+      expect(find.byType(Text), findsOneWidget);
+      expect(find.byType(InkWell), findsNothing);
+
+      await tester.pump();
+    });
+
+    testWidgets('Check route list with routes', (WidgetTester tester) async {
+      //fails need to dependency injection of firebase auth
+      RouteList route_list = const RouteList();
+      Widget buildTestableWidget(Widget widget) {
+        return MediaQuery(
+          data: MediaQueryData(),
+          child: MaterialApp(
+            home: MultiProvider(
+                providers: [
+                  ChangeNotifierProvider(
+                      create: (context) =>
+                          StateInfo(locator: locator, client: client)),
+                  ChangeNotifierProvider(create: (context) => RouteProvider()),
+                ],
+                child: MaterialApp(
+                  home: Scaffold(body: widget),
+                  theme: RideSeattleTheme.theme(),
+                )),
+          ),
+        );
+      }
+
+      await tester.pumpWidget(buildTestableWidget(route_list));
+
+      await tester.pump(const Duration(seconds: 10));
+
+      expect(find.byType(SizedBox), findsOneWidget);
+      expect(find.byType(Text), findsOneWidget);
+      expect(find.byType(InkWell), findsNothing);
+
+      await tester.pump();
     });
   });
 
