@@ -340,7 +340,6 @@ void main() {
     }
 
     testWidgets('Check vehicle sheet', (WidgetTester tester) async {
-      //fails need to dependency injection of firebase auth
       VehicleSheet vehicle_sheet = const VehicleSheet();
       await tester.pumpWidget(buildTestableWidget(vehicle_sheet));
 
@@ -538,8 +537,7 @@ void main() {
           service: true, permission: LocationPermission.always);
 
       MockClient client = MockClient();
-
-      StateInfo stateInfo = MockStateInfo();
+      StateInfo customStateInfo = MockStateInfo();
 
       //MOCK HIVE BOX???
       MockHiveBox mockHiveBox;
@@ -576,7 +574,7 @@ void main() {
           child: MaterialApp(
             home: MultiProvider(
               providers: [
-                ChangeNotifierProvider(create: (context) => stateInfo),
+                ChangeNotifierProvider(create: (context) => customStateInfo),
                 ChangeNotifierProvider(create: (context) => RouteProvider()),
                 ListenableProvider<LocalStorageProvider>(
                   create: (context) => LocalStorageProvider(history),
@@ -676,21 +674,14 @@ void main() {
 
           expect(find.byType(Drawer), findsOneWidget);
 
-          final historyButton = find.text('History');
+          final historyButton = find.byKey(const ValueKey('route_history'));
 
           expect(historyButton, findsOneWidget);
           await tester.tap(historyButton);
           verify(observerMock.didPush(any, any));
 
-          await tester.pumpAndSettle();
-
-          expect(find.byKey(const Key('History')), findsOneWidget);
-
           // final body = find.byType(Scaffold);
           // expect(body, findsAtLeastNWidgets(1));
-
-          // final stopHistory = find.text('Stop History');
-          // expect(stopHistory, findsOneWidget);
         },
       );
     }

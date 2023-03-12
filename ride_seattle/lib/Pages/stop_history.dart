@@ -47,8 +47,10 @@ class _StopHistoryState extends State<StopHistory> {
                     itemCount: history.length,
                     itemBuilder: (context, index) {
                       final oldStop = history[index];
-                      return HistoryTile(
-                          stopName: oldStop.name, stopId: oldStop.stopId);
+                      return Card(
+                        child: HistoryTile(
+                            stopName: oldStop.name, stopId: oldStop.stopId),
+                      );
                     });
               },
             ),

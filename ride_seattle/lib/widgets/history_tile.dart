@@ -14,7 +14,7 @@ class HistoryTile extends StatefulWidget {
   HistoryTile({super.key, required this.stopName, required this.stopId});
   final String stopName;
   final String stopId;
-  bool longpress = false;
+  bool tapped = false;
   @override
   State<HistoryTile> createState() => _HistoryTileState();
 }
@@ -28,35 +28,46 @@ class _HistoryTileState extends State<HistoryTile> {
       title: Center(
         child: Text(
           widget.stopName,
-          style: Theme.of(context).textTheme.bodyMedium,
+          style: const TextStyle(
+            color: Colors.white,
+          ),//Theme.of(context).textTheme.bodyMedium,
           overflow: TextOverflow.ellipsis,
         ),
       ),
-      tileColor: Theme.of(context).cardTheme.color,
-      onLongPress: () => setState(
+
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(10),
+              topRight: Radius.circular(10),
+              bottomRight: Radius.circular(10),
+              bottomLeft: Radius.circular(10)
+          )
+      ),
+      tileColor: Colors.blue,//Theme.of(context).cardTheme.color,
+      onTap: () => setState(
         () {
-          widget.longpress = true;
+          widget.tapped = true;
         },
       ),
-      leading: widget.longpress
+      leading: widget.tapped
           ? IconButton(
               onPressed: () => setState(() {
-                    widget.longpress = false;
+                    widget.tapped = false;
                   }),
-              icon: Icon(
+              icon: const Icon(
                 Icons.close,
-                color: Theme.of(context).iconTheme.color,
+                color: Colors.white, //Theme.of(context).iconTheme.color,
               ))
           : null,
-      trailing: widget.longpress
+      trailing: widget.tapped
           ? IconButton(
               onPressed: () async {
-                widget.longpress = false;
+                widget.tapped = false;
                 await hive.history.delete(widget.stopId);
               },
               icon: Icon(
                 Icons.delete_forever_outlined,
-                color: Theme.of(context).iconTheme.color,
+                color: Colors.white,//Theme.of(context).iconTheme.color,
               ),
             )
           : null,

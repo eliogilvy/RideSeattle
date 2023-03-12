@@ -64,6 +64,7 @@ Widget buildMenuItems(BuildContext context) {
         ),
         Divider(color: Theme.of(context).dividerColor),
         ListTile(
+          key: const ValueKey("route_history"),
           leading: Icon(
             Icons.history_rounded,
             color: Theme.of(context).primaryColorDark,

@@ -30,11 +30,24 @@ class VehicleSheet extends StatelessWidget {
                 future: stateInfo.getStop(stateInfo.vehicleStatus!.nextStop),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
-                    return ListTile(
-                      leading: const Icon(Icons.location_on),
-                      title: Text(
-                        'Next Stop: ${snapshot.data}',
-                        style: Theme.of(context).textTheme.bodyMedium,
+                    return Card(
+
+                      shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(10),
+                              topRight: Radius.circular(10),
+                              bottomRight: Radius.circular(10),
+                              bottomLeft: Radius.circular(10)
+                          )
+                      ),
+
+                      child: ListTile(
+
+                        leading: const Icon(Icons.location_on),
+                        title: Text(
+                          'Next Stop: ${snapshot.data}',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
                       ),
                     );
                   } else {
@@ -42,11 +55,23 @@ class VehicleSheet extends StatelessWidget {
                   }
                 },
               ),
-              ListTile(
-                leading: const Icon(Icons.timer),
-                title: Text(
-                  'Location updated: ${time(stateInfo.vehicleStatus!.lastLocationUpdateTime, 'h:mm a')}',
-                  style: Theme.of(context).textTheme.bodyMedium,
+              Card(
+                shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(10),
+                        topRight: Radius.circular(10),
+                        bottomRight: Radius.circular(10),
+                        bottomLeft: Radius.circular(10)
+                    )
+                ),
+
+                child: ListTile(
+
+                  leading: const Icon(Icons.timer),
+                  title: Text(
+                    'Location updated: ${time(stateInfo.vehicleStatus!.lastLocationUpdateTime, 'h:mm a')}',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
                 ),
               ),
             ],
