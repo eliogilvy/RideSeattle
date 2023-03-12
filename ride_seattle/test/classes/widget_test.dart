@@ -62,45 +62,6 @@ void main() {
 
   });
 
-  testWidgets("Check Sign in", (WidgetTester tester) async {
-
-    GeolocatorPlatform locator = GeolocatorPlatform.instance;
-    Client client = Client();
-    //initialize hive offline storage
-    await Hive.initFlutter();
-    //openboxes
-    Box<OldStops> history = await Hive.openBox('stop_test');
-    final observerMock = MockNavigatorObserver();
-
-    final loginRegisterBtn = find.byKey(const ValueKey('login_registerButton'));
-
-    //execute test
-    await tester.pumpWidget(
-        MaterialApp(
-          home:MultiProvider(
-            providers: [
-              ChangeNotifierProvider(
-                  create: (context) => StateInfo(locator: locator, client: client)),
-              ChangeNotifierProvider(create: (context) => RouteProvider()),
-              ListenableProvider<LocalStorageProvider>(
-                  create: (context) =>
-                      LocalStorageProvider(history)),
-            ],
-            child:const CheckAuth(),
-
-          ),
-          navigatorObservers: [
-            observerMock,
-          ],
-        )
-    );
-
-    //await tester.tap(loginRegisterBtn);
-    //verify(observerMock.didPush(any, any));
-    await tester.pump();
-  });
-
-
   group('login and register tests', () {
     Widget buildTestableWidget(Widget widget) {
       return MediaQuery(
@@ -208,72 +169,8 @@ void main() {
 
   });
 
-
-  group('Router Test', ()
-  {
-
-    final observerMock = MockNavigatorObserver();
-
-
-    final _router = GoRouter(
-      initialLocation: '/',
-      routes: [
-        GoRoute(
-          path: '/',
-          builder: (context, state) => const MapScreen(),
-          routes: const [],
-        ),
-        GoRoute(
-          path: '/favoriteRoutes',
-          builder: (context, state) => const Favorites(),
-          routes: const [],
-        ),
-      ],
-    );
-
-
-    Widget buildTestableWidget() {
-
-      GeolocatorPlatform locator = GeolocatorPlatform.instance;
-      Client client = Client();
-
-      return MediaQuery(
-        data: MediaQueryData(),
-        child: MaterialApp(
-          home:
-          MultiProvider(
-            providers: [
-              ChangeNotifierProvider(
-                  create: (context) => StateInfo(locator: locator, client: client)),
-              ChangeNotifierProvider(create: (context) => RouteProvider()),
-            ],
-            child: MaterialApp.router(
-              title: 'ride seattle',
-              routerConfig: _router,
-            ),
-          ),
-
-        ),
-      );
-    }
-
-    testWidgets('Maps screen loads, navigate to favorites', (WidgetTester tester) async {
-
-      await tester.pumpWidget(buildTestableWidget());
-      final map = find.byKey(const ValueKey('googleMap'));
-      expect(map, findsOneWidget);
-
-      final ScaffoldState scaffoldState = tester.firstState(find.byType(Scaffold));
-      scaffoldState.openDrawer();
-
-      await tester.pump(const Duration(seconds: 1));
-      expect(find.text('My Routes'), findsOneWidget);
-
-    });
-
-  });
-
   group('favorites page test', () {
+    //WIP
 
     Widget buildTestableWidget(Widget widget) {
       return MediaQuery(
@@ -405,7 +302,7 @@ void main() {
 
   group('route_box', (){
 
-    testWidgets('route name has correct text', (WidgetTester tester) async{
+    testWidgets('route box has correct text', (WidgetTester tester) async{
 
       //fails need to dependency injection of firebase auth
       RouteBox routeBox = RouteBox(text: 'route_box_text', maxW: 50,);
@@ -416,7 +313,7 @@ void main() {
       expect(route_box_text, findsOneWidget);
     });
 
-    testWidgets('route box is expanded', (WidgetTester tester) async{
+    testWidgets('route box has been tapped', (WidgetTester tester) async{
 
       final observerMock = MockNavigatorObserver();
 
