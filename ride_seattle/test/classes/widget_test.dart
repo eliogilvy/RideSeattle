@@ -387,12 +387,11 @@ void main() {
 
     });
 
-
   });
 
-  group('route_tile', (){
+  group('route_name', (){
 
-    testWidgets('route tile text', (WidgetTester tester) async{
+    testWidgets('route name has correct text', (WidgetTester tester) async{
       //fails need to dependency injection of firebase auth
       RouteName routeName = const RouteName(text: 'routeBlah');
       await tester.pumpWidget(buildTestableWidget(routeName));
@@ -402,7 +401,20 @@ void main() {
       expect(fake_route, findsOneWidget);
 
     });
+  });
 
+  group('route_box', (){
+
+    testWidgets('route name has correct text', (WidgetTester tester) async{
+      //fails need to dependency injection of firebase auth
+      RouteName routeName = const RouteName(text: 'routeBlah');
+      await tester.pumpWidget(buildTestableWidget(routeName));
+      await tester.pumpAndSettle();
+
+      final fake_route = find.text('routeBlah');
+      expect(fake_route, findsOneWidget);
+
+    });
   });
 
 
