@@ -9,6 +9,7 @@ class NavDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
+        key: const ValueKey("navigation_drawer"),
         width: MediaQuery.of(context).size.width * .6,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
