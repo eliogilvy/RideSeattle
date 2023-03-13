@@ -22,7 +22,6 @@ class HistoryTile extends StatefulWidget {
 class _HistoryTileState extends State<HistoryTile> {
   @override
   Widget build(BuildContext context) {
-    final fire = Provider.of<FireProvider>(context);
     final hive = Provider.of<LocalStorageProvider>(context);
     return ListTile(
       title: Center(
