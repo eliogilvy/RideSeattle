@@ -63,7 +63,7 @@ class _RouteTileState extends State<RouteTile> {
                     }),
                     icon: Icon(
                       Icons.close,
-                      color: Theme.of(context).iconTheme.color,
+                      color: Theme.of(context).canvasColor,
                     ),
                   ),
                 )
@@ -77,7 +77,7 @@ class _RouteTileState extends State<RouteTile> {
                     },
                     icon: Icon(
                       Icons.delete_forever_outlined,
-                      color: Theme.of(context).iconTheme.color,
+                      color: Theme.of(context).canvasColor,
                     ),
                   ),
                 )

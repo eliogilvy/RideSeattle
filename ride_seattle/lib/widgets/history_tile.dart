@@ -32,15 +32,13 @@ class _HistoryTileState extends State<HistoryTile> {
           overflow: TextOverflow.ellipsis,
         ),
       ),
-
       shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
               topLeft: Radius.circular(10),
               topRight: Radius.circular(10),
               bottomRight: Radius.circular(10),
               bottomLeft: Radius.circular(10))),
-      tileColor: Theme.of(context)
-          .primaryColorLight, //Theme.of(context).cardTheme.color,
+      tileColor: Theme.of(context).primaryColorLight,
       onTap: () => setState(
         () {
           widget.tapped = !widget.tapped;
