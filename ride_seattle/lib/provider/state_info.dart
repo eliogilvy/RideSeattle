@@ -342,7 +342,7 @@ class StateInfo with ChangeNotifier {
               iconFilepath: markerFilePath);
         }
       },
-      anchor: const Offset(0.0, 0.0),
+      anchor: x == null || y == null ? const Offset(0.5, 1.0) : Offset(x, y),
     );
     _markers[id] = marker;
     notifyListeners();
