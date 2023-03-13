@@ -134,13 +134,20 @@ class _LoginPageState extends State<LoginPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              const SizedBox(height: 175),
+              const SizedBox(height: 140),
               Image.asset('assets/images/logo.png'),
-              _emailField('Email', emailController),
-              _passwordField('Password', passwordController),
-              _errorMessage(),
-              _submitButton(fire.auth),
-              _loginOrRegisterButton(),
+              Container(
+                color: Colors.white,
+                child: Column(
+                  children: [
+                    _emailField('Email', emailController),
+                    _passwordField('Password', passwordController),
+                    _errorMessage(),
+                    _submitButton(fire.auth),
+                    _loginOrRegisterButton(),
+                  ],
+                ),
+              )
             ],
             ),
           ),
