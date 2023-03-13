@@ -46,7 +46,7 @@ class VehicleSheet extends StatelessWidget {
                         leading: const Icon(Icons.location_on),
                         title: Text(
                           'Next Stop: ${snapshot.data}',
-                          style: Theme.of(context).textTheme.bodyMedium,
+                          style: Theme.of(context).primaryTextTheme.bodyMedium,
                         ),
                       ),
                     );
@@ -70,7 +70,7 @@ class VehicleSheet extends StatelessWidget {
                   leading: const Icon(Icons.timer),
                   title: Text(
                     'Location updated: ${time(stateInfo.vehicleStatus!.lastLocationUpdateTime, 'h:mm a')}',
-                    style: Theme.of(context).textTheme.bodyMedium,
+                    style: Theme.of(context).primaryTextTheme.bodyMedium,
                   ),
                 ),
               ),
