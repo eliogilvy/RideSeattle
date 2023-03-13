@@ -16,13 +16,19 @@ class RouteName extends StatelessWidget {
         ),
       ),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
+        padding: const EdgeInsets.fromLTRB(10, 5, 0, 5),
         child: Align(
           alignment: Alignment.centerLeft,
           child: SizedBox(
             width: MediaQuery.of(context).size.width * .8,
-            child: Text(text,
-                style: Theme.of(context).primaryTextTheme.bodyMedium),
+            child: Text(
+              text,
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                color: Colors.black,
+              ),
+            ),
           ),
         ),
       ),
