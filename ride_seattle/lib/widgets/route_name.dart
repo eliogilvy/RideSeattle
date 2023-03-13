@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:ride_seattle/styles/tile_style.dart';
 
 class RouteName extends StatelessWidget {
   final String text;
@@ -22,7 +21,8 @@ class RouteName extends StatelessWidget {
           alignment: Alignment.centerLeft,
           child: SizedBox(
             width: MediaQuery.of(context).size.width * .8,
-            child: Text(text, style: Theme.of(context).textTheme.bodyMedium),
+            child: Text(text,
+                style: Theme.of(context).primaryTextTheme.bodyMedium),
           ),
         ),
       ),

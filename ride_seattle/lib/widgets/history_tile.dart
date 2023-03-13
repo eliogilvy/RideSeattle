@@ -28,9 +28,7 @@ class _HistoryTileState extends State<HistoryTile> {
       title: Center(
         child: Text(
           widget.stopName,
-          style: const TextStyle(
-            color: Colors.white,
-          ),//Theme.of(context).textTheme.bodyMedium,
+          style: Theme.of(context).textTheme.bodyMedium,
           overflow: TextOverflow.ellipsis,
         ),
       ),
@@ -40,13 +38,12 @@ class _HistoryTileState extends State<HistoryTile> {
               topLeft: Radius.circular(10),
               topRight: Radius.circular(10),
               bottomRight: Radius.circular(10),
-              bottomLeft: Radius.circular(10)
-          )
-      ),
-      tileColor: Colors.blue,//Theme.of(context).cardTheme.color,
+              bottomLeft: Radius.circular(10))),
+      tileColor: Theme.of(context)
+          .primaryColorLight, //Theme.of(context).cardTheme.color,
       onTap: () => setState(
         () {
-          widget.tapped = true;
+          widget.tapped = !widget.tapped;
         },
       ),
       leading: widget.tapped
@@ -65,9 +62,9 @@ class _HistoryTileState extends State<HistoryTile> {
                 widget.tapped = false;
                 await hive.history.delete(widget.stopId);
               },
-              icon: Icon(
+              icon: const Icon(
                 Icons.delete_forever_outlined,
-                color: Colors.white,//Theme.of(context).iconTheme.color,
+                color: Colors.white, //Theme.of(context).iconTheme.color,
               ),
             )
           : null,

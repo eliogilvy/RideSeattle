@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:ride_seattle/classes/auth.dart';
 import 'package:ride_seattle/classes/fav_route.dart';
 
-class FireProvider with ChangeNotifier{
+class FireProvider with ChangeNotifier {
   FireProvider({required this.fb, required this.auth}) {
     user = auth.currentUser;
   }
@@ -24,7 +24,7 @@ class FireProvider with ChangeNotifier{
   Stream<List<FavoriteRoute>> get routeList => fb
       .doc(user!.uid)
       .collection('routes')
-      .orderBy('route_name', descending: false)
+      .orderBy('route_name')
       .snapshots()
       .map((snapshot) => snapshot.docs
           .map((doc) => FavoriteRoute.fromJson(doc.data()))

@@ -41,7 +41,7 @@ Widget buildMenuItems(BuildContext context) {
           ),
           title: Text(
             'Home',
-            style: Theme.of(context).textTheme.bodyMedium,
+            style: Theme.of(context).primaryTextTheme.bodyMedium,
           ),
           onTap: () {
             context.pop();
@@ -56,7 +56,7 @@ Widget buildMenuItems(BuildContext context) {
           ),
           title: Text(
             'My Routes',
-            style: Theme.of(context).textTheme.bodyMedium,
+            style: Theme.of(context).primaryTextTheme.bodyMedium,
           ),
           onTap: () {
             context.push('/favoriteRoutes');
@@ -71,7 +71,7 @@ Widget buildMenuItems(BuildContext context) {
           ),
           title: Text(
             'History',
-            style: Theme.of(context).textTheme.bodyMedium,
+            style: Theme.of(context).primaryTextTheme.bodyMedium,
           ),
           onTap: () {
             context.push('/history');
@@ -88,7 +88,7 @@ Widget buildMenuItems(BuildContext context) {
           ),
           title: Text(
             'Sign out',
-            style: Theme.of(context).textTheme.bodyMedium,
+            style: Theme.of(context).primaryTextTheme.bodyMedium,
           ),
           onTap: () async {
             await fire.auth.signOut();
