@@ -43,7 +43,7 @@ class _RouteBoxState extends State<RouteBox> {
                 alignment: Alignment.center,
                 child: Text(
                   widget.text,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 20,
                   ),
                   overflow: TextOverflow.ellipsis,
