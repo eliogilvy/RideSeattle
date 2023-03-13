@@ -27,6 +27,7 @@ class RouteName extends StatelessWidget {
                 fontSize: 20,
                 fontWeight: FontWeight.w600,
                 color: Colors.black,
+                fontFamily: 'route',
               ),
             ),
           ),

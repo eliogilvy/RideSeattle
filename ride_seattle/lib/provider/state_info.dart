@@ -339,7 +339,7 @@ class StateInfo with ChangeNotifier {
           );
 
           addMarker("current", name, location, (p0) => null,
-              iconFilepath: markerFilePath, x: 0.5, y: 0.8);
+              iconFilepath: markerFilePath);
         }
       },
       anchor: const Offset(0.0, 0.0),

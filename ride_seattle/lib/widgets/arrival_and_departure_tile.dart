@@ -38,40 +38,6 @@ class _ArrivalAndDepartureTileState extends State<ArrivalAndDepartureTile> {
     // WidgetsBinding.instance.addPostFrameCallback((_) => _onAfterBuild(context));
   }
 
-  // void _getTapPosition(TapDownDetails tapPos) {
-  //   final RenderBox renderBox = context.findRenderObject() as RenderBox;
-
-  //   setState(() {
-  //     _tapPosition = renderBox.globalToLocal(tapPos.globalPosition);
-  //   });
-  // }
-
-  // void _showContextMenu(context, String routeId) async {
-  //   final RenderObject? overlay =
-  //       Overlay.of(context).context.findRenderObject();
-  //   final result = await showMenu(
-  //       context: context,
-  //       position: RelativeRect.fromRect(
-  //         Rect.fromLTWH(_tapPosition.dx, _tapPosition.dy, 10, 10),
-  //         Rect.fromLTWH(0, 0, overlay!.paintBounds.size.width,
-  //             overlay.paintBounds.size.height),
-  //       ),
-  //       items: [
-  //         const PopupMenuItem(
-  //           value: "favorited",
-  //           child: Text('Add to favorites'),
-  //         ),
-  //       ]);
-
-  //   if (result == "favorited") {
-  //     print("route favorited");
-  //     //add polylines to local database
-
-  //     localStorage.addRoute(routeId);
-  //     print("route added - arrival/departure tile");
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
     final stateInfo = Provider.of<StateInfo>(context, listen: false);
@@ -96,32 +62,6 @@ class _ArrivalAndDepartureTileState extends State<ArrivalAndDepartureTile> {
           const SizedBox(
             width: 10,
           ),
-          // GestureDetector(
-          //   onTapDown: (position) {
-          //     _getTapPosition(position);
-          //   },
-          //   child: InkWell(
-          //     //tooltip: "Find my vehicle",
-          //     onTap: () async {
-          //       if (widget.adInfo.tripStatus != null) {
-          //         //get all the stops for the current route
-          //         List<LatLng> routeStops =
-          //             await stateInfo.getRoutePolyline(widget.adInfo.routeId);
-          //         //add those stops to the routeProvider
-
-          //         routeProvider.setPolyLines(routeStops);
-
-          //         findBus(stateInfo);
-          //       }
-          //     },
-          //     onLongPress: () async {
-          //       _showContextMenu(context, widget.adInfo.routeId);
-          //     },
-          //     child: Ink(
-          //       child: const Icon(Icons.directions_bus),
-          //     ),
-          //   ),
-          // ),
 
           IconButton(
             tooltip: "Find my vehicle",
