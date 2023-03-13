@@ -25,7 +25,7 @@ class RideSeattleTheme {
         ),
         bodyMedium: TextStyle(
           fontFamily: 'route',
-          fontSize: 18,
+          fontSize: 20,
         ),
         bodyLarge: TextStyle(
           fontFamily: 'route',

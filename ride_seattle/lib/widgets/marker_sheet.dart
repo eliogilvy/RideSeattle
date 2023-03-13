@@ -27,25 +27,23 @@ class MarkerSheet extends StatelessWidget {
                       .currentStopInfo!.arrivalAndDeparture.values.isNotEmpty
               ? Column(
                   children: [
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [RouteName(text: stateInfo.currentStopInfo!.name),],
-                    ),
+                    RouteName(text: stateInfo.currentStopInfo!.name),
 
-                    const SizedBox(height: 15,),
-                    Row(
-                      children: const [
-                        SizedBox(width: 15,),
-                        Text("Route Name"),
-                        SizedBox(width: 45,),
-                        Text("Arrival Time"),
-                        SizedBox(
-                          width: 10,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 15,),
+                    // const SizedBox(
+                    //   height: 15,
+                    // ),
+                    // Row(
+                    //   children: const [
+                    //     SizedBox(width: 15,),
+                    //     Text("Route Name"),
+                    //     SizedBox(width: 45,),
+                    //     Text("Arrival Time"),
+                    //     SizedBox(
+                    //       width: 10,
+                    //     ),
+                    //   ],
+                    // ),
+                    // const SizedBox(height: 15,),
 
                     ArrivalAndDepartureList(
                       scrollController: scrollController,
