@@ -29,7 +29,7 @@ class _ArrivalAndDepartureTileState extends State<ArrivalAndDepartureTile> {
   late LocalStorageProvider localStorage;
   late List<String> favoriteRoutes;
 
-  Offset _tapPosition = Offset.zero;
+  // Offset _tapPosition = Offset.zero;
 
   @override
   void initState() {
@@ -38,13 +38,13 @@ class _ArrivalAndDepartureTileState extends State<ArrivalAndDepartureTile> {
     // WidgetsBinding.instance.addPostFrameCallback((_) => _onAfterBuild(context));
   }
 
-  void _getTapPosition(TapDownDetails tapPos) {
-    final RenderBox renderBox = context.findRenderObject() as RenderBox;
+  // void _getTapPosition(TapDownDetails tapPos) {
+  //   final RenderBox renderBox = context.findRenderObject() as RenderBox;
 
-    setState(() {
-      _tapPosition = renderBox.globalToLocal(tapPos.globalPosition);
-    });
-  }
+  //   setState(() {
+  //     _tapPosition = renderBox.globalToLocal(tapPos.globalPosition);
+  //   });
+  // }
 
   // void _showContextMenu(context, String routeId) async {
   //   final RenderObject? overlay =
